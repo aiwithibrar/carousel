@@ -34,10 +34,13 @@
         handle: '',
         avatarBase64: null,
         size: '1080x1080',
-        fontSize: 28
+        fontSize: 28,
+        fontFamily: 'playfair',
+        rawText: ''
     };
 
     var toastTimer = null;
+    var dragSrcIndex = null;
 
     // ===== DOM REFS =====
     var mainTextInput = document.getElementById('mainTextInput');
@@ -48,6 +51,7 @@
     var avatarPreviewContainer = document.getElementById('avatarPreviewContainer');
     var avatarPreviewImg = document.getElementById('avatarPreviewImg');
     var removeAvatarBtn = document.getElementById('removeAvatarBtn');
+    var fontSelect = document.getElementById('fontSelect');
     var fontSizeSlider = document.getElementById('fontSizeSlider');
     var fontSizeValue = document.getElementById('fontSizeValue');
     var generateBtn = document.getElementById('generateBtn');
@@ -264,6 +268,8 @@
                 if (active) active.classList.remove('active');
                 btn.classList.add('active');
                 state.theme = btn.dataset.theme;
+                saveDraft();
+                if (state.slides.length > 0) generatePreview();
             });
         });
     }
@@ -274,6 +280,8 @@
                 document.querySelectorAll('.size-btn').forEach(function (b) { b.classList.remove('active'); });
                 btn.classList.add('active');
                 state.size = btn.dataset.size;
+                saveDraft();
+                if (state.slides.length > 0) generatePreview();
             });
         });
     }
@@ -282,12 +290,23 @@
         fontSizeSlider.addEventListener('input', function () {
             state.fontSize = parseInt(fontSizeSlider.value, 10);
             fontSizeValue.textContent = state.fontSize + 'px';
+            saveDraft();
+        });
+    }
+
+    function initFontFamily() {
+        if (!fontSelect) return;
+        fontSelect.addEventListener('change', function () {
+            state.fontFamily = fontSelect.value;
+            saveDraft();
+            if (state.slides.length > 0) generatePreview();
         });
     }
 
     function initHandle() {
         handleInput.addEventListener('input', function () {
             state.handle = handleInput.value.trim();
+            saveDraft();
         });
     }
 
@@ -355,22 +374,41 @@
             showToast('Limited to ' + MAX_SLIDES + ' slides for performance', true);
         }
 
+        renderSlidesPreview();
+        showToast(state.slides.length + ' slides generated!');
+    }
+
+    function renderSlidesPreview() {
         var isPortrait = state.size === '1080x1350';
         slidesContainer.innerHTML = '';
+        
         state.slides.forEach(function (slide, i) {
             var card = document.createElement('div');
             card.className = 'slide-card';
+            card.setAttribute('draggable', 'true');
+            card.setAttribute('data-index', i);
             card.style.animationDelay = (i * 0.08) + 's';
-            var slideClass = 'slide-inner theme-' + state.theme;
+            var slideClass = 'slide-inner theme-' + state.theme + ' font-' + state.fontFamily;
             if (isPortrait) slideClass += ' portrait';
             if (slide.type === 'cover') slideClass += ' title-slide';
             if (slide.type === 'cta') slideClass += ' cta-slide';
             var titleFontSize = state.fontSize * (slide.type === 'cover' ? 0.058 : 0.048);
             var bodyFontSize = state.fontSize * 0.029;
             card.innerHTML =
-                '<button class="download-single" data-index="' + i + '" title="Download this slide" aria-label="Download slide ' + (i + 1) + '">' +
-                    '<svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>' +
-                '</button>' +
+                '<div class="slide-actions">' +
+                    '<button class="slide-action-btn edit-slide" data-index="' + i + '" title="Edit slide" aria-label="Edit slide ' + (i + 1) + '">' +
+                        '<svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>' +
+                    '</button>' +
+                    '<button class="slide-action-btn delete-slide" data-index="' + i + '" title="Delete slide" aria-label="Delete slide ' + (i + 1) + '">' +
+                        '<svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>' +
+                    '</button>' +
+                    '<button class="slide-action-btn download-single" data-index="' + i + '" title="Download slide" aria-label="Download slide ' + (i + 1) + '">' +
+                        '<svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>' +
+                    '</button>' +
+                '</div>' +
+                '<div class="drag-handle" title="Drag to reorder">' +
+                    '<svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><circle cx="9" cy="6" r="1.5"/><circle cx="15" cy="6" r="1.5"/><circle cx="9" cy="12" r="1.5"/><circle cx="15" cy="12" r="1.5"/><circle cx="9" cy="18" r="1.5"/><circle cx="15" cy="18" r="1.5"/></svg>' +
+                '</div>' +
                 '<div class="' + slideClass + '">' +
                     '<div class="slide-deco-tl"></div>' +
                     '<div class="slide-deco-br"></div>' +
@@ -387,12 +425,35 @@
                     '<div class="slide-page-indicator">' + (i + 1) + ' / ' + state.slides.length + '</div>' +
                 '</div>';
             slidesContainer.appendChild(card);
+
+            // Drag events
+            card.addEventListener('dragstart', handleDragStart);
+            card.addEventListener('dragend', handleDragEnd);
+            card.addEventListener('dragover', handleDragOver);
+            card.addEventListener('drop', handleDrop);
+            card.addEventListener('dragenter', handleDragEnter);
+            card.addEventListener('dragleave', handleDragLeave);
         });
 
+        // Attach event listeners
         slidesContainer.querySelectorAll('.download-single').forEach(function (btn) {
             btn.addEventListener('click', function (e) {
                 e.stopPropagation();
                 downloadSingle(parseInt(btn.dataset.index, 10));
+            });
+        });
+
+        slidesContainer.querySelectorAll('.edit-slide').forEach(function (btn) {
+            btn.addEventListener('click', function (e) {
+                e.stopPropagation();
+                openSlideEditor(parseInt(btn.dataset.index, 10));
+            });
+        });
+
+        slidesContainer.querySelectorAll('.delete-slide').forEach(function (btn) {
+            btn.addEventListener('click', function (e) {
+                e.stopPropagation();
+                deleteSlide(parseInt(btn.dataset.index, 10));
             });
         });
 
@@ -401,7 +462,124 @@
             slideCountBadge.textContent = state.slides.length + ' slides';
             slideCountBadge.style.display = 'inline';
         }
-        showToast(state.slides.length + ' slides generated!');
+    }
+
+    // =============================================
+    // ===== DRAG AND DROP =====
+    // =============================================
+    function handleDragStart(e) {
+        dragSrcIndex = parseInt(this.dataset.index, 10);
+        this.classList.add('dragging');
+        e.dataTransfer.effectAllowed = 'move';
+        e.dataTransfer.setData('text/plain', dragSrcIndex);
+    }
+
+    function handleDragEnd(e) {
+        this.classList.remove('dragging');
+        document.querySelectorAll('.slide-card').forEach(function (card) {
+            card.classList.remove('drag-over');
+        });
+    }
+
+    function handleDragOver(e) {
+        e.preventDefault();
+        e.dataTransfer.dropEffect = 'move';
+    }
+
+    function handleDragEnter(e) {
+        this.classList.add('drag-over');
+    }
+
+    function handleDragLeave(e) {
+        this.classList.remove('drag-over');
+    }
+
+    function handleDrop(e) {
+        e.preventDefault();
+        var targetIndex = parseInt(this.dataset.index, 10);
+        if (dragSrcIndex !== null && dragSrcIndex !== targetIndex) {
+            var movedSlide = state.slides.splice(dragSrcIndex, 1)[0];
+            state.slides.splice(targetIndex, 0, movedSlide);
+            updateSlideNumbers();
+            renderSlidesPreview();
+            showToast('Slide moved');
+        }
+        this.classList.remove('drag-over');
+    }
+
+    function updateSlideNumbers() {
+        var contentIndex = 1;
+        state.slides.forEach(function (slide) {
+            if (slide.type === 'content') {
+                slide.numberLabel = padNumber(contentIndex);
+                contentIndex++;
+            }
+        });
+    }
+
+    // =============================================
+    // ===== INLINE EDITING =====
+    // =============================================
+    function openSlideEditor(index) {
+        var slide = state.slides[index];
+        var modal = document.createElement('div');
+        modal.className = 'slide-editor-overlay';
+        modal.innerHTML = 
+            '<div class="slide-editor-modal">' +
+                '<h3>Edit Slide ' + (index + 1) + '</h3>' +
+                '<label class="editor-label">Title</label>' +
+                '<input type="text" class="editor-input" id="editTitle" value="' + escapeHTML(slide.title || '') + '" placeholder="Slide title">' +
+                '<label class="editor-label">Body</label>' +
+                '<textarea class="editor-textarea" id="editBody" rows="4" placeholder="Slide body text">' + escapeHTML(slide.body || '') + '</textarea>' +
+                '<div class="editor-actions">' +
+                    '<button class="editor-btn cancel-btn" id="cancelEdit">Cancel</button>' +
+                    '<button class="editor-btn save-btn" id="saveEdit">Save Changes</button>' +
+                '</div>' +
+            '</div>';
+        document.body.appendChild(modal);
+
+        var titleInput = document.getElementById('editTitle');
+        var bodyInput = document.getElementById('editBody');
+        
+        titleInput.focus();
+
+        document.getElementById('saveEdit').addEventListener('click', function () {
+            state.slides[index].title = titleInput.value.trim();
+            state.slides[index].body = bodyInput.value.trim();
+            document.body.removeChild(modal);
+            renderSlidesPreview();
+            showToast('Slide updated');
+        });
+
+        document.getElementById('cancelEdit').addEventListener('click', function () {
+            document.body.removeChild(modal);
+        });
+
+        modal.addEventListener('click', function (e) {
+            if (e.target === modal) {
+                document.body.removeChild(modal);
+            }
+        });
+
+        document.addEventListener('keydown', function escHandler(e) {
+            if (e.key === 'Escape') {
+                if (document.body.contains(modal)) {
+                    document.body.removeChild(modal);
+                }
+                document.removeEventListener('keydown', escHandler);
+            }
+        });
+    }
+
+    function deleteSlide(index) {
+        if (state.slides.length <= 1) {
+            showToast('Cannot delete the last slide', true);
+            return;
+        }
+        state.slides.splice(index, 1);
+        updateSlideNumbers();
+        renderSlidesPreview();
+        showToast('Slide deleted');
     }
 
     // =============================================
@@ -471,7 +649,7 @@
             var h = parseInt(parts[1], 10);
             var scaledFontTitle = state.fontSize * (slide.type === 'cover' ? 1.9 : 1.6);
             var scaledFontBody = state.fontSize * 1.0;
-            var slideClass = 'render-slide theme-' + state.theme;
+            var slideClass = 'render-slide theme-' + state.theme + ' font-' + state.fontFamily;
             if (slide.type === 'cover') slideClass += ' title-slide';
             if (slide.type === 'cta') slideClass += ' cta-slide';
             var el = document.createElement('div');
@@ -729,6 +907,84 @@
         }
     }
 
+    // =============================================
+    // ===== DRAFT SAVE/LOAD SYSTEM =====
+    // =============================================
+    var DRAFT_KEY = 'carouselforge_draft';
+
+    function saveDraft() {
+        var draft = {
+            rawText: mainTextInput.value,
+            theme: state.theme,
+            handle: state.handle,
+            avatarBase64: state.avatarBase64,
+            size: state.size,
+            fontSize: state.fontSize,
+            fontFamily: state.fontFamily
+        };
+        try {
+            localStorage.setItem(DRAFT_KEY, JSON.stringify(draft));
+        } catch (e) {
+            console.warn('Could not save draft:', e);
+        }
+    }
+
+    function loadDraft() {
+        try {
+            var saved = localStorage.getItem(DRAFT_KEY);
+            if (!saved) return false;
+            var draft = JSON.parse(saved);
+            
+            if (draft.rawText) mainTextInput.value = draft.rawText;
+            if (draft.theme) {
+                state.theme = draft.theme;
+                var activeBtn = themeGrid.querySelector('.theme-btn.active');
+                if (activeBtn) activeBtn.classList.remove('active');
+                var targetBtn = themeGrid.querySelector('[data-theme="' + draft.theme + '"]');
+                if (targetBtn) targetBtn.classList.add('active');
+            }
+            if (draft.handle) {
+                state.handle = draft.handle;
+                handleInput.value = draft.handle;
+            }
+            if (draft.avatarBase64) {
+                state.avatarBase64 = draft.avatarBase64;
+                avatarPreviewImg.src = draft.avatarBase64;
+                avatarPreviewContainer.style.display = 'flex';
+                uploadAvatarBtn.style.display = 'none';
+            }
+            if (draft.size) {
+                state.size = draft.size;
+                document.querySelectorAll('.size-btn').forEach(function (b) { 
+                    b.classList.remove('active'); 
+                    if (b.dataset.size === draft.size) b.classList.add('active');
+                });
+            }
+            if (draft.fontSize) {
+                state.fontSize = draft.fontSize;
+                fontSizeSlider.value = draft.fontSize;
+                fontSizeValue.textContent = draft.fontSize + 'px';
+            }
+            if (draft.fontFamily && fontSelect) {
+                state.fontFamily = draft.fontFamily;
+                fontSelect.value = draft.fontFamily;
+            }
+            return true;
+        } catch (e) {
+            console.warn('Could not load draft:', e);
+            return false;
+        }
+    }
+
+    function clearDraft() {
+        try {
+            localStorage.removeItem(DRAFT_KEY);
+            showToast('Draft cleared');
+        } catch (e) {
+            console.warn('Could not clear draft:', e);
+        }
+    }
+
     // ===== INIT =====
     function init() {
         initAccessGate();
@@ -737,8 +993,19 @@
         initTheme();
         initSize();
         initFontSize();
+        initFontFamily();
         initHandle();
         initAvatar();
+
+        // Load saved draft
+        if (loadDraft()) {
+            showToast('Draft restored');
+        }
+
+        // Auto-save on text input
+        mainTextInput.addEventListener('input', function () {
+            saveDraft();
+        });
 
         generateBtn.addEventListener('click', generatePreview);
         downloadAllBtn.addEventListener('click', downloadAll);

@@ -3,7 +3,7 @@
  * Provides full offline support via cache-first strategy.
  */
 
-var CACHE_NAME = 'carouselforge-v2.6';
+var CACHE_NAME = 'carouselforge-v2.7';
 var ASSETS = [
     './',
     './index.html',
@@ -20,7 +20,7 @@ var ASSETS = [
 
 // Google Fonts to cache
 var FONT_URLS = [
-    'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Playfair+Display:wght@700;800;900&display=swap'
+    'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Playfair+Display:wght@700;800;900&family=Poppins:wght@400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&family=Merriweather:wght@400;700;900&family=Outfit:wght@400;500;600;700;800&display=swap'
 ];
 
 // Install: cache all core assets
