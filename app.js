@@ -32,6 +32,7 @@
         slides: [],
         theme: 'midnight',
         handle: '',
+        avatarBase64: null,
         size: '1080x1080',
         fontSize: 28
     };
@@ -42,6 +43,11 @@
     var mainTextInput = document.getElementById('mainTextInput');
     var themeGrid = document.getElementById('themeGrid');
     var handleInput = document.getElementById('handleInput');
+    var avatarInput = document.getElementById('avatarInput');
+    var uploadAvatarBtn = document.getElementById('uploadAvatarBtn');
+    var avatarPreviewContainer = document.getElementById('avatarPreviewContainer');
+    var avatarPreviewImg = document.getElementById('avatarPreviewImg');
+    var removeAvatarBtn = document.getElementById('removeAvatarBtn');
     var fontSizeSlider = document.getElementById('fontSizeSlider');
     var fontSizeValue = document.getElementById('fontSizeValue');
     var generateBtn = document.getElementById('generateBtn');
@@ -285,6 +291,49 @@
         });
     }
 
+    function initAvatar() {
+        if (!avatarInput) return;
+        uploadAvatarBtn.addEventListener('click', function () {
+            avatarInput.click();
+        });
+
+        avatarInput.addEventListener('change', function (e) {
+            var file = e.target.files[0];
+            if (!file) return;
+            if (!file.type.startsWith('image/')) {
+                showToast('Please select an image file.', true);
+                return;
+            }
+            if (file.size > 5 * 1024 * 1024) {
+                showToast('Image too large (max 5MB)', true);
+                return;
+            }
+
+            var reader = new FileReader();
+            reader.onload = function (event) {
+                state.avatarBase64 = event.target.result;
+                avatarPreviewImg.src = state.avatarBase64;
+                avatarPreviewContainer.style.display = 'flex';
+                uploadAvatarBtn.style.display = 'none';
+                
+                // Live preview auto-refresh if there's already slides generated
+                if (state.slides.length > 0) generatePreview();
+            };
+            reader.readAsDataURL(file);
+        });
+
+        removeAvatarBtn.addEventListener('click', function () {
+            state.avatarBase64 = null;
+            avatarInput.value = '';
+            avatarPreviewImg.src = '';
+            avatarPreviewContainer.style.display = 'none';
+            uploadAvatarBtn.style.display = 'flex';
+            
+            // Live preview auto-refresh
+            if (state.slides.length > 0) generatePreview();
+        });
+    }
+
     // =============================================
     // ===== GENERATE PREVIEW =====
     // =============================================
@@ -329,7 +378,12 @@
                     (slide.type !== 'cover' ? '<div class="slide-accent-line"></div>' : '') +
                     (slide.title ? '<div class="slide-title-text" style="font-size:' + titleFontSize + 'rem">' + highlightWords(escapeHTML(slide.title)) + '</div>' : '') +
                     (slide.body ? '<div class="slide-body-text" style="font-size:' + bodyFontSize + 'rem">' + highlightWords(escapeHTMLWithBreaks(slide.body)) + '</div>' : '') +
-                    (state.handle ? '<div class="slide-handle">' + escapeHTML(state.handle) + '</div>' : '') +
+                    (state.handle || state.avatarBase64 ? 
+                        '<div class="slide-author-combo">' + 
+                            (state.avatarBase64 ? '<img src="' + state.avatarBase64 + '" class="slide-avatar" alt="Avatar">' : '') +
+                            (state.handle ? '<div class="slide-handle">' + escapeHTML(state.handle) + '</div>' : '') +
+                        '</div>' 
+                    : '') +
                     '<div class="slide-page-indicator">' + (i + 1) + ' / ' + state.slides.length + '</div>' +
                 '</div>';
             slidesContainer.appendChild(card);
@@ -431,7 +485,12 @@
                 (slide.type !== 'cover' ? '<div class="slide-accent-line"></div>' : '') +
                 (slide.title ? '<div class="slide-title-text" style="font-size:' + scaledFontTitle + 'px">' + highlightWords(escapeHTML(slide.title)) + '</div>' : '') +
                 (slide.body ? '<div class="slide-body-text" style="font-size:' + scaledFontBody + 'px">' + highlightWords(escapeHTMLWithBreaks(slide.body)) + '</div>' : '') +
-                (state.handle ? '<div class="slide-handle">' + escapeHTML(state.handle) + '</div>' : '') +
+                (state.handle || state.avatarBase64 ? 
+                    '<div class="slide-author-combo">' + 
+                        (state.avatarBase64 ? '<img src="' + state.avatarBase64 + '" class="slide-avatar" alt="Avatar">' : '') +
+                        (state.handle ? '<div class="slide-handle">' + escapeHTML(state.handle) + '</div>' : '') +
+                    '</div>' 
+                : '') +
                 '<div class="slide-page-indicator">' + (index + 1) + ' / ' + state.slides.length + '</div>';
             renderArea.appendChild(el);
             requestAnimationFrame(function () {
@@ -679,6 +738,7 @@
         initSize();
         initFontSize();
         initHandle();
+        initAvatar();
 
         generateBtn.addEventListener('click', generatePreview);
         downloadAllBtn.addEventListener('click', downloadAll);

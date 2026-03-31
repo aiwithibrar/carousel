@@ -167,9 +167,22 @@ Pick one habit to change." rows="14"></textarea>
                 </div>
             </div>
 
-            <!-- Handle -->
+            <!-- Author Info -->
             <div class="control-group">
-                <label class="control-label" for="handleInput">Your Handle <span class="optional">(optional)</span></label>
+                <label class="control-label" for="handleInput">Author Profile <span class="optional">(optional)</span></label>
+                
+                <div class="avatar-upload-row">
+                    <button id="uploadAvatarBtn" class="upload-btn" type="button">
+                        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+                        Upload Avatar
+                    </button>
+                    <div id="avatarPreviewContainer" class="avatar-preview-container" style="display:none;">
+                        <img id="avatarPreviewImg" class="avatar-preview-img" src="" alt="Avatar">
+                        <button id="removeAvatarBtn" class="remove-avatar-btn" type="button" title="Remove Avatar" aria-label="Remove Avatar">✕</button>
+                    </div>
+                </div>
+                
+                <input type="file" id="avatarInput" accept="image/png, image/jpeg, image/webp" style="display:none;">
                 <input type="text" id="handleInput" class="handle-input" placeholder="@yourhandle">
             </div>
 
