@@ -1,52 +1,46 @@
 -- =============================================
--- CarouselForge — Supabase Database Setup
+-- CarouselForge — NEW Supabase Database Setup 
+-- (Email-Only Access System)
 -- Run this in: Supabase Dashboard → SQL Editor → New Query
+-- Note: This will delete the old table and any old requests!
 -- =============================================
 
--- 1. Create the approved_users table
-CREATE TABLE IF NOT EXISTS approved_users (
+-- 1. Completely delete the old table and its broken security rules
+DROP TABLE IF EXISTS approved_users;
+
+-- 2. Create the clean new table (Notice: NO token column needed!)
+CREATE TABLE approved_users (
     id SERIAL PRIMARY KEY,
-    email TEXT NOT NULL,
-    token TEXT UNIQUE,
+    email TEXT NOT NULL UNIQUE,
     is_active BOOLEAN DEFAULT false,
     created_at TIMESTAMPTZ DEFAULT now()
 );
 
--- 2. Enable Row Level Security
+-- 3. Enable Security
 ALTER TABLE approved_users ENABLE ROW LEVEL SECURITY;
 
--- 3. Policy: Anyone can submit an access request (INSERT email only)
+-- 4. Policy: Anyone can submit an access request (INSERT email)
 CREATE POLICY "Anyone can request access"
 ON approved_users
 FOR INSERT
 TO anon
 WITH CHECK (true);
 
--- 4. Policy: Anyone can check if a token is valid (SELECT approved only)
-CREATE POLICY "Anyone can validate tokens"
+-- 5. Policy: Anyone can check if an email is approved (SELECT)
+CREATE POLICY "Anyone can validate emails"
 ON approved_users
 FOR SELECT
 TO anon
-USING (is_active = true AND token IS NOT NULL);
+USING (is_active = true);
 
--- 5. Insert your master token (change 'your-email@example.com' to your email)
-INSERT INTO approved_users (email, token, is_active)
-VALUES ('owner@example.com', 'OWNER_MASTER_KEY', true);
+-- 6. Insert your main email immediately so you have access
+-- (Change 'owner@example.com' to your real email address!)
+INSERT INTO approved_users (email, is_active)
+VALUES ('owner@example.com', true);
 
 -- =============================================
--- HOW TO USE (from Supabase Dashboard → Table Editor):
---
--- TO APPROVE a user:
---   1. Find their row (status is_active = false)
---   2. Set is_active = true
---   3. That's it! They can now unlock the app using their email address.
---
--- TO REVOKE access:
---   1. Find their row
---   2. Set is_active = false
---   That's it — they're locked out immediately
---
--- TO SEE all requests:
---   Go to Table Editor → approved_users
---   Rows with is_active=false = pending requests
+-- HOW TO USE:
+-- 1. Go to Table Editor -> approved_users
+-- 2. See a request? Change "is_active" from FALSE to TRUE.
+-- 3. They are instantly unlocked!
 -- =============================================
