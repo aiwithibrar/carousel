@@ -64,6 +64,77 @@
     var loadingSub = document.getElementById('loadingSub');
     var toastEl = document.getElementById('toast');
     var slideCountBadge = document.getElementById('slideCountBadge');
+    var promptHelperBtn = document.getElementById('promptHelperBtn');
+
+    // =============================================
+    // ===== PROMPT HELPER =====
+    // =============================================
+    var PROMPT_TEMPLATE = 'Write a [NUMBER]-slide Instagram carousel about [TOPIC].\n\nFormat EXACTLY like this (I will paste directly into my tool):\n\nTitle: [Catchy main headline]\n\n1. [First point title]\n[1-2 sentence explanation]\n\n2. [Second point title]\n[1-2 sentence explanation]\n\n3. [Third point title]\n[1-2 sentence explanation]\n\n... continue for all slides ...\n\nCTA: [Call to action - e.g., "Follow for more tips!"]\n\nRULES:\n- No image suggestions or [brackets]\n- No "Here\'s your carousel" intro\n- No notes or instructions\n- Keep each point under 40 words\n- Make titles punchy and scannable';
+
+    function showPromptHelper() {
+        var modal = document.createElement('div');
+        modal.className = 'prompt-modal-overlay';
+        modal.innerHTML = 
+            '<div class="prompt-modal">' +
+                '<h3>' +
+                    '<svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>' +
+                    'AI Prompt Template' +
+                '</h3>' +
+                '<p class="modal-subtitle">Copy this prompt and paste it into ChatGPT, Claude, or any AI</p>' +
+                '<div class="prompt-template" id="promptText">' + escapeHTML(PROMPT_TEMPLATE) + '</div>' +
+                '<div class="prompt-actions">' +
+                    '<button class="prompt-btn close-btn" id="closePrompt">Close</button>' +
+                    '<button class="prompt-btn copy-btn" id="copyPrompt">' +
+                        '<svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>' +
+                        'Copy Prompt' +
+                    '</button>' +
+                '</div>' +
+                '<div class="prompt-tips">' +
+                    '<h4>Tips for best results</h4>' +
+                    '<ul>' +
+                        '<li>Replace [NUMBER] with how many slides you want (5-10 works best)</li>' +
+                        '<li>Replace [TOPIC] with your specific subject</li>' +
+                        '<li>The AI output will paste directly into CarouselForge</li>' +
+                        '<li>Works with ChatGPT, Claude, Gemini, and others</li>' +
+                    '</ul>' +
+                '</div>' +
+            '</div>';
+        document.body.appendChild(modal);
+
+        document.getElementById('copyPrompt').addEventListener('click', function () {
+            navigator.clipboard.writeText(PROMPT_TEMPLATE).then(function () {
+                showToast('Prompt copied! Paste into ChatGPT');
+                document.body.removeChild(modal);
+            }).catch(function () {
+                // Fallback
+                var textArea = document.createElement('textarea');
+                textArea.value = PROMPT_TEMPLATE;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+                showToast('Prompt copied!');
+                document.body.removeChild(modal);
+            });
+        });
+
+        document.getElementById('closePrompt').addEventListener('click', function () {
+            document.body.removeChild(modal);
+        });
+
+        modal.addEventListener('click', function (e) {
+            if (e.target === modal) {
+                document.body.removeChild(modal);
+            }
+        });
+    }
+
+    if (promptHelperBtn) {
+        promptHelperBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            showPromptHelper();
+        });
+    }
 
     // =============================================
     // ===== ESCAPE HTML (regex-based) =====
@@ -86,33 +157,118 @@
     }
 
     // =============================================
+    // ===== AI TEXT CLEANUP =====
+    // =============================================
+    function cleanAIOutput(text) {
+        var cleaned = text;
+        
+        // Remove common AI intro phrases
+        var introPatterns = [
+            /^(here'?s?|sure!?|absolutely!?|of course!?|certainly!?)[^\n]*carousel[^\n]*:?\s*/i,
+            /^(here'?s?|sure!?)[^\n]*(content|text|copy)[^\n]*:?\s*/i,
+            /^(i'?ve|i have)[^\n]*(created|written|prepared)[^\n]*:?\s*/i,
+            /^(below|following)[^\n]*(carousel|content|slides)[^\n]*:?\s*/i,
+            /^let me[^\n]*:?\s*/i,
+            /^great[^\n]*!\s*/i,
+        ];
+        introPatterns.forEach(function(pattern) {
+            cleaned = cleaned.replace(pattern, '');
+        });
+        
+        // Remove image/visual suggestions
+        cleaned = cleaned.replace(/\[image[^\]]*\]/gi, '');
+        cleaned = cleaned.replace(/\[visual[^\]]*\]/gi, '');
+        cleaned = cleaned.replace(/\[photo[^\]]*\]/gi, '');
+        cleaned = cleaned.replace(/\[graphic[^\]]*\]/gi, '');
+        cleaned = cleaned.replace(/\[icon[^\]]*\]/gi, '');
+        cleaned = cleaned.replace(/\(image[^)]*\)/gi, '');
+        cleaned = cleaned.replace(/\(visual[^)]*\)/gi, '');
+        cleaned = cleaned.replace(/\(suggest[^)]*\)/gi, '');
+        
+        // Remove speaker notes and instructions
+        cleaned = cleaned.replace(/\[note[^\]]*\]/gi, '');
+        cleaned = cleaned.replace(/\(note[^)]*\)/gi, '');
+        cleaned = cleaned.replace(/^note:.*$/gim, '');
+        cleaned = cleaned.replace(/^caption:.*$/gim, '');
+        cleaned = cleaned.replace(/^description:.*$/gim, '');
+        cleaned = cleaned.replace(/^alt text:.*$/gim, '');
+        
+        // Remove design instructions
+        cleaned = cleaned.replace(/\[design[^\]]*\]/gi, '');
+        cleaned = cleaned.replace(/\[color[^\]]*\]/gi, '');
+        cleaned = cleaned.replace(/\[font[^\]]*\]/gi, '');
+        cleaned = cleaned.replace(/\[background[^\]]*\]/gi, '');
+        cleaned = cleaned.replace(/\[layout[^\]]*\]/gi, '');
+        
+        // Remove character/word counts
+        cleaned = cleaned.replace(/\(\d+\s*(characters?|chars?|words?)\)/gi, '');
+        cleaned = cleaned.replace(/\[\d+\s*(characters?|chars?|words?)\]/gi, '');
+        
+        // Remove trailing AI outros
+        cleaned = cleaned.replace(/\n+(let me know|hope this helps|feel free|if you need|want me to|shall i|i can also)[^\n]*$/gi, '');
+        cleaned = cleaned.replace(/\n+---+\s*\n+(note|tip|remember)[^\n]*$/gi, '');
+        
+        // Clean up excessive whitespace
+        cleaned = cleaned.replace(/\n{4,}/g, '\n\n\n');
+        
+        return cleaned.trim();
+    }
+
+    // =============================================
     // ===== SMART TEXT PARSER =====
     // =============================================
     function parseTextToSlides(text) {
         var trimmed = text.trim();
         if (!trimmed) return [];
+        
+        // Clean AI artifacts first
+        var cleaned = cleanAIOutput(trimmed);
 
         var slides;
+        
+        // Try Hook/CTA format first (common AI output)
+        slides = parseHookFormat(cleaned);
+        if (slides && slides.length > 1) return wrapResult(slides, cleaned);
 
-        slides = parseSlideMarkers(trimmed);
-        if (slides && slides.length > 1) return wrapResult(slides, trimmed);
+        slides = parseSlideMarkers(cleaned);
+        if (slides && slides.length > 1) return wrapResult(slides, cleaned);
+        
+        // Try bracket markers [1] or [Slide 1]
+        slides = parseBracketMarkers(cleaned);
+        if (slides && slides.length > 1) return wrapResult(slides, cleaned);
 
-        slides = parseMarkdownHeadings(trimmed);
-        if (slides && slides.length > 1) return wrapResult(slides, trimmed);
+        slides = parseMarkdownHeadings(cleaned);
+        if (slides && slides.length > 1) return wrapResult(slides, cleaned);
 
-        slides = parseNumberedList(trimmed);
-        if (slides && slides.length > 1) return wrapResult(slides, trimmed);
+        slides = parseNumberedList(cleaned);
+        if (slides && slides.length > 1) return wrapResult(slides, cleaned);
+        
+        // Try Twitter thread format 1/ 2/ 3/
+        slides = parseTwitterThread(cleaned);
+        if (slides && slides.length > 1) return wrapResult(slides, cleaned);
+        
+        // Try emoji headers
+        slides = parseEmojiHeaders(cleaned);
+        if (slides && slides.length > 1) return wrapResult(slides, cleaned);
+        
+        // Try labeled sections (Point 1:, Tip 1:, etc.)
+        slides = parseLabeledSections(cleaned);
+        if (slides && slides.length > 1) return wrapResult(slides, cleaned);
+        
+        // Try dash separators ---
+        slides = parseDashSeparators(cleaned);
+        if (slides && slides.length > 1) return wrapResult(slides, cleaned);
 
-        slides = parseBoldMarkers(trimmed);
-        if (slides && slides.length > 1) return wrapResult(slides, trimmed);
+        slides = parseBoldMarkers(cleaned);
+        if (slides && slides.length > 1) return wrapResult(slides, cleaned);
 
-        slides = parseParagraphs(trimmed);
-        if (slides && slides.length > 1) return wrapResult(slides, trimmed);
+        slides = parseParagraphs(cleaned);
+        if (slides && slides.length > 1) return wrapResult(slides, cleaned);
 
         return [{
             numberLabel: '',
-            title: trimmed.substring(0, 80),
-            body: trimmed.length > 80 ? trimmed.substring(80) : '',
+            title: cleaned.substring(0, 80),
+            body: cleaned.length > 80 ? cleaned.substring(80) : '',
             type: 'content'
         }];
     }
@@ -121,6 +277,174 @@
         var mainTitle = slides._extractedTitle || '';
         delete slides._extractedTitle;
         return addCoverAndCTA(slides, rawText, mainTitle);
+    }
+
+    // ===== HOOK/CTA FORMAT PARSER (Common AI output) =====
+    function parseHookFormat(text) {
+        // Matches: Hook:, **Hook**, 🎣 Hook, Opening:, Intro:
+        var hookPattern = /(?:^|\n)\s*(?:\*\*)?(?:hook|opening|intro|attention[- ]?grabber)\s*(?:\*\*)?[:\-]\s*/i;
+        var ctaPattern = /(?:^|\n)\s*(?:\*\*)?(?:cta|call[- ]?to[- ]?action|closing|outro|final)\s*(?:\*\*)?[:\-]\s*/i;
+        
+        if (!hookPattern.test(text) && !ctaPattern.test(text)) return null;
+        
+        // Split by common section markers
+        var sectionRegex = /(?:^|\n)\s*(?:\*\*)?(?:hook|opening|intro|point\s*\d+|tip\s*\d+|step\s*\d+|slide\s*\d+|key\s*\d+|insight\s*\d+|takeaway|cta|call[- ]?to[- ]?action|closing|outro|final|conclusion)\s*(?:\*\*)?[:\-]\s*/gi;
+        
+        var matches = [];
+        var m;
+        var regex = /(?:^|\n)\s*(?:\*\*)?(hook|opening|intro|point\s*\d+|tip\s*\d+|step\s*\d+|slide\s*\d+|key\s*\d+|insight\s*\d+|takeaway|cta|call[- ]?to[- ]?action|closing|outro|final|conclusion)\s*(?:\*\*)?[:\-]\s*/gi;
+        
+        while ((m = regex.exec(text)) !== null) {
+            matches.push({ index: m.index, length: m[0].length, label: m[1].toLowerCase() });
+        }
+        
+        if (matches.length < 2) return null;
+        
+        var slides = [];
+        for (var i = 0; i < matches.length; i++) {
+            var startIdx = matches[i].index + matches[i].length;
+            var endIdx = i + 1 < matches.length ? matches[i + 1].index : text.length;
+            var content = text.substring(startIdx, endIdx).trim();
+            var parsed = splitTitleBody(content);
+            var label = matches[i].label;
+            
+            var type = 'content';
+            var numberLabel = '';
+            
+            if (/hook|opening|intro/.test(label)) {
+                type = 'cover';
+            } else if (/cta|call|closing|outro|final|conclusion/.test(label)) {
+                type = 'cta';
+            } else {
+                var numMatch = label.match(/\d+/);
+                numberLabel = numMatch ? padNumber(parseInt(numMatch[0])) : padNumber(slides.filter(function(s) { return s.type === 'content'; }).length + 1);
+            }
+            
+            slides.push({ numberLabel: numberLabel, title: parsed.title, body: parsed.body, type: type });
+        }
+        
+        return slides.length >= 2 ? slides : null;
+    }
+
+    // ===== BRACKET MARKERS [1] or [Slide 1] =====
+    function parseBracketMarkers(text) {
+        var regex = /(?:^|\n)\s*\[(?:slide\s*)?(\d+)\]\s*[:\-]?\s*/gi;
+        var matches = [];
+        var m;
+        while ((m = regex.exec(text)) !== null) matches.push(m);
+        if (matches.length < 2) return null;
+        
+        var slides = [];
+        var firstMatchStart = matches[0].index;
+        var preamble = text.substring(0, firstMatchStart).trim();
+        
+        for (var i = 0; i < matches.length; i++) {
+            var match = matches[i];
+            var startIdx = match.index + match[0].length;
+            var endIdx = i + 1 < matches.length ? matches[i + 1].index : text.length;
+            var content = text.substring(startIdx, endIdx).trim();
+            var parsed = splitTitleBody(content);
+            slides.push({ numberLabel: padNumber(parseInt(match[1])), title: parsed.title, body: parsed.body, type: 'content' });
+        }
+        
+        if (preamble && slides.length) {
+            var firstLine = preamble.split('\n')[0].trim();
+            if (firstLine.length <= 80) slides._extractedTitle = firstLine;
+        }
+        return slides.length >= 2 ? slides : null;
+    }
+
+    // ===== TWITTER THREAD FORMAT 1/ 2/ 3/ =====
+    function parseTwitterThread(text) {
+        var regex = /(?:^|\n)\s*(\d+)\/\s+/g;
+        var matches = [];
+        var m;
+        while ((m = regex.exec(text)) !== null) matches.push(m);
+        if (matches.length < 2) return null;
+        
+        var slides = [];
+        for (var i = 0; i < matches.length; i++) {
+            var match = matches[i];
+            var startIdx = match.index + match[0].length;
+            var endIdx = i + 1 < matches.length ? matches[i + 1].index : text.length;
+            var content = text.substring(startIdx, endIdx).trim();
+            var parsed = splitTitleBody(content);
+            slides.push({ numberLabel: padNumber(parseInt(match[1])), title: parsed.title, body: parsed.body, type: 'content' });
+        }
+        return slides.length >= 2 ? slides : null;
+    }
+
+    // ===== EMOJI HEADERS 🔥 Title =====
+    function parseEmojiHeaders(text) {
+        // Common emoji patterns at start of lines followed by title
+        var regex = /(?:^|\n)\s*([\u{1F300}-\u{1F9FF}]|[\u{2600}-\u{26FF}]|[\u{2700}-\u{27BF}])\s*(.+?)(?=\n\s*[\u{1F300}-\u{1F9FF}]|\n\s*[\u{2600}-\u{26FF}]|\n\s*[\u{2700}-\u{27BF}]|$)/gsu;
+        var matches = [];
+        var m;
+        while ((m = regex.exec(text)) !== null) {
+            if (m[2].trim().length > 0) matches.push(m);
+        }
+        if (matches.length < 3) return null;
+        
+        var slides = [];
+        for (var i = 0; i < matches.length; i++) {
+            var content = matches[i][2].trim();
+            var parsed = splitTitleBody(content);
+            // Prepend emoji to title
+            var emoji = matches[i][1];
+            parsed.title = emoji + ' ' + parsed.title;
+            slides.push({ numberLabel: padNumber(i + 1), title: parsed.title, body: parsed.body, type: 'content' });
+        }
+        return slides.length >= 2 ? slides : null;
+    }
+
+    // ===== LABELED SECTIONS (Point 1:, Tip 1:, Step 1:) =====
+    function parseLabeledSections(text) {
+        var regex = /(?:^|\n)\s*(?:\*\*)?(point|tip|step|key|insight|idea|reason|way|strategy|tactic|method|principle|rule|lesson|fact|myth|truth|secret)\s*(?:#)?(\d+)\s*(?:\*\*)?[:\-]\s*/gi;
+        var matches = [];
+        var m;
+        while ((m = regex.exec(text)) !== null) matches.push(m);
+        if (matches.length < 2) return null;
+        
+        var slides = [];
+        var firstMatchStart = matches[0].index;
+        var preamble = text.substring(0, firstMatchStart).trim();
+        
+        for (var i = 0; i < matches.length; i++) {
+            var match = matches[i];
+            var startIdx = match.index + match[0].length;
+            var endIdx = i + 1 < matches.length ? matches[i + 1].index : text.length;
+            var content = text.substring(startIdx, endIdx).trim();
+            var parsed = splitTitleBody(content);
+            slides.push({ numberLabel: padNumber(parseInt(match[2])), title: parsed.title, body: parsed.body, type: 'content' });
+        }
+        
+        if (preamble && slides.length) {
+            var lines = preamble.split('\n').filter(function(l) { return l.trim(); });
+            if (lines.length > 0 && lines[0].length <= 80) {
+                slides._extractedTitle = cleanMarkdown(lines[0]);
+            }
+        }
+        return slides.length >= 2 ? slides : null;
+    }
+
+    // ===== DASH SEPARATORS --- =====
+    function parseDashSeparators(text) {
+        var parts = text.split(/\n\s*[-=]{3,}\s*\n/);
+        if (parts.length < 3) return null;
+        
+        var slides = [];
+        for (var i = 0; i < parts.length; i++) {
+            var content = parts[i].trim();
+            if (!content) continue;
+            var parsed = splitTitleBody(content);
+            slides.push({ 
+                numberLabel: slides.length > 0 ? padNumber(slides.length) : '', 
+                title: parsed.title, 
+                body: parsed.body, 
+                type: slides.length === 0 ? 'cover' : 'content' 
+            });
+        }
+        return slides.length >= 2 ? slides : null;
     }
 
     function parseSlideMarkers(text) {
