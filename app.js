@@ -162,18 +162,24 @@
     function cleanAIOutput(text) {
         var cleaned = text;
         
-        // Remove common AI intro phrases
+        // Remove common AI intro phrases (more aggressive matching)
+        // Pattern: "Here's your/the/a [anything] carousel/content [anything]:" at start
+        cleaned = cleaned.replace(/^[\s\S]*?here'?s?\s+(your|the|a|my)?\s*[\w\s\-]*?(carousel|content|text|copy|slides?)[\w\s\-]*?(on|for|about)?[^\n]*\n*/i, '');
+        
+        // More intro patterns
         var introPatterns = [
-            /^(here'?s?|sure!?|absolutely!?|of course!?|certainly!?)[^\n]*carousel[^\n]*:?\s*/i,
-            /^(here'?s?|sure!?)[^\n]*(content|text|copy)[^\n]*:?\s*/i,
-            /^(i'?ve|i have)[^\n]*(created|written|prepared)[^\n]*:?\s*/i,
-            /^(below|following)[^\n]*(carousel|content|slides)[^\n]*:?\s*/i,
-            /^let me[^\n]*:?\s*/i,
-            /^great[^\n]*!\s*/i,
+            /^(sure|absolutely|of course|certainly|great|perfect|okay|ok)[\s!,]*\n*/i,
+            /^(i'?ve|i have|i've|here is|here are)[^\n]*(created|written|prepared|made|generated)[^\n]*\n*/i,
+            /^(below|following|here)[^\n]*(is|are)[^\n]*(carousel|content|slides?)[^\n]*:?\s*\n*/i,
+            /^let me[^\n]*\n*/i,
+            /^(this is|these are)[^\n]*(carousel|slides?|content)[^\n]*\n*/i,
         ];
         introPatterns.forEach(function(pattern) {
             cleaned = cleaned.replace(pattern, '');
         });
+        
+        // Remove lines that are just emojis with arrows pointing to titles
+        cleaned = cleaned.replace(/^[\s]*[👉🔥💡✨🚀💰💳⚡🎯📌]+\s*[""]?[^""\n]*[""]?\s*[💻💰🔥💡✨🚀📌🎯]*\s*\n/gm, '');
         
         // Remove image/visual suggestions
         cleaned = cleaned.replace(/\[image[^\]]*\]/gi, '');
@@ -200,6 +206,10 @@
         cleaned = cleaned.replace(/\[background[^\]]*\]/gi, '');
         cleaned = cleaned.replace(/\[layout[^\]]*\]/gi, '');
         
+        // Remove slide labels like "Slide 1:" or "Slide 1 -" but keep content
+        // This helps normalize the format
+        cleaned = cleaned.replace(/^slide\s*\d+\s*[:\-–—]\s*/gim, '');
+        
         // Remove character/word counts
         cleaned = cleaned.replace(/\(\d+\s*(characters?|chars?|words?)\)/gi, '');
         cleaned = cleaned.replace(/\[\d+\s*(characters?|chars?|words?)\]/gi, '');
@@ -210,6 +220,7 @@
         
         // Clean up excessive whitespace
         cleaned = cleaned.replace(/\n{4,}/g, '\n\n\n');
+        cleaned = cleaned.replace(/^\n+/, ''); // Remove leading newlines
         
         return cleaned.trim();
     }
@@ -541,11 +552,19 @@
         if (!content) return { title: '', body: '' };
         content = cleanMarkdown(content);
         var lines = content.split('\n').map(function (l) { return l.trim(); }).filter(Boolean);
+        if (lines.length === 0) return { title: '', body: '' };
+        
         if (lines.length === 1) {
-            if (lines[0].length <= 60) return { title: lines[0], body: '' };
-            var sentence = lines[0].match(/^(.{20,60}[.!?])\s+/);
-            if (sentence) return { title: sentence[1], body: lines[0].substring(sentence[0].length) };
-            return { title: lines[0], body: '' };
+            // Clean trailing emojis from title for cleaner look (optional)
+            var titleLine = lines[0];
+            if (titleLine.length <= 80) return { title: titleLine, body: '' };
+            // Try to split at sentence boundary
+            var sentence = titleLine.match(/^(.{20,70}[.!?])\s+/);
+            if (sentence) return { title: sentence[1], body: titleLine.substring(sentence[0].length) };
+            // Split at last space before 80 chars
+            var lastSpace = titleLine.substring(0, 80).lastIndexOf(' ');
+            if (lastSpace > 30) return { title: titleLine.substring(0, lastSpace), body: titleLine.substring(lastSpace + 1) };
+            return { title: titleLine, body: '' };
         }
         return { title: lines[0], body: lines.slice(1).join('\n') };
     }
@@ -555,7 +574,7 @@
             .replace(/\*\*(.+?)\*\*/g, '$1')
             .replace(/__(.+?)__/g, '$1')
             .replace(/_(.+?)_/g, '$1')
-            .replace(/^[-*+]\s+/gm, '\u2022 ')
+            .replace(/^[-*+]\s+/gm, '• ')
             .replace(/^>\s*/gm, '')
             .trim();
     }
