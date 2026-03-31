@@ -3,7 +3,7 @@
  * Provides full offline support via cache-first strategy.
  */
 
-var CACHE_NAME = 'carouselforge-v2.2';
+var CACHE_NAME = 'carouselforge-v2.3';
 var ASSETS = [
     './',
     './index.html',
