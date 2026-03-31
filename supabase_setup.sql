@@ -39,8 +39,7 @@ VALUES ('owner@example.com', 'OWNER_MASTER_KEY', true);
 -- TO APPROVE a user:
 --   1. Find their row (status is_active = false)
 --   2. Set is_active = true
---   3. Set token = any unique string (e.g., 'john_2026_xyz')
---   4. Send them: https://carouselforgee.netlify.app/?token=john_2026_xyz
+--   3. That's it! They can now unlock the app using their email address.
 --
 -- TO REVOKE access:
 --   1. Find their row
@@ -49,5 +48,5 @@ VALUES ('owner@example.com', 'OWNER_MASTER_KEY', true);
 --
 -- TO SEE all requests:
 --   Go to Table Editor → approved_users
---   Rows with is_active=false and no token = pending requests
+--   Rows with is_active=false = pending requests
 -- =============================================

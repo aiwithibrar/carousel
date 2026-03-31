@@ -477,13 +477,13 @@
     var sendRequestBtn = document.getElementById('sendRequestBtn');
     var requestSuccess = document.getElementById('requestSuccess');
 
-    // Validate token against Supabase
-    function validateToken(token) {
-        if (!supabase || !token) return Promise.resolve(false);
+    // Validate email against Supabase
+    function validateEmail(email) {
+        if (!supabase || !email) return Promise.resolve(false);
         return supabase
             .from('approved_users')
-            .select('id, email')
-            .eq('token', token.trim())
+            .select('id')
+            .eq('email', email.trim().toLowerCase())
             .eq('is_active', true)
             .then(function (result) {
                 return result.data && result.data.length > 0;
@@ -493,46 +493,21 @@
             });
     }
 
-    function grantAccess(token) {
-        localStorage.setItem('carouselforge_token', token.trim());
+    function grantAccess(email) {
+        localStorage.setItem('carouselforge_email', email.trim().toLowerCase());
         if (accessGate) accessGate.style.display = 'none';
     }
 
     function revokeAccess() {
-        localStorage.removeItem('carouselforge_token');
+        localStorage.removeItem('carouselforge_email');
     }
 
     function checkAccess() {
-        // Step 1: Check URL for token (?token=XXXX)
-        var urlParams = new URLSearchParams(window.location.search);
-        var urlToken = urlParams.get('token');
-
-        if (urlToken) {
-            if (unlockBtn) unlockBtn.disabled = true;
-            validateToken(urlToken).then(function (valid) {
+        var savedEmail = localStorage.getItem('carouselforge_email');
+        if (savedEmail) {
+            validateEmail(savedEmail).then(function (valid) {
                 if (valid) {
-                    grantAccess(urlToken);
-                    window.history.replaceState({}, '', window.location.pathname);
-                } else {
-                    revokeAccess();
-                    if (accessGate) accessGate.style.display = 'flex';
-                    if (tokenError) {
-                        tokenError.textContent = 'This access link is invalid or has been revoked';
-                        tokenError.style.display = 'block';
-                    }
-                    if (tokenInput) tokenInput.value = urlToken;
-                }
-                if (unlockBtn) unlockBtn.disabled = false;
-            });
-            return;
-        }
-
-        // Step 2: Check localStorage for saved token
-        var savedToken = localStorage.getItem('carouselforge_token');
-        if (savedToken) {
-            validateToken(savedToken).then(function (valid) {
-                if (valid) {
-                    grantAccess(savedToken);
+                    grantAccess(savedEmail);
                 } else {
                     revokeAccess();
                     if (accessGate) accessGate.style.display = 'flex';
@@ -541,7 +516,7 @@
             return;
         }
 
-        // Step 3: No token — show gate
+        // No saved email — show gate
         if (accessGate) accessGate.style.display = 'flex';
     }
 
@@ -553,7 +528,7 @@
         }
         return supabase
             .from('approved_users')
-            .insert([{ email: email, is_active: false }])
+            .insert([{ email: email.trim().toLowerCase(), is_active: false }])
             .then(function (result) {
                 if (result.error) {
                     console.error('Request error:', result.error);
@@ -584,22 +559,22 @@
             });
         }
 
-        // Unlock with token
+        // Unlock with email
         if (unlockBtn) {
             unlockBtn.addEventListener('click', function () {
-                var token = tokenInput.value.trim();
-                if (!token) {
-                    tokenError.textContent = 'Please enter a token';
+                var email = tokenInput.value.trim().toLowerCase();
+                if (!email || email.indexOf('@') === -1) {
+                    tokenError.textContent = 'Please enter a valid email';
                     tokenError.style.display = 'block';
                     return;
                 }
                 unlockBtn.disabled = true;
                 unlockBtn.textContent = 'Verifying...';
-                validateToken(token).then(function (valid) {
+                validateEmail(email).then(function (valid) {
                     if (valid) {
-                        grantAccess(token);
+                        grantAccess(email);
                     } else {
-                        tokenError.textContent = 'Invalid or revoked token';
+                        tokenError.textContent = 'Email not found or not approved yet';
                         tokenError.style.display = 'block';
                         tokenInput.style.borderColor = '#ef4444';
                         setTimeout(function () { tokenInput.style.borderColor = ''; }, 2000);
@@ -610,7 +585,7 @@
             });
         }
 
-        // Enter key on token input
+        // Enter key on email input
         if (tokenInput) {
             tokenInput.addEventListener('keydown', function (e) {
                 if (e.key === 'Enter') { e.preventDefault(); unlockBtn.click(); }
