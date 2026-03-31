@@ -3,7 +3,7 @@
  * Provides full offline support via cache-first strategy.
  */
 
-var CACHE_NAME = 'carouselforge-v2.5';
+var CACHE_NAME = 'carouselforge-v2.6';
 var ASSETS = [
     './',
     './index.html',
@@ -12,6 +12,7 @@ var ASSETS = [
     './manifest.json',
     './icons/icon-192.png',
     './icons/icon-512.png',
+    './lib/supabase.min.js',
     './lib/html2canvas.min.js',
     './lib/jszip.min.js',
     './lib/FileSaver.min.js'
