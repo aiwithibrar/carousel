@@ -585,6 +585,106 @@
 
     function padNumber(n) { return String(n).padStart(2, '0'); }
 
+    // =============================================
+    // ===== SMART CONTENT BALANCING =====
+    // =============================================
+    var OPTIMAL_WORDS = { min: 15, max: 50 };
+    var OPTIMAL_CHARS = { min: 80, max: 280 };
+    
+    function getSlideStats(slide) {
+        var fullText = (slide.title || '') + ' ' + (slide.body || '');
+        var words = fullText.trim().split(/\s+/).filter(Boolean).length;
+        var chars = fullText.replace(/\s/g, '').length;
+        return { words: words, chars: chars };
+    }
+    
+    function getContentStatus(slide) {
+        // Skip cover and CTA slides - they have preset content
+        if (slide.type === 'cover' || slide.type === 'cta') {
+            return { status: 'ok', message: '' };
+        }
+        
+        var stats = getSlideStats(slide);
+        
+        if (stats.words > OPTIMAL_WORDS.max || stats.chars > OPTIMAL_CHARS.max) {
+            return { 
+                status: 'warning', 
+                message: 'Too long (' + stats.words + ' words) - may be hard to read',
+                canSplit: stats.words > OPTIMAL_WORDS.max * 1.5
+            };
+        }
+        if (stats.words < OPTIMAL_WORDS.min && stats.chars < OPTIMAL_CHARS.min) {
+            return { 
+                status: 'short', 
+                message: 'Short slide (' + stats.words + ' words)',
+                canSplit: false
+            };
+        }
+        return { 
+            status: 'ok', 
+            message: stats.words + ' words',
+            canSplit: false
+        };
+    }
+    
+    function splitLongSlide(index) {
+        var slide = state.slides[index];
+        if (!slide || slide.type === 'cover' || slide.type === 'cta') return;
+        
+        var fullText = (slide.title ? slide.title + '\n' : '') + (slide.body || '');
+        var sentences = fullText.match(/[^.!?]+[.!?]+/g) || [fullText];
+        
+        if (sentences.length < 2) {
+            // Split by words if no sentences
+            var words = fullText.split(/\s+/);
+            var midpoint = Math.ceil(words.length / 2);
+            var part1 = words.slice(0, midpoint).join(' ');
+            var part2 = words.slice(midpoint).join(' ');
+            sentences = [part1, part2];
+        }
+        
+        // Split sentences into two groups
+        var midIdx = Math.ceil(sentences.length / 2);
+        var firstHalf = sentences.slice(0, midIdx).join(' ').trim();
+        var secondHalf = sentences.slice(midIdx).join(' ').trim();
+        
+        // Update current slide
+        var parsed1 = splitTitleBody(firstHalf);
+        state.slides[index] = {
+            numberLabel: slide.numberLabel,
+            title: parsed1.title,
+            body: parsed1.body,
+            type: 'content'
+        };
+        
+        // Insert new slide after
+        var parsed2 = splitTitleBody(secondHalf);
+        var newSlide = {
+            numberLabel: padNumber(parseInt(slide.numberLabel) + 1 || index + 2),
+            title: parsed2.title,
+            body: parsed2.body,
+            type: 'content'
+        };
+        state.slides.splice(index + 1, 0, newSlide);
+        
+        // Renumber all slides
+        renumberSlides();
+        renderSlidesPreview();
+        showToast('Slide split into 2 slides');
+    }
+    
+    function renumberSlides() {
+        var contentNum = 1;
+        state.slides.forEach(function(slide) {
+            if (slide.type === 'cover' || slide.type === 'cta') {
+                slide.numberLabel = '';
+            } else {
+                slide.numberLabel = padNumber(contentNum);
+                contentNum++;
+            }
+        });
+    }
+
     function addCoverAndCTA(slides, rawText, mainTitle) {
         var totalContent = slides.length;
         var coverTitle = mainTitle || '';
@@ -737,6 +837,21 @@
             if (slide.type === 'cta') slideClass += ' cta-slide';
             var titleFontSize = state.fontSize * (slide.type === 'cover' ? 0.058 : 0.048);
             var bodyFontSize = state.fontSize * 0.029;
+            
+            // Smart content balancing
+            var contentStatus = getContentStatus(slide);
+            var statusClass = contentStatus.status === 'warning' ? ' content-warning' : 
+                              contentStatus.status === 'short' ? ' content-short' : '';
+            var statusBadge = '';
+            if (contentStatus.status !== 'ok' || slide.type === 'content') {
+                var badgeClass = contentStatus.status === 'warning' ? 'status-warning' : 
+                                 contentStatus.status === 'short' ? 'status-short' : 'status-ok';
+                statusBadge = '<div class="content-status ' + badgeClass + '">' +
+                    '<span class="status-text">' + contentStatus.message + '</span>' +
+                    (contentStatus.canSplit ? '<button class="split-slide-btn" data-index="' + i + '" title="Split into 2 slides">Split</button>' : '') +
+                '</div>';
+            }
+            
             card.innerHTML =
                 '<div class="slide-actions">' +
                     '<button class="slide-action-btn edit-slide" data-index="' + i + '" title="Edit slide" aria-label="Edit slide ' + (i + 1) + '">' +
@@ -749,10 +864,11 @@
                         '<svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>' +
                     '</button>' +
                 '</div>' +
+                statusBadge +
                 '<div class="drag-handle" title="Drag to reorder">' +
                     '<svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><circle cx="9" cy="6" r="1.5"/><circle cx="15" cy="6" r="1.5"/><circle cx="9" cy="12" r="1.5"/><circle cx="15" cy="12" r="1.5"/><circle cx="9" cy="18" r="1.5"/><circle cx="15" cy="18" r="1.5"/></svg>' +
                 '</div>' +
-                '<div class="' + slideClass + '">' +
+                '<div class="' + slideClass + statusClass + '">' +
                     '<div class="slide-deco-tl"></div>' +
                     '<div class="slide-deco-br"></div>' +
                     (slide.numberLabel ? '<div class="slide-number-label">' + escapeHTML(slide.numberLabel) + '</div>' : '') +
@@ -797,6 +913,14 @@
             btn.addEventListener('click', function (e) {
                 e.stopPropagation();
                 deleteSlide(parseInt(btn.dataset.index, 10));
+            });
+        });
+
+        // Split slide buttons (smart content balancing)
+        slidesContainer.querySelectorAll('.split-slide-btn').forEach(function (btn) {
+            btn.addEventListener('click', function (e) {
+                e.stopPropagation();
+                splitLongSlide(parseInt(btn.dataset.index, 10));
             });
         });
 
