@@ -69,6 +69,12 @@
         return escapeHTML(str).replace(/\n/g, '<br>');
     }
 
+    // Replace *word* with accent span (safe to run after escaping HTML)
+    function highlightWords(str) {
+        if (!str) return '';
+        return str.replace(/\*([^*]+)\*/g, '<span class="accent-text">$1</span>');
+    }
+
     // =============================================
     // ===== SMART TEXT PARSER =====
     // =============================================
@@ -214,7 +220,6 @@
         return text
             .replace(/\*\*(.+?)\*\*/g, '$1')
             .replace(/__(.+?)__/g, '$1')
-            .replace(/\*(.+?)\*/g, '$1')
             .replace(/_(.+?)_/g, '$1')
             .replace(/^[-*+]\s+/gm, '\u2022 ')
             .replace(/^>\s*/gm, '')
@@ -322,8 +327,8 @@
                     '<div class="slide-deco-br"></div>' +
                     (slide.numberLabel ? '<div class="slide-number-label">' + escapeHTML(slide.numberLabel) + '</div>' : '') +
                     (slide.type !== 'cover' ? '<div class="slide-accent-line"></div>' : '') +
-                    (slide.title ? '<div class="slide-title-text" style="font-size:' + titleFontSize + 'rem">' + escapeHTML(slide.title) + '</div>' : '') +
-                    (slide.body ? '<div class="slide-body-text" style="font-size:' + bodyFontSize + 'rem">' + escapeHTMLWithBreaks(slide.body) + '</div>' : '') +
+                    (slide.title ? '<div class="slide-title-text" style="font-size:' + titleFontSize + 'rem">' + highlightWords(escapeHTML(slide.title)) + '</div>' : '') +
+                    (slide.body ? '<div class="slide-body-text" style="font-size:' + bodyFontSize + 'rem">' + highlightWords(escapeHTMLWithBreaks(slide.body)) + '</div>' : '') +
                     (state.handle ? '<div class="slide-handle">' + escapeHTML(state.handle) + '</div>' : '') +
                     '<div class="slide-page-indicator">' + (i + 1) + ' / ' + state.slides.length + '</div>' +
                 '</div>';
@@ -424,8 +429,8 @@
                 '<div class="slide-deco-br"></div>' +
                 (slide.numberLabel ? '<div class="slide-number-label">' + escapeHTML(slide.numberLabel) + '</div>' : '') +
                 (slide.type !== 'cover' ? '<div class="slide-accent-line"></div>' : '') +
-                (slide.title ? '<div class="slide-title-text" style="font-size:' + scaledFontTitle + 'px">' + escapeHTML(slide.title) + '</div>' : '') +
-                (slide.body ? '<div class="slide-body-text" style="font-size:' + scaledFontBody + 'px">' + escapeHTMLWithBreaks(slide.body) + '</div>' : '') +
+                (slide.title ? '<div class="slide-title-text" style="font-size:' + scaledFontTitle + 'px">' + highlightWords(escapeHTML(slide.title)) + '</div>' : '') +
+                (slide.body ? '<div class="slide-body-text" style="font-size:' + scaledFontBody + 'px">' + highlightWords(escapeHTMLWithBreaks(slide.body)) + '</div>' : '') +
                 (state.handle ? '<div class="slide-handle">' + escapeHTML(state.handle) + '</div>' : '') +
                 '<div class="slide-page-indicator">' + (index + 1) + ' / ' + state.slides.length + '</div>';
             renderArea.appendChild(el);
