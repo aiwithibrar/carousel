@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>CarouselForge — Instant Carousel Generator</title>
+    <meta name="description" content="Paste your text, get stunning carousel slides instantly. Works offline as a PWA.">
+    <meta name="theme-color" content="#818cf8">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="CarouselForge">
+    <link rel="manifest" href="./manifest.json">
+    <link rel="icon" type="image/png" sizes="512x512" href="./icons/icon-512.png">
+    <link rel="apple-touch-icon" href="./icons/icon-192.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Playfair+Display:wght@700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+    <!-- Access Gate (blocks app until valid token) -->
+    <div id="accessGate" class="license-overlay">
+        <div class="license-modal">
+            <div class="logo-icon" style="display:flex;align-items:center;justify-content:center;">
+                <svg width="48" height="48" viewBox="0 0 28 28" fill="none">
+                    <rect x="2" y="2" width="10" height="10" rx="2" fill="#818cf8"/>
+                    <rect x="16" y="2" width="10" height="10" rx="2" fill="#c084fc"/>
+                    <rect x="2" y="16" width="10" height="10" rx="2" fill="#f472b6"/>
+                    <rect x="16" y="16" width="10" height="10" rx="2" fill="#fb923c"/>
+                </svg>
+            </div>
+            <h2>CarouselForge</h2>
+            <p class="version-info">Version 2.0 — Progressive Web App</p>
+
+            <!-- View 1: Enter Token -->
+            <div id="tokenView" class="gate-view">
+                <div class="gate-section">
+                    <label class="gate-label" for="tokenInput">
+                        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+                        Enter Access Token
+                    </label>
+                    <input type="text" id="tokenInput" class="gate-input" placeholder="Paste your access token here">
+                    <p id="tokenError" class="gate-error" style="display:none;">Invalid or expired token</p>
+                    <button id="unlockBtn" class="license-accept-btn">
+                        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+                        Unlock App
+                    </button>
+                </div>
+                <div class="gate-divider"><span>OR</span></div>
+                <button id="showRequestBtn" class="gate-link-btn">Don't have a token? Request Access →</button>
+            </div>
+
+            <!-- View 2: Request Access -->
+            <div id="requestView" class="gate-view" style="display:none;">
+                <div class="gate-section">
+                    <label class="gate-label" for="requestEmail">
+                        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                        Your Email Address
+                    </label>
+                    <input type="email" id="requestEmail" class="gate-input" placeholder="you@example.com">
+                    <button id="sendRequestBtn" class="license-accept-btn">Send Access Request</button>
+                </div>
+                <p id="requestSuccess" class="gate-success" style="display:none;">
+                    ✅ Request sent! You'll receive your access token via email shortly.
+                </p>
+                <button id="showTokenBtn" class="gate-link-btn">← Already have a token? Enter it</button>
+            </div>
+
+            <!-- License Terms (always visible) -->
+            <div class="license-terms" style="margin-top:20px;">
+                <h4>License — Personal Use Only</h4>
+                <ul>
+                    <li class="allowed">Use for creating your own carousel content</li>
+                    <li class="allowed">Install on your personal devices</li>
+                    <li class="forbidden">Resell, redistribute, or sublicense</li>
+                    <li class="forbidden">Claim as your own creation</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <header class="header" role="banner">
+        <div class="logo">
+            <div class="logo-icon" aria-hidden="true">
+                <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+                    <rect x="2" y="2" width="10" height="10" rx="2" fill="#818cf8"/>
+                    <rect x="16" y="2" width="10" height="10" rx="2" fill="#c084fc"/>
+                    <rect x="2" y="16" width="10" height="10" rx="2" fill="#f472b6"/>
+                    <rect x="16" y="16" width="10" height="10" rx="2" fill="#fb923c"/>
+                </svg>
+            </div>
+            <span class="logo-text">CarouselForge</span>
+            <span class="version-badge">v2</span>
+        </div>
+        <div class="header-right">
+            <p class="tagline">Paste text → Get beautiful carousel slides instantly</p>
+            <button id="installBtn" class="install-btn" aria-label="Install CarouselForge as app">
+                <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+                Install App
+            </button>
+        </div>
+    </header>
+
+    <main class="app-container">
+        <!-- Sidebar Controls -->
+        <aside class="sidebar" role="complementary">
+            <!-- Text Input -->
+            <div class="control-group">
+                <label class="control-label" for="mainTextInput">
+                    <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+                    Paste Your Content
+                </label>
+                <textarea id="mainTextInput" class="text-input main-textarea" placeholder="Paste your ChatGPT carousel text here...
+
+Example formats that work:
+
+Format 1: Numbered list
+5 Tips to Boost Productivity
+
+1. Start with the hardest task
+Tackle your biggest challenge first.
+
+2. Use the Pomodoro technique
+Work in 25-minute focused blocks.
+
+Format 2: Slide markers
+Slide 1: The Power of Habits
+Small daily improvements lead to results.
+
+Slide 2: Start Small
+Pick one habit to change." rows="14"></textarea>
+                <div class="input-hint">
+                    <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+                    Auto-detects numbered lists, headings, and slide markers
+                </div>
+            </div>
+
+            <!-- Theme -->
+            <div class="control-group">
+                <label class="control-label">Theme</label>
+                <div class="theme-grid" id="themeGrid" role="radiogroup" aria-label="Slide theme selection">
+                    <button class="theme-btn active" data-theme="midnight" title="Midnight Gradient" role="radio" aria-checked="true">
+                        <div class="theme-preview midnight-preview"></div>
+                        <span>Midnight</span>
+                    </button>
+                    <button class="theme-btn" data-theme="ocean" title="Ocean Breeze" role="radio" aria-checked="false">
+                        <div class="theme-preview ocean-preview"></div>
+                        <span>Ocean</span>
+                    </button>
+                    <button class="theme-btn" data-theme="sunset" title="Sunset Warm" role="radio" aria-checked="false">
+                        <div class="theme-preview sunset-preview"></div>
+                        <span>Sunset</span>
+                    </button>
+                    <button class="theme-btn" data-theme="minimal" title="Minimal Clean" role="radio" aria-checked="false">
+                        <div class="theme-preview minimal-preview"></div>
+                        <span>Minimal</span>
+                    </button>
+                    <button class="theme-btn" data-theme="neon" title="Neon Dark" role="radio" aria-checked="false">
+                        <div class="theme-preview neon-preview"></div>
+                        <span>Neon</span>
+                    </button>
+                    <button class="theme-btn" data-theme="forest" title="Forest Green" role="radio" aria-checked="false">
+                        <div class="theme-preview forest-preview"></div>
+                        <span>Forest</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Handle -->
+            <div class="control-group">
+                <label class="control-label" for="handleInput">Your Handle <span class="optional">(optional)</span></label>
+                <input type="text" id="handleInput" class="handle-input" placeholder="@yourhandle">
+            </div>
+
+            <!-- Slide Size -->
+            <div class="control-group">
+                <label class="control-label">Slide Size</label>
+                <div class="size-options" role="radiogroup" aria-label="Slide size selection">
+                    <button class="size-btn active" data-size="1080x1080" role="radio" aria-checked="true">1:1 Square</button>
+                    <button class="size-btn" data-size="1080x1350" role="radio" aria-checked="false">4:5 Portrait</button>
+                </div>
+            </div>
+
+            <!-- Font Size -->
+            <div class="control-group">
+                <label class="control-label" for="fontSizeSlider">Font Size</label>
+                <input type="range" id="fontSizeSlider" class="range-slider" min="18" max="42" value="28" aria-label="Font size slider">
+                <div class="range-labels">
+                    <span>Small</span>
+                    <span id="fontSizeValue">28px</span>
+                    <span>Large</span>
+                </div>
+            </div>
+
+            <!-- Generate Button -->
+            <button id="generateBtn" class="generate-btn">
+                <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                <span>Generate Slides</span>
+            </button>
+        </aside>
+
+        <!-- Slides Preview -->
+        <section class="preview-area" role="main">
+            <div class="preview-header">
+                <div>
+                    <h1 class="preview-title">Preview <span id="slideCountBadge" class="slide-count-badge" style="display:none;"></span></h1>
+                </div>
+                <div class="preview-actions" id="previewActions" style="display:none;">
+                    <button id="downloadAllBtn" class="action-btn primary-action" aria-label="Download all slides as ZIP">
+                        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+                        Download All (ZIP)
+                    </button>
+                </div>
+            </div>
+
+            <div class="slides-container" id="slidesContainer">
+                <div class="empty-state">
+                    <div class="empty-icon" aria-hidden="true">
+                        <svg width="64" height="64" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                            <rect x="3" y="3" width="18" height="18" rx="2"/>
+                            <path d="M9 13l2 2 4-4"/>
+                        </svg>
+                    </div>
+                    <h3>No slides yet</h3>
+                    <p>Paste your text on the left and hit <strong>Generate Slides</strong></p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer with license notice -->
+    <footer class="app-footer" role="contentinfo">
+        <span>© 2026 CarouselForge</span>
+        <span>•</span>
+        <span class="not-for-sale">Personal Use Only — Not for Resale</span>
+    </footer>
+
+    <!-- Hidden render area for download -->
+    <div id="renderArea" class="render-area" aria-hidden="true"></div>
+
+    <!-- Loading overlay -->
+    <div id="loadingOverlay" class="loading-overlay" role="alert" aria-live="polite">
+        <div class="loading-content">
+            <div class="loading-spinner"></div>
+            <p class="loading-text" id="loadingText">Generating your slides...</p>
+            <p class="loading-sub" id="loadingSub"></p>
+        </div>
+    </div>
+
+    <!-- Toast notification -->
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+    <!-- Local libraries (offline-capable) -->
+    <script src="./lib/supabase.min.js"></script>
+    <script src="./lib/html2canvas.min.js"></script>
+    <script src="./lib/jszip.min.js"></script>
+    <script src="./lib/FileSaver.min.js"></script>
+    <!-- App logic -->
+    <script src="./app.js"></script>
+</body>
+</html>
