@@ -287,24 +287,32 @@
     function wrapResult(slides, rawText) {
         var mainTitle = slides._extractedTitle || '';
         delete slides._extractedTitle;
-        return addCoverAndCTA(slides, rawText, mainTitle);
+        
+        // Check if we already have cover and CTA from parser
+        var hasCover = slides.some(function(s) { return s.type === 'cover'; });
+        var hasCTA = slides.some(function(s) { return s.type === 'cta'; });
+        
+        if (hasCover && hasCTA) {
+            // Already complete, just return
+            return slides;
+        }
+        
+        return addCoverAndCTA(slides, rawText, mainTitle, hasCover, hasCTA);
     }
 
     // ===== HOOK/CTA FORMAT PARSER (Common AI output) =====
     function parseHookFormat(text) {
-        // Matches: Hook:, **Hook**, 🎣 Hook, Opening:, Intro:
-        var hookPattern = /(?:^|\n)\s*(?:\*\*)?(?:hook|opening|intro|attention[- ]?grabber)\s*(?:\*\*)?[:\-]\s*/i;
+        // Matches: Hook:, Title:, **Hook**, 🎣 Hook, Opening:, Intro:
+        var hookPattern = /(?:^|\n)\s*(?:\*\*)?(?:hook|title|opening|intro|attention[- ]?grabber)\s*(?:\*\*)?[:\-]\s*/i;
         var ctaPattern = /(?:^|\n)\s*(?:\*\*)?(?:cta|call[- ]?to[- ]?action|closing|outro|final)\s*(?:\*\*)?[:\-]\s*/i;
         
         if (!hookPattern.test(text) && !ctaPattern.test(text)) return null;
         
-        // Split by common section markers
-        var sectionRegex = /(?:^|\n)\s*(?:\*\*)?(?:hook|opening|intro|point\s*\d+|tip\s*\d+|step\s*\d+|slide\s*\d+|key\s*\d+|insight\s*\d+|takeaway|cta|call[- ]?to[- ]?action|closing|outro|final|conclusion)\s*(?:\*\*)?[:\-]\s*/gi;
+        // Split by common section markers including Title:
+        var regex = /(?:^|\n)\s*(?:\*\*)?(title|hook|opening|intro|point\s*\d+|tip\s*\d+|step\s*\d+|slide\s*\d+|key\s*\d+|insight\s*\d+|takeaway|cta|call[- ]?to[- ]?action|closing|outro|final|conclusion)\s*(?:\*\*)?[:\-]\s*/gi;
         
         var matches = [];
         var m;
-        var regex = /(?:^|\n)\s*(?:\*\*)?(hook|opening|intro|point\s*\d+|tip\s*\d+|step\s*\d+|slide\s*\d+|key\s*\d+|insight\s*\d+|takeaway|cta|call[- ]?to[- ]?action|closing|outro|final|conclusion)\s*(?:\*\*)?[:\-]\s*/gi;
-        
         while ((m = regex.exec(text)) !== null) {
             matches.push({ index: m.index, length: m[0].length, label: m[1].toLowerCase() });
         }
@@ -316,23 +324,59 @@
             var startIdx = matches[i].index + matches[i].length;
             var endIdx = i + 1 < matches.length ? matches[i + 1].index : text.length;
             var content = text.substring(startIdx, endIdx).trim();
-            var parsed = splitTitleBody(content);
             var label = matches[i].label;
             
             var type = 'content';
             var numberLabel = '';
             
-            if (/hook|opening|intro/.test(label)) {
+            if (/title|hook|opening|intro/.test(label)) {
                 type = 'cover';
+                // For title/hook, first line is title, rest splits into content slides
+                var titleLines = content.split(/\n\n+/);
+                if (titleLines.length > 1) {
+                    // First block is cover
+                    var coverParsed = splitTitleBody(titleLines[0]);
+                    slides.push({ numberLabel: '', title: coverParsed.title, body: coverParsed.body, type: 'cover' });
+                    
+                    // Remaining blocks are content slides
+                    for (var j = 1; j < titleLines.length; j++) {
+                        var blockContent = titleLines[j].trim();
+                        if (!blockContent) continue;
+                        var blockParsed = splitTitleBody(blockContent);
+                        slides.push({ 
+                            numberLabel: padNumber(slides.length), 
+                            title: blockParsed.title, 
+                            body: blockParsed.body, 
+                            type: 'content' 
+                        });
+                    }
+                    continue;
+                } else {
+                    var parsed = splitTitleBody(content);
+                    slides.push({ numberLabel: '', title: parsed.title, body: parsed.body, type: 'cover' });
+                    continue;
+                }
             } else if (/cta|call|closing|outro|final|conclusion/.test(label)) {
                 type = 'cta';
+                var ctaParsed = splitTitleBody(content);
+                slides.push({ numberLabel: '', title: ctaParsed.title, body: ctaParsed.body, type: 'cta' });
+                continue;
             } else {
                 var numMatch = label.match(/\d+/);
                 numberLabel = numMatch ? padNumber(parseInt(numMatch[0])) : padNumber(slides.filter(function(s) { return s.type === 'content'; }).length + 1);
             }
             
+            var parsed = splitTitleBody(content);
             slides.push({ numberLabel: numberLabel, title: parsed.title, body: parsed.body, type: type });
         }
+        
+        // Renumber content slides
+        var contentNum = 1;
+        slides.forEach(function(s) {
+            if (s.type === 'content') {
+                s.numberLabel = padNumber(contentNum++);
+            }
+        });
         
         return slides.length >= 2 ? slides : null;
     }
@@ -685,19 +729,28 @@
         });
     }
 
-    function addCoverAndCTA(slides, rawText, mainTitle) {
-        var totalContent = slides.length;
-        var coverTitle = mainTitle || '';
-        if (!coverTitle) {
-            var firstLine = rawText.split('\n')[0].trim();
-            if (firstLine && !firstLine.match(/^\d+[.):\-]/) && !firstLine.match(/^slide\s+\d+/i) && firstLine.length <= 80) {
-                coverTitle = cleanMarkdown(firstLine);
+    function addCoverAndCTA(slides, rawText, mainTitle, skipCover, skipCTA) {
+        var totalContent = slides.filter(function(s) { return s.type === 'content'; }).length;
+        
+        // Add cover if not skipped
+        if (!skipCover) {
+            var coverTitle = mainTitle || '';
+            if (!coverTitle) {
+                var firstLine = rawText.split('\n')[0].trim();
+                if (firstLine && !firstLine.match(/^\d+[.):\-]/) && !firstLine.match(/^slide\s+\d+/i) && firstLine.length <= 80) {
+                    coverTitle = cleanMarkdown(firstLine);
+                }
+            }
+            if (coverTitle) {
+                slides.unshift({ numberLabel: '', title: coverTitle, body: totalContent + ' key points inside — swipe →', type: 'cover' });
             }
         }
-        if (coverTitle) {
-            slides.unshift({ numberLabel: '', title: coverTitle, body: totalContent + ' key points inside \u2014 swipe \u2192', type: 'cover' });
+        
+        // Add CTA if not skipped
+        if (!skipCTA) {
+            slides.push({ numberLabel: '', title: 'Thanks for reading!', body: state.handle ? 'Follow ' + state.handle + ' for more' : 'Save this post & share with a friend', type: 'cta' });
         }
-        slides.push({ numberLabel: '', title: 'Thanks for reading!', body: state.handle ? 'Follow ' + state.handle + ' for more' : 'Save this post & share with a friend', type: 'cta' });
+        
         return slides;
     }
 
