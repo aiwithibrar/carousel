@@ -32,39 +32,26 @@
             <h2>CarouselForge</h2>
             <p class="version-info">Version 2.0 — Progressive Web App</p>
 
-            <!-- View 1: Enter Email -->
+            <!-- View 1: Enter Email (Magic Link) -->
             <div id="tokenView" class="gate-view">
                 <div class="gate-section">
                     <label class="gate-label" for="tokenInput">
                         <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
-                        Enter Approved Email
-                    </label>
-                    <input type="email" id="tokenInput" class="gate-input" placeholder="you@example.com">
-                    <p id="tokenError" class="gate-error" style="display:none;">Email not approved yet</p>
-                    <button id="unlockBtn" class="license-accept-btn">
-                        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
-                        Unlock App
-                    </button>
-                </div>
-                <div class="gate-divider"><span>OR</span></div>
-                <button id="showRequestBtn" class="gate-link-btn">Not approved yet? Request Access →</button>
-            </div>
-
-            <!-- View 2: Request Access -->
-            <div id="requestView" class="gate-view" style="display:none;">
-                <div class="gate-section">
-                    <label class="gate-label" for="requestEmail">
-                        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
                         Your Email Address
                     </label>
-                    <input type="email" id="requestEmail" class="gate-input" placeholder="you@example.com">
-                    <button id="sendRequestBtn" class="license-accept-btn">Send Access Request</button>
+                    <input type="email" id="tokenInput" class="gate-input" placeholder="you@example.com">
+                    <p id="tokenError" class="gate-error" style="display:none;">Please enter a valid email</p>
+                    <button id="unlockBtn" class="license-accept-btn">
+                        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>
+                        Send Magic Link
+                    </button>
                 </div>
-                <p id="requestSuccess" class="gate-success" style="display:none;">
-                    ✅ Magic link sent! Please check your email to verify and unlock access.
+                <p id="requestSuccess" class="gate-success" style="display:none; margin-top: 15px;">
+                    ✅ Magic link sent! Please check your email to sign in.
                 </p>
-                <button id="showTokenBtn" class="gate-link-btn">← Already approved? Enter your email</button>
             </div>
+
+            <!-- Request access view is no longer needed since anyone can get a magic link, we'll hide it entirely -->
 
             <!-- License Terms (always visible) -->
             <div class="license-terms" style="margin-top:20px;">

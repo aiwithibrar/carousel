@@ -1714,176 +1714,119 @@
     }
 
     // =============================================
-    // ===== ACCESS GATE SYSTEM (Supabase) =====
+    // ===== ACCESS GATE SYSTEM (Supabase Auth) ====
     // =============================================
     var accessGate = document.getElementById('accessGate');
-    var tokenView = document.getElementById('tokenView');
-    var requestView = document.getElementById('requestView');
     var tokenInput = document.getElementById('tokenInput');
     var tokenError = document.getElementById('tokenError');
     var unlockBtn = document.getElementById('unlockBtn');
-    var showRequestBtn = document.getElementById('showRequestBtn');
-    var showTokenBtn = document.getElementById('showTokenBtn');
-    var requestEmailInput = document.getElementById('requestEmail');
-    var sendRequestBtn = document.getElementById('sendRequestBtn');
     var requestSuccess = document.getElementById('requestSuccess');
 
-    // Validate email against Supabase
-    function validateEmail(email) {
-        if (!supabase || !email) return Promise.resolve(false);
-        return supabase
-            .from('approved_users')
-            .select('id')
-            .eq('email', email.trim().toLowerCase())
-            .eq('is_active', true)
-            .then(function (result) {
-                return result.data && result.data.length > 0;
-            })
-            .catch(function () {
-                return false;
-            });
-    }
-
-    function grantAccess(email) {
-        localStorage.setItem('carouselforge_email', email.trim().toLowerCase());
+    function grantAccess() {
         if (accessGate) accessGate.style.display = 'none';
+        
+        // Remove URL hash if it contains auth tokens
+        if (window.location.hash.includes('access_token')) {
+            window.history.replaceState(null, '', window.location.pathname + window.location.search);
+        }
     }
 
     function revokeAccess() {
-        localStorage.removeItem('carouselforge_email');
-    }
-
-    function checkAccess() {
-        var savedEmail = localStorage.getItem('carouselforge_email');
-        if (savedEmail) {
-            validateEmail(savedEmail).then(function (valid) {
-                if (valid) {
-                    grantAccess(savedEmail);
-                } else {
-                    revokeAccess();
-                    if (accessGate) accessGate.style.display = 'flex';
-                }
-            });
-            return;
-        }
-
-        // No saved email — show gate
         if (accessGate) accessGate.style.display = 'flex';
     }
 
-    // Submit access request to Supabase
-    function submitAccessRequest(email) {
+    // Check if user is already authenticated
+    function checkAccess() {
+        if (!supabase) {
+            revokeAccess();
+            return;
+        }
+
+        // Check active session
+        supabase.auth.getSession().then(function(result) {
+            if (result.data && result.data.session) {
+                grantAccess();
+            } else {
+                revokeAccess();
+            }
+        }).catch(function() {
+            revokeAccess();
+        });
+
+        // Listen for auth state changes (e.g. returning from magic link)
+        supabase.auth.onAuthStateChange(function(event, session) {
+            if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
+                grantAccess();
+            } else if (event === 'SIGNED_OUT') {
+                revokeAccess();
+            }
+        });
+    }
+
+    // Send Magic Link via Supabase Auth
+    function sendMagicLink(email) {
         if (!supabase) {
             showToast('Unable to connect. Please try again later.', true);
             return Promise.resolve(false);
         }
         
-        var cleanEmail = email.trim().toLowerCase();
-        
-        // Instead of just inserting into the database, we call a Supabase Edge Function 
-        // that handles the magic link creation and email sending through Resend/SendGrid
-        return supabase.functions.invoke('send-verification', {
-            body: { email: cleanEmail, app: 'carouselforge' }
-        })
-        .then(function (response) {
-            if (response.error) {
-                // If the edge function fails or isn't deployed yet, fallback to the manual approval row
-                console.warn('Edge function failed/missing. Falling back to manual request.', response.error);
-                return supabase
-                    .from('approved_users')
-                    .insert([{ email: cleanEmail, is_active: false }])
-                    .then(function (result) {
-                        if (result.error) return false;
-                        return true;
-                    });
+        return supabase.auth.signInWithOtp({
+            email: email,
+            options: {
+                // Redirect back to the current URL after clicking link
+                emailRedirectTo: window.location.origin + window.location.pathname
             }
-            return true;
-        })
-        .catch(function (err) {
-            console.error('Request failed:', err);
-            return false;
+        }).then(function(result) {
+            if (result.error) {
+                console.error('Auth error:', result.error.message);
+                return { success: false, error: result.error.message };
+            }
+            return { success: true };
+        }).catch(function(err) {
+            return { success: false, error: 'Network error' };
         });
     }
 
     function initAccessGate() {
-        if (!accessGate) return;
+        if (!accessGate || !unlockBtn || !tokenInput) return;
 
-        // Toggle views
-        if (showRequestBtn) {
-            showRequestBtn.addEventListener('click', function () {
-                tokenView.style.display = 'none';
-                requestView.style.display = 'block';
-            });
-        }
-        if (showTokenBtn) {
-            showTokenBtn.addEventListener('click', function () {
-                requestView.style.display = 'none';
-                tokenView.style.display = 'block';
-            });
-        }
+        // Send Magic Link Click
+        unlockBtn.addEventListener('click', function () {
+            var email = tokenInput.value.trim().toLowerCase();
+            if (!email || email.indexOf('@') === -1) {
+                tokenError.textContent = 'Please enter a valid email';
+                tokenError.style.display = 'block';
+                return;
+            }
+            
+            tokenError.style.display = 'none';
+            unlockBtn.disabled = true;
+            unlockBtn.innerHTML = '<svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg> Sending...';
 
-        // Unlock with email
-        if (unlockBtn) {
-            unlockBtn.addEventListener('click', function () {
-                var email = tokenInput.value.trim().toLowerCase();
-                if (!email || email.indexOf('@') === -1) {
-                    tokenError.textContent = 'Please enter a valid email';
+            sendMagicLink(email).then(function (result) {
+                if (result.success) {
+                    unlockBtn.style.display = 'none';
+                    tokenInput.style.display = 'none';
+                    var label = document.querySelector('.gate-label[for="tokenInput"]');
+                    if (label) label.style.display = 'none';
+                    if (requestSuccess) requestSuccess.style.display = 'block';
+                } else {
+                    tokenError.textContent = result.error || 'Failed to send magic link';
                     tokenError.style.display = 'block';
-                    return;
-                }
-                unlockBtn.disabled = true;
-                unlockBtn.textContent = 'Verifying...';
-                validateEmail(email).then(function (valid) {
-                    if (valid) {
-                        grantAccess(email);
-                    } else {
-                        tokenError.textContent = 'Email not found or not approved yet';
-                        tokenError.style.display = 'block';
-                        tokenInput.style.borderColor = '#ef4444';
-                        setTimeout(function () { tokenInput.style.borderColor = ''; }, 2000);
-                    }
                     unlockBtn.disabled = false;
-                    unlockBtn.innerHTML = '<svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg> Unlock App';
-                });
+                    unlockBtn.innerHTML = '<svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg> Send Magic Link';
+                }
             });
-        }
+        });
 
         // Enter key on email input
-        if (tokenInput) {
-            tokenInput.addEventListener('keydown', function (e) {
-                if (e.key === 'Enter') { e.preventDefault(); unlockBtn.click(); }
-            });
-            tokenInput.addEventListener('input', function () {
-                tokenError.style.display = 'none';
-            });
-        }
-
-        // Send access request to Supabase
-        if (sendRequestBtn) {
-            sendRequestBtn.addEventListener('click', function () {
-                var email = requestEmailInput.value.trim();
-                if (!email || email.indexOf('@') === -1) {
-                    requestEmailInput.style.borderColor = '#ef4444';
-                    setTimeout(function () { requestEmailInput.style.borderColor = ''; }, 2000);
-                    return;
-                }
-                sendRequestBtn.disabled = true;
-                sendRequestBtn.textContent = 'Sending...';
-                submitAccessRequest(email).then(function (success) {
-                    if (success) {
-                        sendRequestBtn.style.display = 'none';
-                        requestEmailInput.style.display = 'none';
-                        requestSuccess.style.display = 'block';
-                        var label = document.querySelector('.gate-label[for="requestEmail"]');
-                        if (label) label.style.display = 'none';
-                    } else {
-                        sendRequestBtn.disabled = false;
-                        sendRequestBtn.textContent = 'Send Access Request';
-                        showToast('Failed to send request. Try again.', true);
-                    }
-                });
-            });
-        }
+        tokenInput.addEventListener('keydown', function (e) {
+            if (e.key === 'Enter') { e.preventDefault(); unlockBtn.click(); }
+        });
+        
+        tokenInput.addEventListener('input', function () {
+            tokenError.style.display = 'none';
+        });
     }
 
     // =============================================
