@@ -1777,20 +1777,32 @@
             showToast('Unable to connect. Please try again later.', true);
             return Promise.resolve(false);
         }
-        return supabase
-            .from('approved_users')
-            .insert([{ email: email.trim().toLowerCase(), is_active: false }])
-            .then(function (result) {
-                if (result.error) {
-                    console.error('Request error:', result.error);
-                    return false;
-                }
-                return true;
-            })
-            .catch(function (err) {
-                console.error('Request failed:', err);
-                return false;
-            });
+        
+        var cleanEmail = email.trim().toLowerCase();
+        
+        // Instead of just inserting into the database, we call a Supabase Edge Function 
+        // that handles the magic link creation and email sending through Resend/SendGrid
+        return supabase.functions.invoke('send-verification', {
+            body: { email: cleanEmail, app: 'carouselforge' }
+        })
+        .then(function (response) {
+            if (response.error) {
+                // If the edge function fails or isn't deployed yet, fallback to the manual approval row
+                console.warn('Edge function failed/missing. Falling back to manual request.', response.error);
+                return supabase
+                    .from('approved_users')
+                    .insert([{ email: cleanEmail, is_active: false }])
+                    .then(function (result) {
+                        if (result.error) return false;
+                        return true;
+                    });
+            }
+            return true;
+        })
+        .catch(function (err) {
+            console.error('Request failed:', err);
+            return false;
+        });
     }
 
     function initAccessGate() {
