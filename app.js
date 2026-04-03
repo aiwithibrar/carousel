@@ -36,7 +36,13 @@
         size: '1080x1080',
         fontSize: 28,
         fontFamily: 'playfair',
-        rawText: ''
+        rawText: '',
+        customBg: {
+            type: 'none',
+            color: '#1e1b4b',
+            imageBase64: null,
+            overlayOpacity: 40
+        }
     };
 
     var toastTimer = null;
@@ -64,77 +70,36 @@
     var loadingSub = document.getElementById('loadingSub');
     var toastEl = document.getElementById('toast');
     var slideCountBadge = document.getElementById('slideCountBadge');
-    var promptHelperBtn = document.getElementById('promptHelperBtn');
 
-    // =============================================
-    // ===== PROMPT HELPER =====
-    // =============================================
-    var PROMPT_TEMPLATE = 'Write a [NUMBER]-slide Instagram carousel about [TOPIC].\n\nFormat EXACTLY like this (I will paste directly into my tool):\n\nTitle: [Catchy main headline]\n\n1. [First point title]\n[1-2 sentence explanation]\n\n2. [Second point title]\n[1-2 sentence explanation]\n\n3. [Third point title]\n[1-2 sentence explanation]\n\n... continue for all slides ...\n\nCTA: [Call to action - e.g., "Follow for more tips!"]\n\nRULES:\n- No image suggestions or [brackets]\n- No "Here\'s your carousel" intro\n- No notes or instructions\n- Keep each point under 40 words\n- Make titles punchy and scannable';
+    // Background picker refs
+    var bgTypeNone = document.getElementById('bgTypeNone');
+    var bgTypeColor = document.getElementById('bgTypeColor');
+    var bgTypeImage = document.getElementById('bgTypeImage');
+    var bgColorPanel = document.getElementById('bgColorPanel');
+    var bgImagePanel = document.getElementById('bgImagePanel');
+    var bgColorPicker = document.getElementById('bgColorPicker');
+    var bgColorHex = document.getElementById('bgColorHex');
+    var uploadBgBtn = document.getElementById('uploadBgBtn');
+    var bgImageInput = document.getElementById('bgImageInput');
+    var bgImagePreview = document.getElementById('bgImagePreview');
+    var bgImagePreviewImg = document.getElementById('bgImagePreviewImg');
+    var removeBgImageBtn = document.getElementById('removeBgImageBtn');
+    var bgOverlaySlider = document.getElementById('bgOverlaySlider');
+    var bgOverlayValue = document.getElementById('bgOverlayValue');
+    var bgImageOptions = document.getElementById('bgImageOptions');
 
-    function showPromptHelper() {
-        var modal = document.createElement('div');
-        modal.className = 'prompt-modal-overlay';
-        modal.innerHTML = 
-            '<div class="prompt-modal">' +
-                '<h3>' +
-                    '<svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>' +
-                    'AI Prompt Template' +
-                '</h3>' +
-                '<p class="modal-subtitle">Copy this prompt and paste it into ChatGPT, Claude, or any AI</p>' +
-                '<div class="prompt-template" id="promptText">' + escapeHTML(PROMPT_TEMPLATE) + '</div>' +
-                '<div class="prompt-actions">' +
-                    '<button class="prompt-btn close-btn" id="closePrompt">Close</button>' +
-                    '<button class="prompt-btn copy-btn" id="copyPrompt">' +
-                        '<svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>' +
-                        'Copy Prompt' +
-                    '</button>' +
-                '</div>' +
-                '<div class="prompt-tips">' +
-                    '<h4>Tips for best results</h4>' +
-                    '<ul>' +
-                        '<li>Replace [NUMBER] with how many slides you want (5-10 works best)</li>' +
-                        '<li>Replace [TOPIC] with your specific subject</li>' +
-                        '<li>The AI output will paste directly into CarouselForge</li>' +
-                        '<li>Works with ChatGPT, Claude, Gemini, and others</li>' +
-                    '</ul>' +
-                '</div>' +
-            '</div>';
-        document.body.appendChild(modal);
-
-        document.getElementById('copyPrompt').addEventListener('click', function () {
-            navigator.clipboard.writeText(PROMPT_TEMPLATE).then(function () {
-                showToast('Prompt copied! Paste into ChatGPT');
-                document.body.removeChild(modal);
-            }).catch(function () {
-                // Fallback
-                var textArea = document.createElement('textarea');
-                textArea.value = PROMPT_TEMPLATE;
-                document.body.appendChild(textArea);
-                textArea.select();
-                document.execCommand('copy');
-                document.body.removeChild(textArea);
-                showToast('Prompt copied!');
-                document.body.removeChild(modal);
-            });
-        });
-
-        document.getElementById('closePrompt').addEventListener('click', function () {
-            document.body.removeChild(modal);
-        });
-
-        modal.addEventListener('click', function (e) {
-            if (e.target === modal) {
-                document.body.removeChild(modal);
-            }
-        });
+    // ===== SIZE CLASS HELPER =====
+    function getSizeClass(sizeStr) {
+        switch (sizeStr) {
+            case '1080x1350': return ' portrait';
+            case '1080x1920': return ' story';
+            case '1200x627': return ' landscape-linkedin';
+            case '1600x900': return ' landscape-twitter';
+            case '1000x1500': return ' pinterest';
+            default: return '';
+        }
     }
 
-    if (promptHelperBtn) {
-        promptHelperBtn.addEventListener('click', function(e) {
-            e.preventDefault();
-            showPromptHelper();
-        });
-    }
 
     // =============================================
     // ===== ESCAPE HTML (regex-based) =====
@@ -157,62 +122,33 @@
     }
 
     // =============================================
-    // ===== AI TEXT CLEANUP =====
+    // ===== TEXT CLEANUP =====
     // =============================================
     function cleanAIOutput(text) {
         var cleaned = text;
         
-        // Remove common AI intro phrases (more aggressive matching)
-        // Pattern: "Here's your/the/a [anything] carousel/content [anything]:" at start
-        cleaned = cleaned.replace(/^[\s\S]*?here'?s?\s+(your|the|a|my)?\s*[\w\s\-]*?(carousel|content|text|copy|slides?)[\w\s\-]*?(on|for|about)?[^\n]*\n*/i, '');
-        
-        // More intro patterns
+        // Remove common intro phrases (only at start of text, non-greedy)
         var introPatterns = [
-            /^(sure|absolutely|of course|certainly|great|perfect|okay|ok)[\s!,]*\n*/i,
-            /^(i'?ve|i have|i've|here is|here are)[^\n]*(created|written|prepared|made|generated)[^\n]*\n*/i,
-            /^(below|following|here)[^\n]*(is|are)[^\n]*(carousel|content|slides?)[^\n]*:?\s*\n*/i,
-            /^let me[^\n]*\n*/i,
-            /^(this is|these are)[^\n]*(carousel|slides?|content)[^\n]*\n*/i,
+            /^(sure|absolutely|of course|certainly|great|perfect|okay|ok)[^\n]*\n+/i,
+            /^(i'?ve|i have|here is|here are)[^\n]*(created|written|prepared|made|generated)[^\n]*\n+/i,
+            /^(below|following)[^\n]*(is|are)[^\n]*(carousel|content|slides?)[^\n]*:?\s*\n+/i,
+            /^here'?s?\s+(your|the|a|my)\s+[^\n]*:\s*\n+/i,
+            /^let me[^\n]*\n+/i,
+            /^(this is|these are)[^\n]*(carousel|slides?|content)[^\n]*\n+/i,
         ];
         introPatterns.forEach(function(pattern) {
             cleaned = cleaned.replace(pattern, '');
         });
         
-        // Remove lines that are just emojis with arrows pointing to titles
-        cleaned = cleaned.replace(/^[\s]*[👉🔥💡✨🚀💰💳⚡🎯📌]+\s*[""]?[^""\n]*[""]?\s*[💻💰🔥💡✨🚀📌🎯]*\s*\n/gm, '');
+        // Remove image/visual/design suggestions in brackets
+        cleaned = cleaned.replace(/\[(image|visual|photo|graphic|icon|design|color|font|background|layout|note)[^\]]*\]/gi, '');
+        cleaned = cleaned.replace(/\((image|visual|suggest|note)[^)]*\)/gi, '');
         
-        // Remove image/visual suggestions
-        cleaned = cleaned.replace(/\[image[^\]]*\]/gi, '');
-        cleaned = cleaned.replace(/\[visual[^\]]*\]/gi, '');
-        cleaned = cleaned.replace(/\[photo[^\]]*\]/gi, '');
-        cleaned = cleaned.replace(/\[graphic[^\]]*\]/gi, '');
-        cleaned = cleaned.replace(/\[icon[^\]]*\]/gi, '');
-        cleaned = cleaned.replace(/\(image[^)]*\)/gi, '');
-        cleaned = cleaned.replace(/\(visual[^)]*\)/gi, '');
-        cleaned = cleaned.replace(/\(suggest[^)]*\)/gi, '');
-        
-        // Remove speaker notes and instructions
-        cleaned = cleaned.replace(/\[note[^\]]*\]/gi, '');
-        cleaned = cleaned.replace(/\(note[^)]*\)/gi, '');
-        cleaned = cleaned.replace(/^note:.*$/gim, '');
-        cleaned = cleaned.replace(/^caption:.*$/gim, '');
-        cleaned = cleaned.replace(/^description:.*$/gim, '');
-        cleaned = cleaned.replace(/^alt text:.*$/gim, '');
-        
-        // Remove design instructions
-        cleaned = cleaned.replace(/\[design[^\]]*\]/gi, '');
-        cleaned = cleaned.replace(/\[color[^\]]*\]/gi, '');
-        cleaned = cleaned.replace(/\[font[^\]]*\]/gi, '');
-        cleaned = cleaned.replace(/\[background[^\]]*\]/gi, '');
-        cleaned = cleaned.replace(/\[layout[^\]]*\]/gi, '');
-        
-        // Remove slide labels like "Slide 1:" or "Slide 1 -" but keep content
-        // This helps normalize the format
-        cleaned = cleaned.replace(/^slide\s*\d+\s*[:\-–—]\s*/gim, '');
+        // Remove speaker notes
+        cleaned = cleaned.replace(/^(note|caption|description|alt text):.*$/gim, '');
         
         // Remove character/word counts
-        cleaned = cleaned.replace(/\(\d+\s*(characters?|chars?|words?)\)/gi, '');
-        cleaned = cleaned.replace(/\[\d+\s*(characters?|chars?|words?)\]/gi, '');
+        cleaned = cleaned.replace(/[(\[]\d+\s*(characters?|chars?|words?)[)\]]/gi, '');
         
         // Remove trailing AI outros
         cleaned = cleaned.replace(/\n+(let me know|hope this helps|feel free|if you need|want me to|shall i|i can also)[^\n]*$/gi, '');
@@ -220,168 +156,305 @@
         
         // Clean up excessive whitespace
         cleaned = cleaned.replace(/\n{4,}/g, '\n\n\n');
-        cleaned = cleaned.replace(/^\n+/, ''); // Remove leading newlines
+        cleaned = cleaned.replace(/^\n+/, '');
         
         return cleaned.trim();
     }
 
     // =============================================
-    // ===== SMART TEXT PARSER =====
+    // ===== SMART TEXT PARSER (v3) =====
     // =============================================
     function parseTextToSlides(text) {
         var trimmed = text.trim();
         if (!trimmed) return [];
         
-        // Clean AI artifacts first
+        // Clean artifacts
         var cleaned = cleanAIOutput(trimmed);
+        if (!cleaned) return [];
 
-        var slides;
-        
-        // Try Hook/CTA format first (common AI output)
-        slides = parseHookFormat(cleaned);
-        if (slides && slides.length > 1) return wrapResult(slides, cleaned);
+        // Try all parsers and pick the best result by score
+        var candidates = [];
+        var result;
 
-        slides = parseSlideMarkers(cleaned);
-        if (slides && slides.length > 1) return wrapResult(slides, cleaned);
-        
-        // Try bracket markers [1] or [Slide 1]
-        slides = parseBracketMarkers(cleaned);
-        if (slides && slides.length > 1) return wrapResult(slides, cleaned);
+        result = parseSlideMarkers(cleaned);
+        if (result && result.length > 1) candidates.push({ slides: result, score: scoreResult(result, 'slideMarkers') });
 
-        slides = parseMarkdownHeadings(cleaned);
-        if (slides && slides.length > 1) return wrapResult(slides, cleaned);
+        result = parseHookFormat(cleaned);
+        if (result && result.length > 1) candidates.push({ slides: result, score: scoreResult(result, 'hookFormat') });
 
-        slides = parseNumberedList(cleaned);
-        if (slides && slides.length > 1) return wrapResult(slides, cleaned);
-        
-        // Try Twitter thread format 1/ 2/ 3/
-        slides = parseTwitterThread(cleaned);
-        if (slides && slides.length > 1) return wrapResult(slides, cleaned);
-        
-        // Try emoji headers
-        slides = parseEmojiHeaders(cleaned);
-        if (slides && slides.length > 1) return wrapResult(slides, cleaned);
-        
-        // Try labeled sections (Point 1:, Tip 1:, etc.)
-        slides = parseLabeledSections(cleaned);
-        if (slides && slides.length > 1) return wrapResult(slides, cleaned);
-        
-        // Try dash separators ---
-        slides = parseDashSeparators(cleaned);
-        if (slides && slides.length > 1) return wrapResult(slides, cleaned);
+        result = parseBracketMarkers(cleaned);
+        if (result && result.length > 1) candidates.push({ slides: result, score: scoreResult(result, 'bracketMarkers') });
 
-        slides = parseBoldMarkers(cleaned);
-        if (slides && slides.length > 1) return wrapResult(slides, cleaned);
+        result = parseMarkdownHeadings(cleaned);
+        if (result && result.length > 1) candidates.push({ slides: result, score: scoreResult(result, 'markdown') });
 
-        slides = parseParagraphs(cleaned);
-        if (slides && slides.length > 1) return wrapResult(slides, cleaned);
+        result = parseNumberedList(cleaned);
+        if (result && result.length > 1) candidates.push({ slides: result, score: scoreResult(result, 'numbered') });
 
+        result = parseTwitterThread(cleaned);
+        if (result && result.length > 1) candidates.push({ slides: result, score: scoreResult(result, 'twitter') });
+
+        result = parseLabeledSections(cleaned);
+        if (result && result.length > 1) candidates.push({ slides: result, score: scoreResult(result, 'labeled') });
+
+        result = parseBoldMarkers(cleaned);
+        if (result && result.length > 1) candidates.push({ slides: result, score: scoreResult(result, 'bold') });
+
+        result = parseDashSeparators(cleaned);
+        if (result && result.length > 1) candidates.push({ slides: result, score: scoreResult(result, 'dash') });
+
+        result = parseDoubleNewlineBlocks(cleaned);
+        if (result && result.length > 1) candidates.push({ slides: result, score: scoreResult(result, 'blocks') });
+
+        result = parseParagraphs(cleaned);
+        if (result && result.length > 1) candidates.push({ slides: result, score: scoreResult(result, 'paragraphs') });
+
+        // Pick the best candidate by score
+        if (candidates.length > 0) {
+            candidates.sort(function(a, b) { return b.score - a.score; });
+            return wrapResult(candidates[0].slides, cleaned);
+        }
+
+        // Absolute fallback: single slide
+        var fallbackParsed = splitTitleBody(cleaned);
         return [{
             numberLabel: '',
-            title: cleaned.substring(0, 80),
-            body: cleaned.length > 80 ? cleaned.substring(80) : '',
+            title: fallbackParsed.title || cleaned.substring(0, 80),
+            body: fallbackParsed.body || (cleaned.length > 80 ? cleaned.substring(80) : ''),
             type: 'content'
         }];
+    }
+
+    // Score a parser result to pick the best one
+    function scoreResult(slides, parserType) {
+        var score = 0;
+        var contentSlides = slides.filter(function(s) { return s.type === 'content'; });
+        
+        // Reasonable slide count
+        if (contentSlides.length >= 3 && contentSlides.length <= 12) score += 20;
+        else if (contentSlides.length >= 2) score += 10;
+        
+        // Both title + body present
+        var withBoth = contentSlides.filter(function(s) { return s.title && s.body; }).length;
+        score += (withBoth / Math.max(contentSlides.length, 1)) * 30;
+        
+        // Consistent slide sizes
+        if (contentSlides.length > 1) {
+            var wordCounts = contentSlides.map(function(s) {
+                return ((s.title || '') + ' ' + (s.body || '')).split(/\s+/).length;
+            });
+            var avg = wordCounts.reduce(function(a,b) { return a+b; }, 0) / wordCounts.length;
+            var variance = wordCounts.reduce(function(acc, wc) { return acc + Math.pow(wc - avg, 2); }, 0) / wordCounts.length;
+            var cv = Math.sqrt(variance) / Math.max(avg, 1);
+            if (cv < 0.5) score += 15;
+            else if (cv < 1.0) score += 8;
+        }
+        
+        // Penalize empty or very short slides
+        var emptySlides = contentSlides.filter(function(s) { return !s.title && !s.body; }).length;
+        score -= emptySlides * 15;
+        var shortTitles = contentSlides.filter(function(s) { return s.title && s.title.length < 5; }).length;
+        score -= shortTitles * 5;
+        
+        // Bonus for structured parsers
+        var structureBonus = {
+            'slideMarkers': 20, 'hookFormat': 18, 'bracketMarkers': 16,
+            'markdown': 14, 'numbered': 12, 'labeled': 14, 'twitter': 10,
+            'bold': 8, 'dash': 6, 'blocks': 4, 'paragraphs': 2
+        };
+        score += (structureBonus[parserType] || 0);
+        
+        if (slides.some(function(s) { return s.type === 'cover'; })) score += 5;
+        if (slides.some(function(s) { return s.type === 'cta'; })) score += 5;
+        
+        return score;
     }
 
     function wrapResult(slides, rawText) {
         var mainTitle = slides._extractedTitle || '';
         delete slides._extractedTitle;
         
-        // Check if we already have cover and CTA from parser
+        // Post-process: balance slide content
+        slides = autoBalanceSlides(slides);
+        
         var hasCover = slides.some(function(s) { return s.type === 'cover'; });
         var hasCTA = slides.some(function(s) { return s.type === 'cta'; });
         
-        if (hasCover && hasCTA) {
-            // Already complete, just return
-            return slides;
-        }
-        
+        if (hasCover && hasCTA) return slides;
         return addCoverAndCTA(slides, rawText, mainTitle, hasCover, hasCTA);
     }
 
-    // ===== HOOK/CTA FORMAT PARSER (Common AI output) =====
-    function parseHookFormat(text) {
-        // Matches: Hook:, Title:, **Hook**, 🎣 Hook, Opening:, Intro:
-        var hookPattern = /(?:^|\n)\s*(?:\*\*)?(?:hook|title|opening|intro|attention[- ]?grabber)\s*(?:\*\*)?[:\-]\s*/i;
-        var ctaPattern = /(?:^|\n)\s*(?:\*\*)?(?:cta|call[- ]?to[- ]?action|closing|outro|final)\s*(?:\*\*)?[:\-]\s*/i;
+    // =============================================
+    // ===== POST-PROCESSING: AUTO-BALANCE =====
+    // =============================================
+    function autoBalanceSlides(slides) {
+        var MAX_WORDS = 55;
+        var MIN_WORDS = 8;
+        var result = [];
         
-        if (!hookPattern.test(text) && !ctaPattern.test(text)) return null;
+        // Step 1: Split long slides
+        for (var i = 0; i < slides.length; i++) {
+            var slide = slides[i];
+            if (slide.type !== 'content') {
+                result.push(slide);
+                continue;
+            }
+            
+            var fullText = ((slide.title || '') + ' ' + (slide.body || '')).trim();
+            var wordCount = fullText.split(/\s+/).filter(Boolean).length;
+            
+            if (wordCount > MAX_WORDS) {
+                // Split into two slides at sentence boundary
+                var sentences = fullText.match(/[^.!?]+[.!?]+/g);
+                if (sentences && sentences.length >= 2) {
+                    var midIdx = Math.ceil(sentences.length / 2);
+                    var firstHalf = sentences.slice(0, midIdx).join(' ').trim();
+                    var secondHalf = sentences.slice(midIdx).join(' ').trim();
+                    
+                    var parsed1 = splitTitleBody(firstHalf);
+                    var parsed2 = splitTitleBody(secondHalf);
+                    result.push({ numberLabel: '', title: parsed1.title, body: parsed1.body, type: 'content' });
+                    result.push({ numberLabel: '', title: parsed2.title, body: parsed2.body, type: 'content' });
+                } else {
+                    // No sentence boundaries: split at word midpoint
+                    var words = fullText.split(/\s+/);
+                    var mid = Math.ceil(words.length / 2);
+                    var p1 = splitTitleBody(words.slice(0, mid).join(' '));
+                    var p2 = splitTitleBody(words.slice(mid).join(' '));
+                    result.push({ numberLabel: '', title: p1.title, body: p1.body, type: 'content' });
+                    result.push({ numberLabel: '', title: p2.title, body: p2.body, type: 'content' });
+                }
+            } else {
+                result.push(slide);
+            }
+        }
         
-        // Split by common section markers including Title:
-        var regex = /(?:^|\n)\s*(?:\*\*)?(title|hook|opening|intro|point\s*\d+|tip\s*\d+|step\s*\d+|slide\s*\d+|key\s*\d+|insight\s*\d+|takeaway|cta|call[- ]?to[- ]?action|closing|outro|final|conclusion)\s*(?:\*\*)?[:\-]\s*/gi;
+        // Step 2: Merge very short consecutive content slides
+        var merged = [];
+        for (var j = 0; j < result.length; j++) {
+            var current = result[j];
+            if (current.type !== 'content') {
+                merged.push(current);
+                continue;
+            }
+            
+            var curText = ((current.title || '') + ' ' + (current.body || '')).trim();
+            var curWords = curText.split(/\s+/).filter(Boolean).length;
+            
+            if (curWords < MIN_WORDS && j + 1 < result.length && result[j + 1].type === 'content') {
+                var next = result[j + 1];
+                var nextText = ((next.title || '') + ' ' + (next.body || '')).trim();
+                var nextWords = nextText.split(/\s+/).filter(Boolean).length;
+                
+                // Only merge if combined is still reasonable
+                if (curWords + nextWords <= MAX_WORDS) {
+                    var combinedTitle = current.title || next.title || '';
+                    var combinedBody = '';
+                    if (current.body) combinedBody += current.body;
+                    if (next.title && current.title) combinedBody += (combinedBody ? '\n' : '') + next.title;
+                    if (next.body) combinedBody += (combinedBody ? '\n' : '') + next.body;
+                    
+                    merged.push({ numberLabel: '', title: combinedTitle, body: combinedBody, type: 'content' });
+                    j++; // skip next
+                    continue;
+                }
+            }
+            merged.push(current);
+        }
         
+        // Step 3: Renumber content slides
+        var num = 1;
+        merged.forEach(function(s) {
+            if (s.type === 'content') {
+                s.numberLabel = padNumber(num++);
+            }
+        });
+        
+        return merged;
+    }
+
+    // =============================================
+    // ===== INDIVIDUAL PARSERS =====
+    // =============================================
+
+    // --- Slide Markers: "Slide 1:", "Slide 2:" ---
+    function parseSlideMarkers(text) {
+        var regex = /(?:^|\n)\s*slide\s*(\d+)\s*[:\-\u2013\u2014]\s*/gi;
         var matches = [];
         var m;
         while ((m = regex.exec(text)) !== null) {
-            matches.push({ index: m.index, length: m[0].length, label: m[1].toLowerCase() });
+            matches.push({ index: m.index, length: m[0].length, num: parseInt(m[1]) });
         }
-        
         if (matches.length < 2) return null;
         
         var slides = [];
+        var preamble = text.substring(0, matches[0].index).trim();
+
         for (var i = 0; i < matches.length; i++) {
             var startIdx = matches[i].index + matches[i].length;
             var endIdx = i + 1 < matches.length ? matches[i + 1].index : text.length;
             var content = text.substring(startIdx, endIdx).trim();
-            var label = matches[i].label;
-            
-            var type = 'content';
-            var numberLabel = '';
-            
-            if (/title|hook|opening|intro/.test(label)) {
-                type = 'cover';
-                // For title/hook, first line is title, rest splits into content slides
-                var titleLines = content.split(/\n\n+/);
-                if (titleLines.length > 1) {
-                    // First block is cover
-                    var coverParsed = splitTitleBody(titleLines[0]);
-                    slides.push({ numberLabel: '', title: coverParsed.title, body: coverParsed.body, type: 'cover' });
-                    
-                    // Remaining blocks are content slides
-                    for (var j = 1; j < titleLines.length; j++) {
-                        var blockContent = titleLines[j].trim();
-                        if (!blockContent) continue;
-                        var blockParsed = splitTitleBody(blockContent);
-                        slides.push({ 
-                            numberLabel: padNumber(slides.length), 
-                            title: blockParsed.title, 
-                            body: blockParsed.body, 
-                            type: 'content' 
-                        });
-                    }
-                    continue;
-                } else {
-                    var parsed = splitTitleBody(content);
-                    slides.push({ numberLabel: '', title: parsed.title, body: parsed.body, type: 'cover' });
-                    continue;
-                }
-            } else if (/cta|call|closing|outro|final|conclusion/.test(label)) {
-                type = 'cta';
-                var ctaParsed = splitTitleBody(content);
-                slides.push({ numberLabel: '', title: ctaParsed.title, body: ctaParsed.body, type: 'cta' });
-                continue;
-            } else {
-                var numMatch = label.match(/\d+/);
-                numberLabel = numMatch ? padNumber(parseInt(numMatch[0])) : padNumber(slides.filter(function(s) { return s.type === 'content'; }).length + 1);
-            }
-            
+            if (!content) continue;
             var parsed = splitTitleBody(content);
-            slides.push({ numberLabel: numberLabel, title: parsed.title, body: parsed.body, type: type });
+            slides.push({ numberLabel: padNumber(matches[i].num), title: parsed.title, body: parsed.body, type: 'content' });
         }
         
-        // Renumber content slides
+        if (preamble && slides.length) {
+            var firstLine = preamble.split('\n')[0].trim();
+            if (firstLine.length > 0 && firstLine.length <= 100) slides._extractedTitle = cleanMarkdown(firstLine);
+        }
+        return slides.length >= 2 ? slides : null;
+    }
+
+    // --- Hook / CTA Format ---
+    function parseHookFormat(text) {
+        var hookPattern = /(?:^|\n)\s*(?:\*\*)?(hook|title|opening|intro)\s*(?:\*\*)?[:\-]\s*/i;
+        var ctaPattern = /(?:^|\n)\s*(?:\*\*)?(cta|call[\- ]?to[\- ]?action|closing|outro|final|conclusion)\s*(?:\*\*)?[:\-]\s*/i;
+        var hasPoints = /(?:^|\n)\s*(?:\*\*)?(point|tip|step|key|insight)\s*\d+/i.test(text);
+        
+        // Must have hook AND (cta OR numbered points)
+        if (!hookPattern.test(text)) return null;
+        if (!ctaPattern.test(text) && !hasPoints) return null;
+        
+        var regex = /(?:^|\n)\s*(?:\*\*)?(title|hook|opening|intro|point\s*\d+|tip\s*\d+|step\s*\d+|key\s*\d+|insight\s*\d+|slide\s*\d+|takeaway|cta|call[\- ]?to[\- ]?action|closing|outro|final|conclusion)\s*(?:\*\*)?[:\-]\s*/gi;
+        
+        var matchList = [];
+        var mm;
+        while ((mm = regex.exec(text)) !== null) {
+            matchList.push({ index: mm.index, length: mm[0].length, label: mm[1].toLowerCase() });
+        }
+        if (matchList.length < 2) return null;
+        
+        var slides = [];
+        for (var i = 0; i < matchList.length; i++) {
+            var startIdx = matchList[i].index + matchList[i].length;
+            var endIdx = i + 1 < matchList.length ? matchList[i + 1].index : text.length;
+            var content = text.substring(startIdx, endIdx).trim();
+            var label = matchList[i].label;
+            
+            if (/title|hook|opening|intro/.test(label)) {
+                var parsedHook = splitTitleBody(content);
+                slides.push({ numberLabel: '', title: parsedHook.title, body: parsedHook.body, type: 'cover' });
+            } else if (/cta|call|closing|outro|final|conclusion/.test(label)) {
+                var ctaParsed = splitTitleBody(content);
+                slides.push({ numberLabel: '', title: ctaParsed.title, body: ctaParsed.body, type: 'cta' });
+            } else {
+                var numMatch = label.match(/\d+/);
+                var num = numMatch ? parseInt(numMatch[0]) : slides.filter(function(s) { return s.type === 'content'; }).length + 1;
+                var contentParsed = splitTitleBody(content);
+                slides.push({ numberLabel: padNumber(num), title: contentParsed.title, body: contentParsed.body, type: 'content' });
+            }
+        }
+        
         var contentNum = 1;
         slides.forEach(function(s) {
-            if (s.type === 'content') {
-                s.numberLabel = padNumber(contentNum++);
-            }
+            if (s.type === 'content') s.numberLabel = padNumber(contentNum++);
         });
         
         return slides.length >= 2 ? slides : null;
     }
 
-    // ===== BRACKET MARKERS [1] or [Slide 1] =====
+    // --- Bracket Markers [1], [Slide 1] ---
     function parseBracketMarkers(text) {
         var regex = /(?:^|\n)\s*\[(?:slide\s*)?(\d+)\]\s*[:\-]?\s*/gi;
         var matches = [];
@@ -389,6 +462,75 @@
         while ((m = regex.exec(text)) !== null) matches.push(m);
         if (matches.length < 2) return null;
         
+        var slides = [];
+        var preamble = text.substring(0, matches[0].index).trim();
+        
+        for (var i = 0; i < matches.length; i++) {
+            var match = matches[i];
+            var startIdx = match.index + match[0].length;
+            var endIdx = i + 1 < matches.length ? matches[i + 1].index : text.length;
+            var content = text.substring(startIdx, endIdx).trim();
+            if (!content) continue;
+            var parsed = splitTitleBody(content);
+            slides.push({ numberLabel: padNumber(parseInt(match[1])), title: parsed.title, body: parsed.body, type: 'content' });
+        }
+        
+        if (preamble && slides.length) {
+            var firstLine = preamble.split('\n')[0].trim();
+            if (firstLine.length > 0 && firstLine.length <= 100) slides._extractedTitle = cleanMarkdown(firstLine);
+        }
+        return slides.length >= 2 ? slides : null;
+    }
+
+    // --- Markdown Headings ---
+    function parseMarkdownHeadings(text) {
+        var lines = text.split('\n');
+        var slides = [];
+        var currentSlide = null;
+        var mainTitle = null;
+        for (var idx = 0; idx < lines.length; idx++) {
+            var line = lines[idx];
+            var h1Match = line.match(/^#\s+(.+)/);
+            var h2Match = line.match(/^##\s+(.+)/);
+            var h3Match = line.match(/^###\s+(.+)/);
+            if (h1Match && !mainTitle) {
+                mainTitle = cleanMarkdown(h1Match[1].trim());
+            } else if (h2Match || h3Match) {
+                if (currentSlide) slides.push(currentSlide);
+                var heading = cleanMarkdown((h2Match ? h2Match[1] : h3Match[1]).trim());
+                currentSlide = { numberLabel: padNumber(slides.length + 1), title: heading, body: '', type: 'content' };
+            } else if (currentSlide) {
+                var trimLine = line.trim();
+                if (trimLine) currentSlide.body += (currentSlide.body ? '\n' : '') + cleanMarkdown(trimLine);
+            }
+        }
+        if (currentSlide) slides.push(currentSlide);
+        if (mainTitle && slides.length) slides._extractedTitle = mainTitle;
+        return slides.length >= 2 ? slides : null;
+    }
+
+    // --- Numbered List (with sequential validation) ---
+    function parseNumberedList(text) {
+        var regex = /(?:^|\n)\s*(\d+)\s*[.)\-:\u2013\u2014]\s+/g;
+        var matches = [];
+        var m;
+        while ((m = regex.exec(text)) !== null) matches.push(m);
+        if (matches.length < 2) return null;
+        
+        // Validate sequential numbering
+        var nums = matches.map(function(mm) { return parseInt(mm[1]); });
+        var isSequential = true;
+        for (var k = 1; k < nums.length; k++) {
+            if (nums[k] !== nums[k-1] + 1) { isSequential = false; break; }
+        }
+        if (!isSequential) {
+            var isIncreasing = nums[0] === 1;
+            for (var k2 = 1; k2 < nums.length; k2++) {
+                if (nums[k2] <= nums[k2-1]) { isIncreasing = false; break; }
+            }
+            if (!isIncreasing) return null;
+        }
+
         var slides = [];
         var firstMatchStart = matches[0].index;
         var preamble = text.substring(0, firstMatchStart).trim();
@@ -398,18 +540,22 @@
             var startIdx = match.index + match[0].length;
             var endIdx = i + 1 < matches.length ? matches[i + 1].index : text.length;
             var content = text.substring(startIdx, endIdx).trim();
+            if (!content) continue;
             var parsed = splitTitleBody(content);
             slides.push({ numberLabel: padNumber(parseInt(match[1])), title: parsed.title, body: parsed.body, type: 'content' });
         }
         
         if (preamble && slides.length) {
-            var firstLine = preamble.split('\n')[0].trim();
-            if (firstLine.length <= 80) slides._extractedTitle = firstLine;
+            var pLines = preamble.split('\n').filter(function(l) { return l.trim(); });
+            if (pLines.length > 0) {
+                var titleLine = cleanMarkdown(pLines[0].trim());
+                if (titleLine.length > 0 && titleLine.length <= 100) slides._extractedTitle = titleLine;
+            }
         }
         return slides.length >= 2 ? slides : null;
     }
 
-    // ===== TWITTER THREAD FORMAT 1/ 2/ 3/ =====
+    // --- Twitter Thread ---
     function parseTwitterThread(text) {
         var regex = /(?:^|\n)\s*(\d+)\/\s+/g;
         var matches = [];
@@ -423,36 +569,14 @@
             var startIdx = match.index + match[0].length;
             var endIdx = i + 1 < matches.length ? matches[i + 1].index : text.length;
             var content = text.substring(startIdx, endIdx).trim();
+            if (!content) continue;
             var parsed = splitTitleBody(content);
             slides.push({ numberLabel: padNumber(parseInt(match[1])), title: parsed.title, body: parsed.body, type: 'content' });
         }
         return slides.length >= 2 ? slides : null;
     }
 
-    // ===== EMOJI HEADERS 🔥 Title =====
-    function parseEmojiHeaders(text) {
-        // Common emoji patterns at start of lines followed by title
-        var regex = /(?:^|\n)\s*([\u{1F300}-\u{1F9FF}]|[\u{2600}-\u{26FF}]|[\u{2700}-\u{27BF}])\s*(.+?)(?=\n\s*[\u{1F300}-\u{1F9FF}]|\n\s*[\u{2600}-\u{26FF}]|\n\s*[\u{2700}-\u{27BF}]|$)/gsu;
-        var matches = [];
-        var m;
-        while ((m = regex.exec(text)) !== null) {
-            if (m[2].trim().length > 0) matches.push(m);
-        }
-        if (matches.length < 3) return null;
-        
-        var slides = [];
-        for (var i = 0; i < matches.length; i++) {
-            var content = matches[i][2].trim();
-            var parsed = splitTitleBody(content);
-            // Prepend emoji to title
-            var emoji = matches[i][1];
-            parsed.title = emoji + ' ' + parsed.title;
-            slides.push({ numberLabel: padNumber(i + 1), title: parsed.title, body: parsed.body, type: 'content' });
-        }
-        return slides.length >= 2 ? slides : null;
-    }
-
-    // ===== LABELED SECTIONS (Point 1:, Tip 1:, Step 1:) =====
+    // --- Labeled Sections ---
     function parseLabeledSections(text) {
         var regex = /(?:^|\n)\s*(?:\*\*)?(point|tip|step|key|insight|idea|reason|way|strategy|tactic|method|principle|rule|lesson|fact|myth|truth|secret)\s*(?:#)?(\d+)\s*(?:\*\*)?[:\-]\s*/gi;
         var matches = [];
@@ -461,28 +585,44 @@
         if (matches.length < 2) return null;
         
         var slides = [];
-        var firstMatchStart = matches[0].index;
-        var preamble = text.substring(0, firstMatchStart).trim();
+        var preamble = text.substring(0, matches[0].index).trim();
         
         for (var i = 0; i < matches.length; i++) {
             var match = matches[i];
             var startIdx = match.index + match[0].length;
             var endIdx = i + 1 < matches.length ? matches[i + 1].index : text.length;
             var content = text.substring(startIdx, endIdx).trim();
+            if (!content) continue;
             var parsed = splitTitleBody(content);
             slides.push({ numberLabel: padNumber(parseInt(match[2])), title: parsed.title, body: parsed.body, type: 'content' });
         }
         
         if (preamble && slides.length) {
             var lines = preamble.split('\n').filter(function(l) { return l.trim(); });
-            if (lines.length > 0 && lines[0].length <= 80) {
-                slides._extractedTitle = cleanMarkdown(lines[0]);
-            }
+            if (lines.length > 0 && lines[0].length <= 100) slides._extractedTitle = cleanMarkdown(lines[0]);
         }
         return slides.length >= 2 ? slides : null;
     }
 
-    // ===== DASH SEPARATORS --- =====
+    // --- Bold Markers ---
+    function parseBoldMarkers(text) {
+        var regex = /(?:^|\n)\s*\*\*(.+?)\*\*/g;
+        var matches = [];
+        var m;
+        while ((m = regex.exec(text)) !== null) matches.push(m);
+        if (matches.length < 2) return null;
+        var slides = [];
+        for (var i = 0; i < matches.length; i++) {
+            var title = matches[i][1].trim();
+            var startIdx = matches[i].index + matches[i][0].length;
+            var endIdx = i + 1 < matches.length ? matches[i + 1].index : text.length;
+            var body = text.substring(startIdx, endIdx).trim();
+            slides.push({ numberLabel: padNumber(i + 1), title: cleanMarkdown(title), body: cleanBody(body), type: 'content' });
+        }
+        return slides.length >= 2 ? slides : null;
+    }
+
+    // --- Dash Separators ---
     function parseDashSeparators(text) {
         var parts = text.split(/\n\s*[-=]{3,}\s*\n/);
         if (parts.length < 3) return null;
@@ -502,115 +642,121 @@
         return slides.length >= 2 ? slides : null;
     }
 
-    function parseSlideMarkers(text) {
-        var regex = /(?:^|\n)\s*slide\s*(\d+)\s*[:\-\u2013\u2014]\s*/gi;
-        var parts = text.split(regex);
-        if (parts.length < 3) return null;
+    // --- Double Newline Blocks (title + body separated by blank lines) ---
+    function parseDoubleNewlineBlocks(text) {
+        var blocks = text.split(/\n\s*\n/).map(function(b) { return b.trim(); }).filter(Boolean);
+        if (blocks.length < 3) return null;
+        
         var slides = [];
-        for (var i = 1; i < parts.length; i += 2) {
-            var num = parts[i];
-            var content = (parts[i + 1] || '').trim();
-            var parsed = splitTitleBody(content);
-            slides.push({ numberLabel: padNumber(parseInt(num)), title: parsed.title, body: parsed.body, type: 'content' });
-        }
-        return slides.length ? slides : null;
-    }
-
-    function parseMarkdownHeadings(text) {
-        var lines = text.split('\n');
-        var slides = [];
-        var currentSlide = null;
-        var mainTitle = null;
-        for (var idx = 0; idx < lines.length; idx++) {
-            var line = lines[idx];
-            var h1Match = line.match(/^#\s+(.+)/);
-            var h2Match = line.match(/^##\s+(.+)/);
-            var h3Match = line.match(/^###\s+(.+)/);
-            if (h1Match && !mainTitle) {
-                mainTitle = h1Match[1].trim();
-            } else if (h2Match || h3Match) {
-                if (currentSlide) slides.push(currentSlide);
-                var heading = (h2Match ? h2Match[1] : h3Match[1]).trim();
-                currentSlide = { numberLabel: padNumber(slides.length + 1), title: heading, body: '', type: 'content' };
-            } else if (currentSlide) {
-                var trimLine = line.trim();
-                if (trimLine) currentSlide.body += (currentSlide.body ? '\n' : '') + trimLine;
+        for (var i = 0; i < blocks.length; i++) {
+            var block = blocks[i];
+            var blockLines = block.split('\n').filter(function(l) { return l.trim(); });
+            if (blockLines.length === 0) continue;
+            
+            // Short single line + next block looks like body = combine them
+            if (blockLines.length === 1 && blockLines[0].length <= 60 && i + 1 < blocks.length) {
+                var nextBlock = blocks[i + 1];
+                var nextLines = nextBlock.split('\n').filter(function(l) { return l.trim(); });
+                if (nextLines.length > 1 || (nextLines.length === 1 && nextLines[0].length > 60)) {
+                    slides.push({
+                        numberLabel: padNumber(slides.length + 1),
+                        title: cleanMarkdown(blockLines[0]),
+                        body: cleanMarkdown(nextBlock),
+                        type: 'content'
+                    });
+                    i++;
+                    continue;
+                }
             }
-        }
-        if (currentSlide) slides.push(currentSlide);
-        if (mainTitle && slides.length) slides._extractedTitle = mainTitle;
-        return slides.length >= 2 ? slides : null;
-    }
-
-    function parseNumberedList(text) {
-        var regex = /(?:^|\n)\s*(\d+)\s*[.)\-:\u2013\u2014]\s+/g;
-        var matches = [];
-        var m;
-        while ((m = regex.exec(text)) !== null) matches.push(m);
-        if (matches.length < 2) return null;
-        var slides = [];
-        var firstMatchStart = matches[0].index;
-        var preamble = text.substring(0, firstMatchStart).trim();
-        for (var i = 0; i < matches.length; i++) {
-            var match = matches[i];
-            var startIdx = match.index + match[0].length;
-            var endIdx = i + 1 < matches.length ? matches[i + 1].index : text.length;
-            var content = text.substring(startIdx, endIdx).trim();
-            var parsed = splitTitleBody(content);
-            slides.push({ numberLabel: padNumber(parseInt(match[1])), title: parsed.title, body: parsed.body, type: 'content' });
-        }
-        if (preamble && slides.length) slides._extractedTitle = preamble.split('\n')[0].trim();
-        return slides.length >= 2 ? slides : null;
-    }
-
-    function parseBoldMarkers(text) {
-        var regex = /(?:^|\n)\s*\*\*(.+?)\*\*/g;
-        var matches = [];
-        var m;
-        while ((m = regex.exec(text)) !== null) matches.push(m);
-        if (matches.length < 2) return null;
-        var slides = [];
-        for (var i = 0; i < matches.length; i++) {
-            var title = matches[i][1].trim();
-            var startIdx = matches[i].index + matches[i][0].length;
-            var endIdx = i + 1 < matches.length ? matches[i + 1].index : text.length;
-            var body = text.substring(startIdx, endIdx).trim();
-            slides.push({ numberLabel: padNumber(i + 1), title: title, body: cleanBody(body), type: 'content' });
+            
+            var parsed = splitTitleBody(block);
+            slides.push({
+                numberLabel: padNumber(slides.length + 1),
+                title: parsed.title,
+                body: parsed.body,
+                type: 'content'
+            });
         }
         return slides.length >= 2 ? slides : null;
     }
 
+    // --- Paragraphs fallback ---
     function parseParagraphs(text) {
-        var blocks = text.split(/\n\s*\n/).map(function (b) { return b.trim(); }).filter(Boolean);
+        var blocks = text.split(/\n\s*\n/).map(function(b) { return b.trim(); }).filter(Boolean);
         if (blocks.length < 2) return null;
+        
         var slides = [];
         for (var i = 0; i < blocks.length; i++) {
             var parsed = splitTitleBody(blocks[i]);
-            slides.push({ numberLabel: slides.length > 0 ? padNumber(slides.length) : '', title: parsed.title, body: parsed.body, type: i === 0 ? 'title' : 'content' });
+            var isFirst = slides.length === 0;
+            slides.push({ 
+                numberLabel: isFirst ? '' : padNumber(slides.length), 
+                title: parsed.title, 
+                body: parsed.body, 
+                type: isFirst ? 'cover' : 'content' 
+            });
         }
-        return slides;
+        return slides.length >= 2 ? slides : null;
     }
 
+    // =============================================
     // ===== PARSER HELPERS =====
+    // =============================================
     function splitTitleBody(content) {
         if (!content) return { title: '', body: '' };
         content = cleanMarkdown(content);
-        var lines = content.split('\n').map(function (l) { return l.trim(); }).filter(Boolean);
+        var lines = content.split('\n').map(function(l) { return l.trim(); }).filter(Boolean);
         if (lines.length === 0) return { title: '', body: '' };
         
         if (lines.length === 1) {
-            // Clean trailing emojis from title for cleaner look (optional)
             var titleLine = lines[0];
-            if (titleLine.length <= 80) return { title: titleLine, body: '' };
-            // Try to split at sentence boundary
-            var sentence = titleLine.match(/^(.{20,70}[.!?])\s+/);
+            
+            // Check for "Title: body text" colon format
+            var colonMatch = titleLine.match(/^([^:]{5,60}):\s+(.+)/);
+            if (colonMatch && colonMatch[2].length > 10) {
+                return { title: colonMatch[1].trim(), body: colonMatch[2].trim() };
+            }
+            
+            if (titleLine.length <= 100) return { title: titleLine, body: '' };
+            var sentence = titleLine.match(/^(.{20,80}[.!?])\s+/);
             if (sentence) return { title: sentence[1], body: titleLine.substring(sentence[0].length) };
-            // Split at last space before 80 chars
             var lastSpace = titleLine.substring(0, 80).lastIndexOf(' ');
-            if (lastSpace > 30) return { title: titleLine.substring(0, lastSpace), body: titleLine.substring(lastSpace + 1) };
+            if (lastSpace > 20) return { title: titleLine.substring(0, lastSpace), body: titleLine.substring(lastSpace + 1) };
             return { title: titleLine, body: '' };
         }
-        return { title: lines[0], body: lines.slice(1).join('\n') };
+        
+        // Multi-line: find the best title candidate
+        var title = lines[0];
+        var bodyStartIdx = 1;
+        
+        // If first line is a bullet point, look for a non-bullet title
+        if (/^\u2022/.test(title)) {
+            // All bullets - use first bullet as title, strip the bullet char
+            title = title.replace(/^\u2022\s*/, '');
+            bodyStartIdx = 1;
+        }
+        
+        // Check for "Title: body" in first line
+        var multiColonMatch = title.match(/^([^:]{5,60}):\s+(.+)/);
+        if (multiColonMatch && multiColonMatch[2].length > 10) {
+            title = multiColonMatch[1].trim();
+            // Prepend the colon body to the rest
+            var body = multiColonMatch[2].trim() + '\n' + lines.slice(bodyStartIdx).join('\n');
+            return { title: title, body: body.trim() };
+        }
+        
+        var body = lines.slice(bodyStartIdx).join('\n');
+        
+        // Very short label = combine with next line
+        if (title.length < 5 && lines.length > 2) {
+            title = lines[0] + ' ' + lines[1];
+            body = lines.slice(2).join('\n');
+        }
+        
+        // Strip trailing colon from title
+        if (title.endsWith(':')) title = title.slice(0, -1).trim();
+        
+        return { title: title, body: body };
     }
 
     function cleanMarkdown(text) {
@@ -618,7 +764,7 @@
             .replace(/\*\*(.+?)\*\*/g, '$1')
             .replace(/__(.+?)__/g, '$1')
             .replace(/_(.+?)_/g, '$1')
-            .replace(/^[-*+]\s+/gm, '• ')
+            .replace(/^[-*+]\s+/gm, '\u2022 ')
             .replace(/^>\s*/gm, '')
             .trim();
     }
@@ -736,22 +882,121 @@
         if (!skipCover) {
             var coverTitle = mainTitle || '';
             if (!coverTitle) {
-                var firstLine = rawText.split('\n')[0].trim();
-                if (firstLine && !firstLine.match(/^\d+[.):\-]/) && !firstLine.match(/^slide\s+\d+/i) && firstLine.length <= 80) {
-                    coverTitle = cleanMarkdown(firstLine);
-                }
+                coverTitle = findBestTitle(rawText);
             }
             if (coverTitle) {
-                slides.unshift({ numberLabel: '', title: coverTitle, body: totalContent + ' key points inside — swipe →', type: 'cover' });
+                // Dynamic cover body based on slide count
+                var coverBody = '';
+                if (totalContent >= 5) {
+                    coverBody = totalContent + ' key insights inside \u2014 swipe \u2192';
+                } else if (totalContent >= 3) {
+                    coverBody = totalContent + ' essential points \u2014 swipe \u2192';
+                } else {
+                    coverBody = 'Keep reading to learn more \u2192';
+                }
+                slides.unshift({ numberLabel: '', title: coverTitle, body: coverBody, type: 'cover' });
             }
         }
         
         // Add CTA if not skipped
         if (!skipCTA) {
-            slides.push({ numberLabel: '', title: 'Thanks for reading!', body: state.handle ? 'Follow ' + state.handle + ' for more' : 'Save this post & share with a friend', type: 'cta' });
+            var ctaTitle = generateSmartCTA(rawText, mainTitle);
+            var ctaBody = state.handle ? 'Follow ' + state.handle + ' for more' : 'Save this post & share with a friend';
+            slides.push({ numberLabel: '', title: ctaTitle, body: ctaBody, type: 'cta' });
         }
         
         return slides;
+    }
+
+    // Find the most "title-like" line from raw text
+    function findBestTitle(text) {
+        var lines = text.split('\n').map(function(l) { return l.trim(); }).filter(Boolean);
+        var bestTitle = '';
+        var bestScore = -1;
+        
+        // Only check first 5 lines
+        var searchLines = lines.slice(0, Math.min(5, lines.length));
+        
+        for (var i = 0; i < searchLines.length; i++) {
+            var line = cleanMarkdown(searchLines[i]);
+            var score = 0;
+            
+            // Skip numbering, bullets, and slide markers
+            if (/^\d+[.)\-:]/.test(line)) continue;
+            if (/^slide\s+\d+/i.test(line)) continue;
+            if (/^\u2022/.test(line)) continue;
+            if (line.length > 100 || line.length < 5) continue;
+            
+            // Shorter is more title-like (but not too short)
+            if (line.length >= 10 && line.length <= 60) score += 20;
+            else if (line.length <= 80) score += 10;
+            
+            // No ending period = more title-like
+            if (!/[.!]$/.test(line)) score += 10;
+            
+            // Question mark endings are great for titles
+            if (/\?$/.test(line)) score += 15;
+            
+            // Title case bonus (starts with uppercase, has some uppercase words)
+            var words = line.split(/\s+/);
+            var upperWords = words.filter(function(w) { return /^[A-Z]/.test(w); }).length;
+            if (upperWords > words.length * 0.5) score += 10;
+            
+            // First line gets a position bonus
+            if (i === 0) score += 15;
+            
+            // Contains power words
+            if (/\b(how|why|what|best|top|secret|hack|mistake|way|tip|step|guide|ultimate|essential)\b/i.test(line)) score += 10;
+            
+            // Contains numbers (e.g., "5 Ways to...")
+            if (/^\d+\s+/.test(line)) score += 12;
+            
+            if (score > bestScore) {
+                bestScore = score;
+                bestTitle = line;
+            }
+        }
+        
+        return bestTitle;
+    }
+
+    // Generate context-aware CTA text
+    function generateSmartCTA(rawText, mainTitle) {
+        var source = (mainTitle || '') + ' ' + (rawText || '');
+        source = source.toLowerCase();
+        
+        // Detect content type
+        if (/\b(tip|hack|trick|shortcut)\b/i.test(source)) {
+            return 'Found these tips useful?';
+        }
+        if (/\b(step|guide|tutorial|process)\b/i.test(source)) {
+            return 'Ready to take the next step?';
+        }
+        if (/\b(mistake|avoid|wrong|never|stop)\b/i.test(source)) {
+            return 'Don\u2019t make these mistakes!';
+        }
+        if (/\b(lesson|learn|taught|realize)\b/i.test(source)) {
+            return 'Key takeaways to remember';
+        }
+        if (/\b(money|earn|income|revenue|profit|business)\b/i.test(source)) {
+            return 'Start building your success!';
+        }
+        if (/\b(health|fitness|workout|exercise|diet)\b/i.test(source)) {
+            return 'Your health journey starts now!';
+        }
+        if (/\b(product|tool|software|app|resource)\b/i.test(source)) {
+            return 'Try these out today!';
+        }
+        
+        // Generic CTAs (rotate randomly for variety)
+        var genericCTAs = [
+            'Thanks for reading!',
+            'Found this valuable?',
+            'Drop a comment below!',
+            'Share this with someone who needs it!',
+            'What did you think?'
+        ];
+        return genericCTAs[Math.floor(Math.random() * genericCTAs.length)];
     }
 
     // =============================================
@@ -803,6 +1048,76 @@
         handleInput.addEventListener('input', function () {
             state.handle = handleInput.value.trim();
             saveDraft();
+        });
+    }
+
+    function initPromptTemplate() {
+        var copyBtn = document.getElementById('copyPromptBtn');
+        var topicInput = document.getElementById('promptTopicInput');
+        var previewBox = document.getElementById('promptPreviewBox');
+        if (!copyBtn || !topicInput) return;
+
+        function buildPrompt(topic) {
+            return 'Write a social media carousel about: ' + (topic || '[YOUR TOPIC]') + '\n\n' +
+                'Use EXACTLY this format:\n\n' +
+                '[Write an attention-grabbing title for the carousel]\n\n' +
+                '1. [First point title]\n' +
+                '[2-3 sentences explaining this point]\n\n' +
+                '2. [Second point title]\n' +
+                '[2-3 sentences explaining this point]\n\n' +
+                '3. [Third point title]\n' +
+                '[2-3 sentences explaining this point]\n\n' +
+                '...continue for 5-8 points total.\n\n' +
+                'Rules:\n' +
+                '- Start with ONE title line (no numbering)\n' +
+                '- Each point: number + period + title on one line\n' +
+                '- Body text on the next lines (2-3 sentences max)\n' +
+                '- Separate each point with a blank line\n' +
+                '- No emojis, no bold (**), no markdown\n' +
+                '- Keep each point under 40 words\n' +
+                '- Make the title catchy and scroll-stopping\n' +
+                '- End with a final point, no CTA needed';
+        }
+
+        // Update preview when topic changes
+        topicInput.addEventListener('input', function() {
+            if (previewBox) {
+                previewBox.textContent = buildPrompt(topicInput.value.trim());
+            }
+        });
+
+        copyBtn.addEventListener('click', function() {
+            var topic = topicInput.value.trim();
+            if (!topic) {
+                showToast('Enter a topic first', true);
+                topicInput.focus();
+                return;
+            }
+
+            var prompt = buildPrompt(topic);
+            
+            navigator.clipboard.writeText(prompt).then(function() {
+                copyBtn.classList.add('copied');
+                var origHTML = copyBtn.innerHTML;
+                copyBtn.innerHTML = '<svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Copied!';
+                showToast('Prompt copied! Paste it into any AI chatbot');
+                
+                setTimeout(function() {
+                    copyBtn.classList.remove('copied');
+                    copyBtn.innerHTML = origHTML;
+                }, 2000);
+            }).catch(function() {
+                // Fallback for older browsers
+                var textarea = document.createElement('textarea');
+                textarea.value = prompt;
+                textarea.style.position = 'fixed';
+                textarea.style.opacity = '0';
+                document.body.appendChild(textarea);
+                textarea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textarea);
+                showToast('Prompt copied! Paste it into any AI chatbot');
+            });
         });
     }
 
@@ -875,22 +1190,43 @@
     }
 
     function renderSlidesPreview() {
-        var isPortrait = state.size === '1080x1350';
         slidesContainer.innerHTML = '';
         
+        // Build custom background HTML
+        var customBgHTML = '';
+        if (state.customBg.type === 'image' && state.customBg.imageBase64) {
+            customBgHTML = '<img src="' + state.customBg.imageBase64 + '" class="custom-bg-image" alt="">' +
+                '<div class="custom-bg-overlay" style="background:rgba(0,0,0,' + (state.customBg.overlayOpacity / 100) + ')"></div>';
+        } else if (state.customBg.type === 'color' && state.customBg.color) {
+            customBgHTML = '<div class="custom-bg-overlay" style="background:' + state.customBg.color + ';"></div>';
+        }
+
         state.slides.forEach(function (slide, i) {
             var card = document.createElement('div');
             card.className = 'slide-card';
             card.setAttribute('draggable', 'true');
             card.setAttribute('data-index', i);
             card.style.animationDelay = (i * 0.08) + 's';
-            var slideClass = 'slide-inner theme-' + state.theme + ' font-' + state.fontFamily;
-            if (isPortrait) slideClass += ' portrait';
+            var slideClass = 'slide-inner font-' + state.fontFamily;
+            if (state.customBg.type === 'none') {
+                slideClass += ' theme-' + state.theme;
+            }
+            slideClass += getSizeClass(state.size);
             if (slide.type === 'cover') slideClass += ' title-slide';
             if (slide.type === 'cta') slideClass += ' cta-slide';
             var titleFontSize = state.fontSize * (slide.type === 'cover' ? 0.058 : 0.048);
             var bodyFontSize = state.fontSize * 0.029;
             
+            // Custom bg inline styles
+            var customInlineStyle = '';
+            if (state.customBg.type === 'color') {
+                // Determine text color based on bg brightness
+                var isLight = isLightColor(state.customBg.color);
+                customInlineStyle = 'color:' + (isLight ? '#1e293b' : '#f1f5f9') + ';';
+            } else if (state.customBg.type === 'image') {
+                customInlineStyle = 'color:#f1f5f9;';
+            }
+
             // Smart content balancing
             var contentStatus = getContentStatus(slide);
             var statusClass = contentStatus.status === 'warning' ? ' content-warning' : 
@@ -921,7 +1257,8 @@
                 '<div class="drag-handle" title="Drag to reorder">' +
                     '<svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><circle cx="9" cy="6" r="1.5"/><circle cx="15" cy="6" r="1.5"/><circle cx="9" cy="12" r="1.5"/><circle cx="15" cy="12" r="1.5"/><circle cx="9" cy="18" r="1.5"/><circle cx="15" cy="18" r="1.5"/></svg>' +
                 '</div>' +
-                '<div class="' + slideClass + statusClass + '">' +
+                '<div class="' + slideClass + statusClass + '"' + (customInlineStyle ? ' style="' + customInlineStyle + '"' : '') + '>' +
+                    customBgHTML +
                     '<div class="slide-deco-tl"></div>' +
                     '<div class="slide-deco-br"></div>' +
                     (slide.numberLabel ? '<div class="slide-number-label">' + escapeHTML(slide.numberLabel) + '</div>' : '') +
@@ -1169,14 +1506,36 @@
             var h = parseInt(parts[1], 10);
             var scaledFontTitle = state.fontSize * (slide.type === 'cover' ? 1.9 : 1.6);
             var scaledFontBody = state.fontSize * 1.0;
-            var slideClass = 'render-slide theme-' + state.theme + ' font-' + state.fontFamily;
+            var slideClass = 'render-slide font-' + state.fontFamily;
+            if (state.customBg.type === 'none') {
+                slideClass += ' theme-' + state.theme;
+            }
             if (slide.type === 'cover') slideClass += ' title-slide';
             if (slide.type === 'cta') slideClass += ' cta-slide';
             var el = document.createElement('div');
             el.className = slideClass;
             el.style.width = w + 'px';
             el.style.height = h + 'px';
+            
+            // Custom bg inline style
+            if (state.customBg.type === 'color') {
+                var isLight = isLightColor(state.customBg.color);
+                el.style.color = isLight ? '#1e293b' : '#f1f5f9';
+            } else if (state.customBg.type === 'image') {
+                el.style.color = '#f1f5f9';
+            }
+
+            // Build custom background HTML for export
+            var exportBgHTML = '';
+            if (state.customBg.type === 'image' && state.customBg.imageBase64) {
+                exportBgHTML = '<img src="' + state.customBg.imageBase64 + '" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0;" alt="">' +
+                    '<div style="position:absolute;inset:0;background:rgba(0,0,0,' + (state.customBg.overlayOpacity / 100) + ');z-index:0;"></div>';
+            } else if (state.customBg.type === 'color' && state.customBg.color) {
+                exportBgHTML = '<div style="position:absolute;inset:0;background:' + state.customBg.color + ';z-index:0;"></div>';
+            }
+
             el.innerHTML =
+                exportBgHTML +
                 '<div class="slide-deco-tl"></div>' +
                 '<div class="slide-deco-br"></div>' +
                 (slide.numberLabel ? '<div class="slide-number-label">' + escapeHTML(slide.numberLabel) + '</div>' : '') +
@@ -1201,6 +1560,136 @@
                 });
             });
         });
+    }
+
+    // ===== COLOR HELPERS =====
+    function isLightColor(hex) {
+        hex = hex.replace('#', '');
+        if (hex.length === 3) hex = hex[0]+hex[0]+hex[1]+hex[1]+hex[2]+hex[2];
+        var r = parseInt(hex.substring(0, 2), 16);
+        var g = parseInt(hex.substring(2, 4), 16);
+        var b = parseInt(hex.substring(4, 6), 16);
+        var luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+        return luminance > 0.55;
+    }
+
+    // =============================================
+    // ===== CUSTOM BACKGROUND =====
+    // =============================================
+    function initBackground() {
+        if (!bgTypeNone) return;
+
+        // Toggle between bg types
+        var bgTypeBtns = [bgTypeNone, bgTypeColor, bgTypeImage];
+        bgTypeBtns.forEach(function(btn) {
+            if (!btn) return;
+            btn.addEventListener('click', function() {
+                bgTypeBtns.forEach(function(b) { if (b) b.classList.remove('active'); });
+                btn.classList.add('active');
+                var bgType = btn.dataset.bgType;
+                state.customBg.type = bgType;
+
+                if (bgColorPanel) bgColorPanel.style.display = bgType === 'color' ? 'block' : 'none';
+                if (bgImagePanel) bgImagePanel.style.display = bgType === 'image' ? 'block' : 'none';
+
+                saveDraft();
+                if (state.slides.length > 0) renderSlidesPreview();
+            });
+        });
+
+        // Color swatches
+        document.querySelectorAll('.color-swatch').forEach(function(swatch) {
+            swatch.addEventListener('click', function() {
+                document.querySelectorAll('.color-swatch').forEach(function(s) { s.classList.remove('active'); });
+                swatch.classList.add('active');
+                var color = swatch.dataset.color;
+                state.customBg.color = color;
+                if (bgColorPicker) bgColorPicker.value = color;
+                if (bgColorHex) bgColorHex.value = color;
+                saveDraft();
+                if (state.slides.length > 0) renderSlidesPreview();
+            });
+        });
+
+        // Color picker
+        if (bgColorPicker) {
+            bgColorPicker.addEventListener('input', function() {
+                state.customBg.color = bgColorPicker.value;
+                if (bgColorHex) bgColorHex.value = bgColorPicker.value;
+                document.querySelectorAll('.color-swatch').forEach(function(s) { s.classList.remove('active'); });
+                saveDraft();
+                if (state.slides.length > 0) renderSlidesPreview();
+            });
+        }
+
+        // Hex input
+        if (bgColorHex) {
+            bgColorHex.addEventListener('change', function() {
+                var val = bgColorHex.value.trim();
+                if (!val.startsWith('#')) val = '#' + val;
+                if (/^#[0-9a-fA-F]{6}$/.test(val)) {
+                    state.customBg.color = val;
+                    if (bgColorPicker) bgColorPicker.value = val;
+                    document.querySelectorAll('.color-swatch').forEach(function(s) { s.classList.remove('active'); });
+                    saveDraft();
+                    if (state.slides.length > 0) renderSlidesPreview();
+                }
+            });
+        }
+
+        // Background image upload
+        if (uploadBgBtn && bgImageInput) {
+            uploadBgBtn.addEventListener('click', function() {
+                bgImageInput.click();
+            });
+
+            bgImageInput.addEventListener('change', function(e) {
+                var file = e.target.files[0];
+                if (!file) return;
+                if (!file.type.startsWith('image/')) {
+                    showToast('Please select an image file', true);
+                    return;
+                }
+                if (file.size > 10 * 1024 * 1024) {
+                    showToast('Image too large (max 10MB)', true);
+                    return;
+                }
+                var reader = new FileReader();
+                reader.onload = function(event) {
+                    state.customBg.imageBase64 = event.target.result;
+                    if (bgImagePreviewImg) bgImagePreviewImg.src = event.target.result;
+                    if (bgImagePreview) bgImagePreview.style.display = 'block';
+                    if (bgImageOptions) bgImageOptions.style.display = 'block';
+                    uploadBgBtn.style.display = 'none';
+                    saveDraft();
+                    if (state.slides.length > 0) renderSlidesPreview();
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+
+        // Remove bg image
+        if (removeBgImageBtn) {
+            removeBgImageBtn.addEventListener('click', function() {
+                state.customBg.imageBase64 = null;
+                if (bgImageInput) bgImageInput.value = '';
+                if (bgImagePreview) bgImagePreview.style.display = 'none';
+                if (bgImageOptions) bgImageOptions.style.display = 'none';
+                if (uploadBgBtn) uploadBgBtn.style.display = 'flex';
+                saveDraft();
+                if (state.slides.length > 0) renderSlidesPreview();
+            });
+        }
+
+        // Overlay opacity slider
+        if (bgOverlaySlider) {
+            bgOverlaySlider.addEventListener('input', function() {
+                state.customBg.overlayOpacity = parseInt(bgOverlaySlider.value, 10);
+                if (bgOverlayValue) bgOverlayValue.textContent = bgOverlaySlider.value + '%';
+                saveDraft();
+                if (state.slides.length > 0) renderSlidesPreview();
+            });
+        }
     }
 
     // ===== HELPERS =====
@@ -1440,7 +1929,13 @@
             avatarBase64: state.avatarBase64,
             size: state.size,
             fontSize: state.fontSize,
-            fontFamily: state.fontFamily
+            fontFamily: state.fontFamily,
+            customBg: {
+                type: state.customBg.type,
+                color: state.customBg.color,
+                overlayOpacity: state.customBg.overlayOpacity
+                // Note: imageBase64 not saved to avoid localStorage quota
+            }
         };
         try {
             localStorage.setItem(DRAFT_KEY, JSON.stringify(draft));
@@ -1489,6 +1984,23 @@
                 state.fontFamily = draft.fontFamily;
                 fontSelect.value = draft.fontFamily;
             }
+            if (draft.customBg) {
+                state.customBg.type = draft.customBg.type || 'none';
+                state.customBg.color = draft.customBg.color || '#1e1b4b';
+                state.customBg.overlayOpacity = draft.customBg.overlayOpacity != null ? draft.customBg.overlayOpacity : 40;
+                // Restore bg type toggle
+                var bgBtns = document.querySelectorAll('.bg-type-btn');
+                bgBtns.forEach(function(b) {
+                    b.classList.remove('active');
+                    if (b.dataset.bgType === state.customBg.type) b.classList.add('active');
+                });
+                if (bgColorPanel) bgColorPanel.style.display = state.customBg.type === 'color' ? 'block' : 'none';
+                if (bgImagePanel) bgImagePanel.style.display = state.customBg.type === 'image' ? 'block' : 'none';
+                if (bgColorPicker) bgColorPicker.value = state.customBg.color;
+                if (bgColorHex) bgColorHex.value = state.customBg.color;
+                if (bgOverlaySlider) bgOverlaySlider.value = state.customBg.overlayOpacity;
+                if (bgOverlayValue) bgOverlayValue.textContent = state.customBg.overlayOpacity + '%';
+            }
             return true;
         } catch (e) {
             console.warn('Could not load draft:', e);
@@ -1505,6 +2017,7 @@
         }
     }
 
+
     // ===== INIT =====
     function init() {
         initAccessGate();
@@ -1516,6 +2029,8 @@
         initFontFamily();
         initHandle();
         initAvatar();
+        initBackground();
+        initPromptTemplate();
 
         // Load saved draft
         if (loadDraft()) {
