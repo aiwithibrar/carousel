@@ -34,6 +34,10 @@
 
             <!-- View 1: Enter Email (Magic Link) -->
             <div id="tokenView" class="gate-view">
+                <div class="modal-header">
+                    <h3 id="modalTitle">Log In</h3>
+                    <button id="closeModalBtn" class="close-modal-btn" aria-label="Close modal">✕</button>
+                </div>
                 <div class="gate-section">
                     <label class="gate-label" for="tokenInput">
                         <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
@@ -43,51 +47,108 @@
                     <p id="tokenError" class="gate-error" style="display:none;">Please enter a valid email</p>
                     <button id="unlockBtn" class="license-accept-btn">
                         <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>
-                        Send Magic Link
+                        <span id="unlockBtnText">Send Magic Link</span>
                     </button>
                 </div>
                 <p id="requestSuccess" class="gate-success" style="display:none; margin-top: 15px;">
                     ✅ Magic link sent! Please check your email to sign in.
                 </p>
             </div>
-
-            <!-- Request access view is no longer needed since anyone can get a magic link, we'll hide it entirely -->
-
-            <!-- License Terms (always visible) -->
+            
             <div class="license-terms" style="margin-top:20px;">
-                <h4>License — Personal Use Only</h4>
-                <ul>
-                    <li class="allowed">Use for creating your own carousel content</li>
-                    <li class="allowed">Install on your personal devices</li>
-                    <li class="forbidden">Resell, redistribute, or sublicense</li>
-                    <li class="forbidden">Claim as your own creation</li>
-                </ul>
+                <p class="terms-text" style="font-size:0.75rem; color: #64748b; text-align:center;">By continuing, you agree to our Terms of Service.</p>
             </div>
         </div>
     </div>
 
-    <!-- Header -->
-    <header class="header" role="banner">
-        <div class="logo">
-            <div class="logo-icon" aria-hidden="true">
-                <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
-                    <rect x="2" y="2" width="10" height="10" rx="2" fill="#818cf8"/>
-                    <rect x="16" y="2" width="10" height="10" rx="2" fill="#c084fc"/>
-                    <rect x="2" y="16" width="10" height="10" rx="2" fill="#f472b6"/>
-                    <rect x="16" y="16" width="10" height="10" rx="2" fill="#fb923c"/>
-                </svg>
+    <!-- HOMEPAGE VIEW (Shown to unauthenticated users) -->
+    <div id="homepageView" class="homepage-container">
+        <!-- Homepage Navbar -->
+        <nav class="home-nav">
+            <div class="logo">
+                <div class="logo-icon" aria-hidden="true">
+                    <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+                        <rect x="2" y="2" width="10" height="10" rx="2" fill="#818cf8"/>
+                        <rect x="16" y="2" width="10" height="10" rx="2" fill="#c084fc"/>
+                        <rect x="2" y="16" width="10" height="10" rx="2" fill="#f472b6"/>
+                        <rect x="16" y="16" width="10" height="10" rx="2" fill="#fb923c"/>
+                    </svg>
+                </div>
+                <span class="logo-text">CarouselForge</span>
             </div>
-            <span class="logo-text">CarouselForge</span>
-            <span class="version-badge">v2</span>
-        </div>
-        <div class="header-right">
-            <p class="tagline">Paste text → Get beautiful carousel slides instantly</p>
-            <button id="installBtn" class="install-btn" aria-label="Install CarouselForge as app">
-                <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
-                Install App
-            </button>
-        </div>
-    </header>
+            <div class="home-nav-actions">
+                <button id="navLoginBtn" class="nav-btn-secondary">Log In</button>
+                <button id="navSignupBtn" class="nav-btn-primary">Sign Up Free</button>
+            </div>
+        </nav>
+
+        <!-- Hero Section -->
+        <section class="home-hero">
+            <div class="hero-content">
+                <h1 class="hero-title">Create Stunning Carousels in <span class="hero-highlight">Seconds</span></h1>
+                <p class="hero-subtitle">Paste your text. Get beautiful, highly-engaging slides instantly. No design skills required.</p>
+                <button id="heroCtaBtn" class="hero-cta-btn">Start Creating Now →</button>
+            </div>
+            <div class="hero-visual">
+                <!-- Abstract stylized carousel representation -->
+                <div class="abstract-carousel">
+                    <div class="abstract-slide slide-1"></div>
+                    <div class="abstract-slide slide-2"></div>
+                    <div class="abstract-slide slide-3"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Features Grid -->
+        <section class="home-features">
+            <div class="feature-card">
+                <div class="feature-icon">✨</div>
+                <h3>Auto Formatting</h3>
+                <p>Detects numbered lists, threads, and headers to auto-split your slides perfectly.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🚀</div>
+                <h3>Offline Capable</h3>
+                <p>Install as a Progressive Web App (PWA) and use it anywhere, even without internet.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🤖</div>
+                <h3>AI Prompt Generator</h3>
+                <p>Get perfectly formatted responses from ChatGPT or Claude to instantly copy-paste.</p>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="home-footer">
+            <p>© 2026 CarouselForge. All rights reserved.</p>
+        </footer>
+    </div>
+
+    <!-- MAIN APP WORKSPACE (Hidden until authenticated) -->
+    <div id="appWorkspace" style="display: none;">
+        <!-- Header -->
+        <header class="header" role="banner">
+            <div class="logo">
+                <div class="logo-icon" aria-hidden="true">
+                    <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+                        <rect x="2" y="2" width="10" height="10" rx="2" fill="#818cf8"/>
+                        <rect x="16" y="2" width="10" height="10" rx="2" fill="#c084fc"/>
+                        <rect x="2" y="16" width="10" height="10" rx="2" fill="#f472b6"/>
+                        <rect x="16" y="16" width="10" height="10" rx="2" fill="#fb923c"/>
+                    </svg>
+                </div>
+                <span class="logo-text">CarouselForge</span>
+                <span class="version-badge">v2</span>
+            </div>
+            <div class="header-right">
+                <p class="tagline">Paste text → Get beautiful carousel slides instantly</p>
+                <button id="installBtn" class="install-btn" aria-label="Install CarouselForge as app">
+                    <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+                    Install App
+                </button>
+                <button id="signOutBtn" class="nav-btn-secondary" style="margin-left: 10px; padding: 6px 12px; font-size: 0.8rem;">Sign Out</button>
+            </div>
+        </header>
 
     <main class="app-container">
         <!-- Sidebar Controls -->
@@ -394,6 +455,7 @@ Rules:
         <span>•</span>
         <span class="not-for-sale"></span>
     </footer>
+    </div> <!-- /#appWorkspace -->
 
     <!-- Hidden render area for download -->
     <div id="renderArea" class="render-area" aria-hidden="true"></div>

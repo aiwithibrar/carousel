@@ -1720,10 +1720,23 @@
     var tokenInput = document.getElementById('tokenInput');
     var tokenError = document.getElementById('tokenError');
     var unlockBtn = document.getElementById('unlockBtn');
+    var unlockBtnText = document.getElementById('unlockBtnText');
     var requestSuccess = document.getElementById('requestSuccess');
+    var modalTitle = document.getElementById('modalTitle');
+    
+    // New DOM elements
+    var homepageView = document.getElementById('homepageView');
+    var appWorkspace = document.getElementById('appWorkspace');
+    var navLoginBtn = document.getElementById('navLoginBtn');
+    var navSignupBtn = document.getElementById('navSignupBtn');
+    var heroCtaBtn = document.getElementById('heroCtaBtn');
+    var closeModalBtn = document.getElementById('closeModalBtn');
+    var signOutBtn = document.getElementById('signOutBtn');
 
     function grantAccess() {
         if (accessGate) accessGate.style.display = 'none';
+        if (homepageView) homepageView.style.display = 'none';
+        if (appWorkspace) appWorkspace.style.display = 'block';
         
         // Remove URL hash if it contains auth tokens
         if (window.location.hash.includes('access_token')) {
@@ -1732,7 +1745,9 @@
     }
 
     function revokeAccess() {
-        if (accessGate) accessGate.style.display = 'flex';
+        if (accessGate) accessGate.style.display = 'none'; // Hidden by default now
+        if (homepageView) homepageView.style.display = 'flex';
+        if (appWorkspace) appWorkspace.style.display = 'none';
     }
 
     // Check if user is already authenticated
@@ -1788,6 +1803,35 @@
     }
 
     function initAccessGate() {
+        // Open Modal functions
+        function openLoginModal() {
+            if (modalTitle) modalTitle.textContent = 'Log In';
+            if (unlockBtnText) unlockBtnText.textContent = 'Send Login Link';
+            if (accessGate) accessGate.style.display = 'flex';
+        }
+
+        function openSignupModal() {
+            if (modalTitle) modalTitle.textContent = 'Sign Up';
+            if (unlockBtnText) unlockBtnText.textContent = 'Create Account';
+            if (accessGate) accessGate.style.display = 'flex';
+        }
+
+        if (navLoginBtn) navLoginBtn.addEventListener('click', openLoginModal);
+        if (navSignupBtn) navSignupBtn.addEventListener('click', openSignupModal);
+        if (heroCtaBtn) heroCtaBtn.addEventListener('click', openSignupModal);
+
+        if (closeModalBtn) {
+            closeModalBtn.addEventListener('click', function() {
+                if (accessGate) accessGate.style.display = 'none';
+            });
+        }
+
+        if (signOutBtn && supabase) {
+            signOutBtn.addEventListener('click', function() {
+                supabase.auth.signOut();
+            });
+        }
+
         if (!accessGate || !unlockBtn || !tokenInput) return;
 
         // Send Magic Link Click
@@ -1814,7 +1858,7 @@
                     tokenError.textContent = result.error || 'Failed to send magic link';
                     tokenError.style.display = 'block';
                     unlockBtn.disabled = false;
-                    unlockBtn.innerHTML = '<svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg> Send Magic Link';
+                    unlockBtn.innerHTML = '<svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg> <span id="unlockBtnText">Try Again</span>';
                 }
             });
         });
