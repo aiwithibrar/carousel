@@ -1778,39 +1778,56 @@
         });
     }
 
-    // Send Magic Link via Supabase Auth
-    function sendMagicLink(email) {
+    // Handle Email & Password Auth via Supabase
+    function handlePasswordAuth(email, password, mode) {
         if (!supabase) {
             showToast('Unable to connect. Please try again later.', true);
             return Promise.resolve(false);
         }
         
-        return supabase.auth.signInWithOtp({
-            email: email,
-            options: {
-                // Redirect back to the current URL after clicking link
-                emailRedirectTo: window.location.origin + window.location.pathname
-            }
-        }).then(function(result) {
-            if (result.error) {
-                console.error('Auth error:', result.error.message);
-                return { success: false, error: result.error.message };
-            }
-            return { success: true };
-        }).catch(function(err) {
-            return { success: false, error: 'Network error' };
-        });
+        if (mode === 'signup') {
+            return supabase.auth.signUp({
+                email: email,
+                password: password
+            }).then(function(result) {
+                if (result.error) {
+                    console.error('Signup error:', result.error.message);
+                    return { success: false, error: result.error.message };
+                }
+                return { success: true };
+            }).catch(function(err) {
+                return { success: false, error: 'Network error' };
+            });
+        } else {
+            return supabase.auth.signInWithPassword({
+                email: email,
+                password: password
+            }).then(function(result) {
+                if (result.error) {
+                    console.error('Login error:', result.error.message);
+                    return { success: false, error: result.error.message };
+                }
+                return { success: true };
+            }).catch(function(err) {
+                return { success: false, error: 'Network error' };
+            });
+        }
     }
 
     function initAccessGate() {
+        var authMode = 'login'; // 'login' or 'signup'
+        var passwordInput = document.getElementById('passwordInput');
+
         // Open Modal functions
         function openLoginModal() {
+            authMode = 'login';
             if (modalTitle) modalTitle.textContent = 'Log In';
-            if (unlockBtnText) unlockBtnText.textContent = 'Send Login Link';
+            if (unlockBtnText) unlockBtnText.textContent = 'Log In';
             if (accessGate) accessGate.style.display = 'flex';
         }
 
         function openSignupModal() {
+            authMode = 'signup';
             if (modalTitle) modalTitle.textContent = 'Sign Up';
             if (unlockBtnText) unlockBtnText.textContent = 'Create Account';
             if (accessGate) accessGate.style.display = 'flex';
@@ -1832,30 +1849,43 @@
             });
         }
 
-        if (!accessGate || !unlockBtn || !tokenInput) return;
+        if (!accessGate || !unlockBtn || !tokenInput || !passwordInput) return;
 
-        // Send Magic Link Click
+        // Passwword Auth Submit
         unlockBtn.addEventListener('click', function () {
             var email = tokenInput.value.trim().toLowerCase();
-            if (!email || email.indexOf('@') === -1) {
-                tokenError.textContent = 'Please enter a valid email';
+            var password = passwordInput.value;
+            
+            if (!email || email.indexOf('@') === -1 || !password || password.length < 6) {
+                tokenError.textContent = 'Please enter a valid email and a password (min 6 chars)';
                 tokenError.style.display = 'block';
                 return;
             }
             
             tokenError.style.display = 'none';
             unlockBtn.disabled = true;
-            unlockBtn.innerHTML = '<svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg> Sending...';
+            unlockBtn.innerHTML = '<svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg> Processing...';
 
-            sendMagicLink(email).then(function (result) {
+            handlePasswordAuth(email, password, authMode).then(function (result) {
                 if (result.success) {
-                    unlockBtn.style.display = 'none';
-                    tokenInput.style.display = 'none';
-                    var label = document.querySelector('.gate-label[for="tokenInput"]');
-                    if (label) label.style.display = 'none';
-                    if (requestSuccess) requestSuccess.style.display = 'block';
+                    // Check if we need email confirmation on signup
+                    if (authMode === 'signup') {
+                        unlockBtn.style.display = 'none';
+                        tokenInput.style.display = 'none';
+                        passwordInput.style.display = 'none';
+                        var labels = document.querySelectorAll('.gate-label');
+                        labels.forEach(l => l.style.display = 'none');
+                        
+                        if (requestSuccess) {
+                            requestSuccess.innerHTML = '✅ Account created! If required, check your email to verify your account.';
+                            requestSuccess.style.display = 'block';
+                        }
+                    } else {
+                        // Successful login will auto-close the modal via the onAuthStateChange listener
+                        if (accessGate) accessGate.style.display = 'none';
+                    }
                 } else {
-                    tokenError.textContent = result.error || 'Failed to send magic link';
+                    tokenError.textContent = result.error || 'Failed to authenticate';
                     tokenError.style.display = 'block';
                     unlockBtn.disabled = false;
                     unlockBtn.innerHTML = '<svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg> <span id="unlockBtnText">Try Again</span>';
@@ -1863,14 +1893,15 @@
             });
         });
 
-        // Enter key on email input
-        tokenInput.addEventListener('keydown', function (e) {
+        // Enter key on inputs
+        function handleEnter(e) {
             if (e.key === 'Enter') { e.preventDefault(); unlockBtn.click(); }
-        });
+        }
+        tokenInput.addEventListener('keydown', handleEnter);
+        passwordInput.addEventListener('keydown', handleEnter);
         
-        tokenInput.addEventListener('input', function () {
-            tokenError.style.display = 'none';
-        });
+        tokenInput.addEventListener('input', function () { tokenError.style.display = 'none'; });
+        passwordInput.addEventListener('input', function () { tokenError.style.display = 'none'; });
     }
 
     // =============================================

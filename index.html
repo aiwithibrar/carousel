@@ -32,7 +32,7 @@
             <h2>CarouselForge</h2>
             <p class="version-info">Version 2.0 — Progressive Web App</p>
 
-            <!-- View 1: Enter Email (Magic Link) -->
+            <!-- View 1: Auth Modal (Email & Password) -->
             <div id="tokenView" class="gate-view">
                 <div class="modal-header">
                     <h3 id="modalTitle">Log In</h3>
@@ -44,14 +44,21 @@
                         Your Email Address
                     </label>
                     <input type="email" id="tokenInput" class="gate-input" placeholder="you@example.com">
-                    <p id="tokenError" class="gate-error" style="display:none;">Please enter a valid email</p>
-                    <button id="unlockBtn" class="license-accept-btn">
-                        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>
-                        <span id="unlockBtnText">Send Magic Link</span>
+                    
+                    <label class="gate-label" for="passwordInput" style="margin-top: 10px;">
+                        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+                        Password
+                    </label>
+                    <input type="password" id="passwordInput" class="gate-input" placeholder="Enter your password">
+                    
+                    <p id="tokenError" class="gate-error" style="display:none;">Please enter a valid email and password</p>
+                    
+                    <button id="unlockBtn" class="license-accept-btn" style="margin-top: 10px;">
+                        <span id="unlockBtnText">Log In</span>
                     </button>
                 </div>
                 <p id="requestSuccess" class="gate-success" style="display:none; margin-top: 15px;">
-                    ✅ Magic link sent! Please check your email to sign in.
+                    ✅ Success!
                 </p>
             </div>
             
