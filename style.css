@@ -2356,8 +2356,9 @@ body::before {
         gap: 12px;
     }
     .slide-inner { 
-        width: 320px; 
-        height: 320px; 
+        width: 100%;
+        max-width: 320px; 
+        height: auto; 
     }
     .slides-container { 
         justify-content: flex-start; 
@@ -2396,16 +2397,18 @@ body::before {
         padding: 16px; 
     }
     .slide-inner { 
-        width: 280px; 
-        height: 280px; 
+        width: 100%; 
+        max-width: 280px; 
+        height: auto; 
     }
     .theme-grid { 
         grid-template-columns: repeat(2, 1fr); 
     }
     .license-modal { 
-        padding: 20px; 
+        padding: 20px 15px; 
         width: 95%;
-        max-height: 95vh;
+        max-height: 90vh;
+        overflow-y: auto;
     }
     .header-right {
         flex-direction: column;
