@@ -1768,9 +1768,18 @@
             revokeAccess();
         });
 
-        // Listen for auth state changes (e.g. returning from magic link)
+        // Listen for auth state changes (e.g. returning from magic link or password recovery)
         supabase.auth.onAuthStateChange(function(event, session) {
-            if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
+            if (event === 'PASSWORD_RECOVERY') {
+                // Show the password recovery UI securely
+                if (accessGate) accessGate.style.display = 'flex';
+                var tv = document.getElementById('tokenView');
+                var fv = document.getElementById('forgotPasswordView');
+                var uv = document.getElementById('updatePasswordView');
+                if (tv) tv.style.display = 'none';
+                if (fv) fv.style.display = 'none';
+                if (uv) uv.style.display = 'block';
+            } else if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
                 grantAccess();
             } else if (event === 'SIGNED_OUT') {
                 revokeAccess();
@@ -1851,6 +1860,167 @@
 
         if (!accessGate || !unlockBtn || !tokenInput || !passwordInput) return;
 
+        // Password visibility togglers
+        function setupEyeToggle(toggleBtnId, inputId) {
+            var btn = document.getElementById(toggleBtnId);
+            var input = document.getElementById(inputId);
+            if (!btn || !input) return;
+            
+            var showIcon = btn.querySelector('.eye-icon-show');
+            var hideIcon = btn.querySelector('.eye-icon-hide');
+            
+            btn.addEventListener('click', function() {
+                if (input.type === 'password') {
+                    input.type = 'text';
+                    showIcon.style.display = 'none';
+                    hideIcon.style.display = 'block';
+                } else {
+                    input.type = 'password';
+                    showIcon.style.display = 'block';
+                    hideIcon.style.display = 'none';
+                }
+            });
+        }
+        setupEyeToggle('passwordToggleBtn', 'passwordInput');
+        setupEyeToggle('newPasswordToggleBtn', 'newPasswordInput');
+
+        // References for Reset / Update flows
+        var showForgotBtn = document.getElementById('showForgotPasswordBtn');
+        var backToLoginBtn = document.getElementById('backToLoginBtn');
+        var closeForgotBtn = document.getElementById('closeForgotModalBtn');
+        
+        var tokenView = document.getElementById('tokenView');
+        var forgotView = document.getElementById('forgotPasswordView');
+        var updateView = document.getElementById('updatePasswordView');
+        
+        var resetEmailInput = document.getElementById('resetEmailInput');
+        var sendResetBtn = document.getElementById('sendResetBtn');
+        var resetError = document.getElementById('resetError');
+        var resetSuccess = document.getElementById('resetSuccess');
+        
+        var newPasswordInput = document.getElementById('newPasswordInput');
+        var updatePasswordBtn = document.getElementById('updatePasswordBtn');
+        var cancelUpdateBtn = document.getElementById('cancelUpdateBtn');
+        var updateError = document.getElementById('updateError');
+        var updateSuccess = document.getElementById('updateSuccess');
+
+        // Navigation between Modals
+        if (showForgotBtn) {
+            showForgotBtn.addEventListener('click', function() {
+                if (tokenView) tokenView.style.display = 'none';
+                if (forgotView) forgotView.style.display = 'block';
+                resetError.style.display = 'none';
+                resetSuccess.style.display = 'none';
+                resetEmailInput.value = tokenInput.value; // pre-fill if typed
+            });
+        }
+        
+        if (backToLoginBtn) {
+            backToLoginBtn.addEventListener('click', function() {
+                if (forgotView) forgotView.style.display = 'none';
+                if (tokenView) tokenView.style.display = 'block';
+            });
+        }
+        
+        if (closeForgotBtn) {
+            closeForgotBtn.addEventListener('click', function() {
+                if (accessGate) accessGate.style.display = 'none';
+                // Reset views for next time
+                if (forgotView) forgotView.style.display = 'none';
+                if (tokenView) tokenView.style.display = 'block';
+            });
+        }
+        
+        if (cancelUpdateBtn) {
+            cancelUpdateBtn.addEventListener('click', function() {
+                supabase.auth.signOut(); // cancel recovery session
+                if (updateView) updateView.style.display = 'none';
+                if (tokenView) tokenView.style.display = 'block';
+                if (accessGate) accessGate.style.display = 'none';
+            });
+        }
+
+        // Send Reset Email
+        if (sendResetBtn && resetEmailInput) {
+            sendResetBtn.addEventListener('click', function() {
+                var email = resetEmailInput.value.trim().toLowerCase();
+                if (!email || email.indexOf('@') === -1) {
+                    resetError.textContent = 'Please enter a valid email address';
+                    resetError.style.display = 'block';
+                    return;
+                }
+                
+                resetError.style.display = 'none';
+                sendResetBtn.disabled = true;
+                sendResetBtn.innerHTML = 'Sending...';
+                
+                // Root redirect ensures user lands back on main index
+                supabase.auth.resetPasswordForEmail(email, {
+                    redirectTo: window.location.origin + window.location.pathname
+                }).then(function(result) {
+                    sendResetBtn.disabled = false;
+                    sendResetBtn.innerHTML = 'Send Reset Link';
+                    
+                    if (result.error) {
+                        // Rate limit handling
+                        if (result.error.status === 429) {
+                            resetError.textContent = 'Too many requests. Please check your inbox or try again later.';
+                        } else {
+                            resetError.textContent = result.error.message;
+                        }
+                        resetError.style.display = 'block';
+                    } else {
+                        resetSuccess.style.display = 'block';
+                        resetEmailInput.value = '';
+                    }
+                }).catch(function(err) {
+                    sendResetBtn.disabled = false;
+                    sendResetBtn.innerHTML = 'Send Reset Link';
+                    resetError.textContent = 'Network error. Please try again.';
+                    resetError.style.display = 'block';
+                });
+            });
+        }
+
+        // Update Password
+        if (updatePasswordBtn && newPasswordInput) {
+            updatePasswordBtn.addEventListener('click', function() {
+                var password = newPasswordInput.value;
+                if (!password || password.length < 6) {
+                    updateError.textContent = 'Password must be at least 6 characters';
+                    updateError.style.display = 'block';
+                    return;
+                }
+                
+                updateError.style.display = 'none';
+                updatePasswordBtn.disabled = true;
+                updatePasswordBtn.innerHTML = 'Updating...';
+                
+                supabase.auth.updateUser({ password: password }).then(function(result) {
+                    updatePasswordBtn.disabled = false;
+                    updatePasswordBtn.innerHTML = 'Update Password';
+                    
+                    if (result.error) {
+                        updateError.textContent = result.error.message;
+                        updateError.style.display = 'block';
+                    } else {
+                        updateSuccess.style.display = 'block';
+                        newPasswordInput.value = '';
+                        setTimeout(function() {
+                            updateSuccess.style.display = 'none';
+                            updateView.style.display = 'none';
+                            grantAccess(); // Successful update -> login user
+                        }, 2000);
+                    }
+                }).catch(function() {
+                    updatePasswordBtn.disabled = false;
+                    updatePasswordBtn.innerHTML = 'Update Password';
+                    updateError.textContent = 'Network error. Please try again.';
+                    updateError.style.display = 'block';
+                });
+            });
+        }
+
         // Passwword Auth Submit
         unlockBtn.addEventListener('click', function () {
             var email = tokenInput.value.trim().toLowerCase();
@@ -1872,7 +2042,8 @@
                     if (authMode === 'signup') {
                         unlockBtn.style.display = 'none';
                         tokenInput.style.display = 'none';
-                        passwordInput.style.display = 'none';
+                        // Keep new structured password invisible
+                        document.querySelector('.password-wrapper').style.display = 'none';
                         var labels = document.querySelectorAll('.gate-label');
                         labels.forEach(l => l.style.display = 'none');
                         
@@ -1899,9 +2070,13 @@
         }
         tokenInput.addEventListener('keydown', handleEnter);
         passwordInput.addEventListener('keydown', handleEnter);
+        if (resetEmailInput) resetEmailInput.addEventListener('keydown', function(e) { if(e.key === 'Enter') { e.preventDefault(); sendResetBtn.click(); } });
+        if (newPasswordInput) newPasswordInput.addEventListener('keydown', function(e) { if(e.key === 'Enter') { e.preventDefault(); updatePasswordBtn.click(); } });
         
         tokenInput.addEventListener('input', function () { tokenError.style.display = 'none'; });
         passwordInput.addEventListener('input', function () { tokenError.style.display = 'none'; });
+        if (resetEmailInput) resetEmailInput.addEventListener('input', function() { if (resetError) resetError.style.display='none'; });
+        if (newPasswordInput) newPasswordInput.addEventListener('input', function() { if (updateError) updateError.style.display='none'; });
     }
 
     // =============================================

@@ -2280,6 +2280,54 @@ body::before {
     color: var(--accent-primary);
 }
 
+/* ===== AUTH UI ENHANCEMENTS ===== */
+.password-wrapper {
+    position: relative;
+    width: 100%;
+}
+
+.password-wrapper .gate-input {
+    width: 100%;
+    padding-right: 40px; /* space for the eye icon */
+}
+
+.eye-toggle-btn {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    padding: 2px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color var(--transition-fast);
+}
+
+.eye-toggle-btn:hover {
+    color: var(--accent-primary);
+}
+
+.auth-text-btn {
+    background: transparent;
+    border: none;
+    color: var(--accent-primary);
+    font-size: 0.8rem;
+    font-weight: 500;
+    cursor: pointer;
+    text-decoration: underline;
+    text-decoration-color: transparent;
+    transition: all var(--transition-fast);
+}
+
+.auth-text-btn:hover {
+    text-decoration-color: var(--accent-primary);
+    color: var(--accent-secondary);
+}
+
 /* ===== RESPONSIVE ===== */
 @media (max-width: 900px) {
     .app-container { 
