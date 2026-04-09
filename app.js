@@ -15,6 +15,9 @@
     // ===== CONSTANTS =====
     var MAX_SLIDES = 20;
     var TOAST_DURATION = 3000;
+    var GUEST_FREE_USES = 5;
+    var GUEST_ID_KEY = 'carouselforge_guest_id';
+    var GUEST_USAGE_KEY = 'carouselforge_guest_uses';
 
     // ===== SUPABASE CONFIG =====
     var SUPABASE_URL = 'https://eyjybwkoucwoabzpatvm.supabase.co';
@@ -47,6 +50,8 @@
 
     var toastTimer = null;
     var dragSrcIndex = null;
+    var isAuthenticated = false;
+    var openSignupModalFn = null; // set in initAccessGate, used for guest upsell
 
     // ===== DOM REFS =====
     var mainTextInput = document.getElementById('mainTextInput');
@@ -1168,6 +1173,15 @@
     // ===== GENERATE PREVIEW =====
     // =============================================
     function generatePreview() {
+        // Guest trial gate: check usage limit before proceeding
+        if (!isAuthenticated) {
+            if (!checkAndIncrementGuestUsage()) {
+                showToast('Free trial limit reached. Sign up for unlimited access!', true);
+                if (openSignupModalFn) openSignupModalFn();
+                return;
+            }
+        }
+
         var rawText = mainTextInput.value.trim();
         if (!rawText) {
             showToast('Please paste some text first!', true);
@@ -1714,6 +1728,70 @@
     }
 
     // =============================================
+    // ===== GUEST USAGE HELPERS =====
+    // =============================================
+    function getOrCreateGuestId() {
+        var guestId = localStorage.getItem(GUEST_ID_KEY);
+        if (!guestId) {
+            if (window.crypto && window.crypto.randomUUID) {
+                guestId = 'guest_' + window.crypto.randomUUID();
+            } else {
+                var arr = new Uint32Array(4);
+                window.crypto.getRandomValues(arr);
+                guestId = 'guest_' + Array.from(arr).map(function (n) { return n.toString(16).padStart(8, '0'); }).join('');
+            }
+            localStorage.setItem(GUEST_ID_KEY, guestId);
+        }
+        return guestId;
+    }
+
+    function getLocalGuestUses() {
+        return parseInt(localStorage.getItem(GUEST_USAGE_KEY) || '0', 10);
+    }
+
+    function setLocalGuestUses(count) {
+        localStorage.setItem(GUEST_USAGE_KEY, String(count));
+    }
+
+    function updateTrialBanner(usedCount) {
+        var banner = document.getElementById('trialBanner');
+        if (!banner) return;
+        var remaining = GUEST_FREE_USES - usedCount;
+        if (remaining <= 0) {
+            banner.innerHTML = '⚡ You\'ve used all your free generations. <a href="#" id="trialSignUpLink">Sign up free</a> for unlimited access.';
+        } else {
+            banner.innerHTML = '⚡ <strong>' + remaining + ' of ' + GUEST_FREE_USES + '</strong> free generations remaining &mdash; <a href="#" id="trialSignUpLink">Sign up free</a> for unlimited access.';
+        }
+        var link = document.getElementById('trialSignUpLink');
+        if (link) {
+            link.addEventListener('click', function (e) {
+                e.preventDefault();
+                if (openSignupModalFn) openSignupModalFn();
+            });
+        }
+    }
+
+    // Increment guest usage locally and sync to Supabase.
+    // Returns true if the action is allowed (uses < limit), false if limit reached.
+    function checkAndIncrementGuestUsage() {
+        var currentUses = getLocalGuestUses();
+        if (currentUses >= GUEST_FREE_USES) {
+            return false;
+        }
+        var newCount = currentUses + 1;
+        setLocalGuestUses(newCount);
+        updateTrialBanner(newCount);
+        if (supabase) {
+            var guestId = getOrCreateGuestId();
+            supabase.from('guest_usage').upsert(
+                { guest_id: guestId, use_count: newCount, updated_at: new Date().toISOString() },
+                { onConflict: 'guest_id' }
+            ).catch(function (err) { console.warn('Guest usage sync failed:', err); });
+        }
+        return true;
+    }
+
+    // =============================================
     // ===== ACCESS GATE SYSTEM (Supabase Auth) ====
     // =============================================
     var accessGate = document.getElementById('accessGate');
@@ -1734,17 +1812,60 @@
     var signOutBtn = document.getElementById('signOutBtn');
 
     function grantAccess() {
+        isAuthenticated = true;
         if (accessGate) accessGate.style.display = 'none';
         if (homepageView) homepageView.style.display = 'none';
         if (appWorkspace) appWorkspace.style.display = 'block';
-        
+        var banner = document.getElementById('trialBanner');
+        if (banner) banner.style.display = 'none';
+        if (signOutBtn) signOutBtn.style.display = '';
         // Remove URL hash if it contains auth tokens
         if (window.location.hash.includes('access_token')) {
             window.history.replaceState(null, '', window.location.pathname + window.location.search);
         }
     }
 
+    function grantGuestAccess() {
+        isAuthenticated = false;
+        if (accessGate) accessGate.style.display = 'none';
+        if (homepageView) homepageView.style.display = 'none';
+        if (appWorkspace) appWorkspace.style.display = 'block';
+        if (signOutBtn) signOutBtn.style.display = 'none';
+        var guestId = getOrCreateGuestId();
+
+        function showTrialBanner() {
+            var banner = document.getElementById('trialBanner');
+            if (banner) {
+                banner.style.display = '';
+                updateTrialBanner(getLocalGuestUses());
+            }
+        }
+
+        // Sync usage count from Supabase so the banner reflects the authoritative count
+        if (supabase) {
+            supabase.from('guest_usage')
+                .select('use_count')
+                .eq('guest_id', guestId)
+                .maybeSingle()
+                .then(function (result) {
+                    if (result.data) {
+                        // Take the max of local and remote to prevent local bypass
+                        var remoteCount = result.data.use_count || 0;
+                        var localCount = getLocalGuestUses();
+                        setLocalGuestUses(Math.max(remoteCount, localCount));
+                    }
+                    showTrialBanner();
+                }).catch(function (err) {
+                    console.warn('Guest usage fetch failed:', err);
+                    showTrialBanner();
+                });
+        } else {
+            showTrialBanner();
+        }
+    }
+
     function revokeAccess() {
+        isAuthenticated = false;
         if (accessGate) accessGate.style.display = 'none'; // Hidden by default now
         if (homepageView) homepageView.style.display = 'flex';
         if (appWorkspace) appWorkspace.style.display = 'none';
@@ -1753,7 +1874,7 @@
     // Check if user is already authenticated
     function checkAccess() {
         if (!supabase) {
-            revokeAccess();
+            grantGuestAccess();
             return;
         }
 
@@ -1762,10 +1883,10 @@
             if (result.data && result.data.session) {
                 grantAccess();
             } else {
-                revokeAccess();
+                grantGuestAccess();
             }
         }).catch(function() {
-            revokeAccess();
+            grantGuestAccess();
         });
 
         // Listen for auth state changes (e.g. returning from magic link or password recovery)
@@ -1842,9 +1963,13 @@
             if (accessGate) accessGate.style.display = 'flex';
         }
 
+        // Expose for use in guest trial upsell
+        openSignupModalFn = openSignupModal;
+
         if (navLoginBtn) navLoginBtn.addEventListener('click', openLoginModal);
         if (navSignupBtn) navSignupBtn.addEventListener('click', openSignupModal);
-        if (heroCtaBtn) heroCtaBtn.addEventListener('click', openSignupModal);
+        // heroCtaBtn takes guests straight to the workspace for free trials
+        if (heroCtaBtn) heroCtaBtn.addEventListener('click', grantGuestAccess);
 
         if (closeModalBtn) {
             closeModalBtn.addEventListener('click', function() {
