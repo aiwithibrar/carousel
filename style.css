@@ -151,6 +151,31 @@ body::before {
     display: flex;
 }
 
+/* ===== GUEST TRIAL BANNER ===== */
+.trial-banner {
+    background: linear-gradient(90deg, rgba(129, 140, 248, 0.12) 0%, rgba(192, 132, 252, 0.12) 100%);
+    border-bottom: 1px solid rgba(129, 140, 248, 0.25);
+    padding: 8px 24px;
+    text-align: center;
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+}
+
+.trial-banner strong {
+    color: var(--accent-primary);
+}
+
+.trial-banner a {
+    color: var(--accent-secondary);
+    text-decoration: underline;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.trial-banner a:hover {
+    color: var(--accent-primary);
+}
+
 /* ===== HOMEPAGE VIEW ===== */
 .homepage-container {
     display: flex;
