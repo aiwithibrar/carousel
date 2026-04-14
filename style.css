@@ -1218,6 +1218,7 @@ body::before {
 
 /* ===== SLIDE INNER (Preview) ===== */
 .slide-inner {
+    container-type: inline-size;
     width: 320px;
     aspect-ratio: 1 / 1;
     display: flex;

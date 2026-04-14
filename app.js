@@ -1200,8 +1200,8 @@
             slideClass += getSizeClass(state.size);
             if (slide.type === 'cover') slideClass += ' title-slide';
             if (slide.type === 'cta') slideClass += ' cta-slide';
-            var titleFontSize = state.fontSize * (slide.type === 'cover' ? 0.058 : 0.048);
-            var bodyFontSize = state.fontSize * 0.029;
+            var titleFontSize = state.fontSize * (slide.type === 'cover' ? 1.9 : 1.6) / 10.8;
+            var bodyFontSize = state.fontSize * 1.0 / 10.8;
             
             // Custom bg inline styles
             var customInlineStyle = '';
@@ -1249,8 +1249,8 @@
                     '<div class="slide-deco-br"></div>' +
                     (slide.numberLabel ? '<div class="slide-number-label">' + escapeHTML(slide.numberLabel) + '</div>' : '') +
                     (slide.type !== 'cover' ? '<div class="slide-accent-line"></div>' : '') +
-                    (slide.title ? '<div class="slide-title-text" style="font-size:' + titleFontSize + 'rem">' + highlightWords(escapeHTML(slide.title)) + '</div>' : '') +
-                    (slide.body ? '<div class="slide-body-text" style="font-size:' + bodyFontSize + 'rem">' + highlightWords(escapeHTMLWithBreaks(slide.body)) + '</div>' : '') +
+                    (slide.title ? '<div class="slide-title-text" style="font-size:' + titleFontSize + 'cqi">' + highlightWords(escapeHTML(slide.title)) + '</div>' : '') +
+                    (slide.body ? '<div class="slide-body-text" style="font-size:' + bodyFontSize + 'cqi">' + highlightWords(escapeHTMLWithBreaks(slide.body)) + '</div>' : '') +
                     (state.handle || state.avatarBase64 ? 
                         '<div class="slide-author-combo">' + 
                             (state.avatarBase64 ? '<img src="' + state.avatarBase64 + '" class="slide-avatar" alt="Avatar">' : '') +
