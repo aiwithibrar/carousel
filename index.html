@@ -3,12 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>CarouselForge — Instant Carousel Generator</title>
-    <meta name="description" content="Paste your text, get stunning carousel slides instantly. Works offline as a PWA.">
+    <title>CarouselForge — Free Instant Carousel Generator | Create Stunning Slides</title>
+    <meta name="description" content="Create beautiful, professional carousel slides for LinkedIn, Instagram, Twitter & more. Paste your text, get stunning slides instantly. 100% free, no signup required.">
+    <meta name="keywords" content="carousel generator, social media carousel, LinkedIn carousel, Instagram carousel, slide maker, free carousel tool">
+    <meta name="author" content="CarouselForge">
     <meta name="theme-color" content="#3b82f6">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="apple-mobile-web-app-title" content="CarouselForge">
+    <meta property="og:title" content="CarouselForge — Free Instant Carousel Generator">
+    <meta property="og:description" content="Paste your text, get beautiful carousel slides instantly. Free, no signup required.">
+    <meta property="og:type" content="website">
+    <meta name="twitter:card" content="summary_large_image">
+    <link rel="canonical" href="./">
     <link rel="manifest" href="./manifest.json">
     <link rel="icon" type="image/png" sizes="512x512" href="./icons/icon-512.png">
     <link rel="apple-touch-icon" href="./icons/icon-192.png">
@@ -16,132 +23,17 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Playfair+Display:wght@700;800;900&family=Poppins:wght@400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&family=Merriweather:wght@400;700;900&family=Outfit:wght@400;500;600;700;800&family=Noto+Nastaliq+Urdu:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="./style.css">
+    
+    <!-- Force Refresh / Prevent Browser Caching -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
 </head>
 <body>
-    <!-- Access Gate (blocks app until valid token) -->
-    <div id="accessGate" class="license-overlay">
-        <div class="license-modal">
-            <div class="logo-icon" style="display:flex;align-items:center;justify-content:center;">
-                <svg width="48" height="48" viewBox="0 0 28 28" fill="none">
-                    <rect x="2" y="2" width="10" height="10" rx="2" fill="#818cf8"/>
-                    <rect x="16" y="2" width="10" height="10" rx="2" fill="#c084fc"/>
-                    <rect x="2" y="16" width="10" height="10" rx="2" fill="#f472b6"/>
-                    <rect x="16" y="16" width="10" height="10" rx="2" fill="#fb923c"/>
-                </svg>
-            </div>
-            <h2>CarouselForge</h2>
-            <p class="version-info">Version 2.0 — Progressive Web App</p>
-
-            <!-- View 1: Auth Modal (Email & Password) -->
-            <div id="tokenView" class="gate-view">
-                <div class="modal-header">
-                    <h3 id="modalTitle">Log In</h3>
-                    <button id="closeModalBtn" class="close-modal-btn" aria-label="Close modal">✕</button>
-                </div>
-                <div class="gate-section">
-                    <label class="gate-label" for="tokenInput">
-                        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
-                        Your Email Address
-                    </label>
-                    <input type="email" id="tokenInput" class="gate-input" placeholder="you@example.com">
-                    
-                    <label class="gate-label" for="passwordInput" style="margin-top: 10px;">
-                        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
-                        Password
-                    </label>
-                    <div class="password-wrapper">
-                        <input type="password" id="passwordInput" class="gate-input" placeholder="Enter your password">
-                        <button type="button" class="eye-toggle-btn" id="passwordToggleBtn" aria-label="Toggle password visibility" tabindex="-1">
-                            <svg class="eye-icon-show" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-                            <svg class="eye-icon-hide" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="display:none;"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
-                        </button>
-                    </div>
-                    
-                    <!-- Forgot Password Link Area -->
-                    <div class="gate-auth-links" id="forgotPasswordLinkContainer" style="display: flex; justify-content: flex-end; margin-top: 6px;">
-                        <button id="showForgotPasswordBtn" class="auth-text-btn">Forgot Password?</button>
-                    </div>
-                    
-                    <p id="tokenError" class="gate-error" style="display:none;">Please enter a valid email and password</p>
-                    
-                    <button id="unlockBtn" class="license-accept-btn" style="margin-top: 10px;">
-                        <span id="unlockBtnText">Log In</span>
-                    </button>
-                </div>
-                <p id="requestSuccess" class="gate-success" style="display:none; margin-top: 15px;">
-                    ✅ Success!
-                </p>
-            </div>
-
-            <!-- View 2: Forgot Password Modal -->
-            <div id="forgotPasswordView" class="gate-view" style="display: none;">
-                <div class="modal-header">
-                    <h3>Reset Password</h3>
-                    <button id="closeForgotModalBtn" class="close-modal-btn" aria-label="Close modal">✕</button>
-                </div>
-                <div class="gate-section">
-                    <p class="terms-text" style="margin-bottom: 15px; font-size: 0.85rem;">Enter your email and we'll send you a link to reset your password.</p>
-                    <label class="gate-label" for="resetEmailInput">
-                        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
-                        Your Email Address
-                    </label>
-                    <input type="email" id="resetEmailInput" class="gate-input" placeholder="you@example.com">
-                    
-                    <p id="resetError" class="gate-error" style="display:none;"></p>
-                    
-                    <button id="sendResetBtn" class="license-accept-btn" style="margin-top: 15px;">
-                        <span>Send Reset Link</span>
-                    </button>
-
-                    <div class="gate-auth-links" style="display: flex; justify-content: center; margin-top: 15px;">
-                        <button id="backToLoginBtn" class="auth-text-btn">Back to Login</button>
-                    </div>
-                </div>
-                <p id="resetSuccess" class="gate-success" style="display:none; margin-top: 15px;">
-                    ✅ Reset link sent! Check your email.
-                </p>
-            </div>
-
-            <!-- View 3: Update Password Modal (Used when returning from email link) -->
-            <div id="updatePasswordView" class="gate-view" style="display: none;">
-                <div class="modal-header">
-                    <h3>Set New Password</h3>
-                </div>
-                <div class="gate-section">
-                    <label class="gate-label" for="newPasswordInput">
-                        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
-                        New Password
-                    </label>
-                    <div class="password-wrapper">
-                        <input type="password" id="newPasswordInput" class="gate-input" placeholder="Enter new password">
-                        <button type="button" class="eye-toggle-btn" id="newPasswordToggleBtn" aria-label="Toggle password visibility" tabindex="-1">
-                            <svg class="eye-icon-show" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-                            <svg class="eye-icon-hide" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="display:none;"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
-                        </button>
-                    </div>
-                    
-                    <p id="updateError" class="gate-error" style="display:none;"></p>
-                    
-                    <button id="updatePasswordBtn" class="license-accept-btn" style="margin-top: 15px;">
-                        <span>Update Password</span>
-                    </button>
-                    <button id="cancelUpdateBtn" class="nav-btn-secondary" style="width: 100%; margin-top: 10px;">Cancel</button>
-                </div>
-                <p id="updateSuccess" class="gate-success" style="display:none; margin-top: 15px;">
-                    ✅ Password updated successfully! Please Wait...
-                </p>
-            </div>
-            
-            <div class="license-terms" style="margin-top:20px;">
-                <p class="terms-text" style="font-size:0.75rem; color: #64748b; text-align:center;">By continuing, you agree to our Terms of Service.</p>
-            </div>
-        </div>
-    </div>
-
-    <!-- HOMEPAGE VIEW (Shown to unauthenticated users) -->
+    <!-- HOMEPAGE VIEW -->
     <div id="homepageView" class="homepage-container">
         <!-- Homepage Navbar -->
-        <nav class="home-nav">
+        <nav class="home-nav" id="homeNav">
             <div class="logo">
                 <div class="logo-icon" aria-hidden="true">
                     <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
@@ -154,78 +46,337 @@
                 <span class="logo-text">CarouselForge</span>
             </div>
             <div class="home-nav-actions">
-                <button id="navLoginBtn" class="nav-btn-secondary">Log In</button>
-                <button id="navSignupBtn" class="nav-btn-primary">Sign Up Free</button>
+                <a href="#features" class="nav-link-item">Features</a>
+                <a href="#how-it-works" class="nav-link-item">How It Works</a>
+                <a href="./about.html" class="nav-link-item">About</a>
+                <a href="./contact.html" class="nav-link-item">Contact</a>
+                <button id="navStartBtn" class="nav-btn-primary">Start Free →</button>
+                <!-- Mobile hamburger -->
+                <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Open navigation menu">
+                    <div class="hamburger">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </div>
+                </button>
             </div>
         </nav>
+
+        <!-- Mobile Menu Overlay -->
+        <div class="mobile-menu" id="mobileMenu">
+            <a href="#how-it-works" class="mobile-nav-link">How It Works</a>
+            <a href="#features" class="mobile-nav-link">Features</a>
+            <a href="#testimonials" class="mobile-nav-link">Testimonials</a>
+            <a href="#faq" class="mobile-nav-link">FAQ</a>
+            <div class="mobile-divider"></div>
+            <a href="./about.html">About Us</a>
+            <a href="./contact.html">Contact Us</a>
+            <a href="./privacy.html">Privacy Policy</a>
+            <a href="./terms.html">Terms of Service</a>
+            <div class="mobile-divider"></div>
+            <button id="mobileStartBtn" class="mobile-cta">⚡ Start Creating Now</button>
+        </div>
 
         <!-- Hero Section -->
         <section class="home-hero">
             <div class="hero-content">
+                <div class="hero-badge">✨ 100% Free — No Signup Required</div>
                 <h1 class="hero-title">Create Stunning Carousels in <span class="hero-highlight">Seconds</span></h1>
-                <p class="hero-subtitle">Paste your text. Get beautiful, highly-engaging slides instantly. No design skills required.</p>
-                <button id="heroCtaBtn" class="hero-cta-btn">Start Creating Now →</button>
+                <p class="hero-subtitle">Paste your text, article, or thread — get beautiful, platform-optimized carousel slides instantly. Perfect for LinkedIn, Instagram, Twitter & more.</p>
+                <div class="hero-cta-group">
+                    <button id="heroCtaBtn" class="hero-cta-btn">
+                        <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                        Start Creating Now
+                    </button>
+                    <span class="hero-cta-note">100% Free • No account needed</span>
+                </div>
             </div>
             <div class="hero-visual">
-                <!-- Abstract stylized carousel representation -->
                 <div class="abstract-carousel">
-                    <div class="abstract-slide slide-1"></div>
-                    <div class="abstract-slide slide-2"></div>
-                    <div class="abstract-slide slide-3"></div>
+                    <div class="abstract-slide slide-1">
+                        <div class="mock-slide-content">
+                            <div class="mock-title-bar"></div>
+                            <div class="mock-line"></div>
+                            <div class="mock-line short"></div>
+                        </div>
+                    </div>
+                    <div class="abstract-slide slide-2">
+                        <div class="mock-slide-content">
+                            <div class="mock-number">02</div>
+                            <div class="mock-title-bar"></div>
+                            <div class="mock-line"></div>
+                            <div class="mock-line short"></div>
+                        </div>
+                    </div>
+                    <div class="abstract-slide slide-3">
+                        <div class="mock-slide-content">
+                            <div class="mock-number">03</div>
+                            <div class="mock-title-bar"></div>
+                            <div class="mock-line"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Stats Bar -->
+        <section class="stats-bar reveal">
+            <div class="stat-item">
+                <span class="stat-number">11+</span>
+                <span class="stat-label">Premium Themes</span>
+            </div>
+            <div class="stat-divider"></div>
+            <div class="stat-item">
+                <span class="stat-number">6</span>
+                <span class="stat-label">Slide Sizes</span>
+            </div>
+            <div class="stat-divider"></div>
+            <div class="stat-item">
+                <span class="stat-number">10+</span>
+                <span class="stat-label">Text Formats</span>
+            </div>
+            <div class="stat-divider"></div>
+            <div class="stat-item">
+                <span class="stat-number">100%</span>
+                <span class="stat-label">Free Forever</span>
+            </div>
+        </section>
+
+        <!-- How It Works -->
+        <section class="how-it-works" id="how-it-works">
+            <h2 class="section-title reveal">How It Works</h2>
+            <p class="section-subtitle reveal">Three simple steps to professional carousels</p>
+            <div class="steps-grid reveal-stagger">
+                <div class="step-card reveal">
+                    <div class="step-number">1</div>
+                    <div class="step-icon">📝</div>
+                    <h3>Paste Your Text</h3>
+                    <p>Drop in your article, thread, or bullet points. Our smart parser auto-detects 10+ formats including numbered lists, markdown, and more.</p>
+                </div>
+                <div class="step-arrow reveal">→</div>
+                <div class="step-card reveal">
+                    <div class="step-number">2</div>
+                    <div class="step-icon">🎨</div>
+                    <h3>Customize Design</h3>
+                    <p>Choose from 11 stunning themes, 7 font styles, 6 size formats, custom backgrounds, and add your personal branding.</p>
+                </div>
+                <div class="step-arrow reveal">→</div>
+                <div class="step-card reveal">
+                    <div class="step-number">3</div>
+                    <div class="step-icon">📥</div>
+                    <h3>Download & Share</h3>
+                    <p>Export as high-quality PNG images or download all slides as a ZIP. Ready for LinkedIn, Instagram, Twitter & Pinterest.</p>
                 </div>
             </div>
         </section>
 
         <!-- Features Grid -->
-        <section class="home-features">
-            <div class="feature-card">
-                <div class="feature-icon">✨</div>
-                <h3>Auto Formatting</h3>
-                <p>Detects numbered lists, threads, and headers to auto-split your slides perfectly.</p>
+        <section class="home-features" id="features">
+            <h2 class="section-title reveal">Powerful Features</h2>
+            <p class="section-subtitle reveal">Everything you need to create scroll-stopping carousels</p>
+            <div class="features-grid reveal-stagger">
+                <div class="feature-card reveal">
+                    <div class="feature-icon">✨</div>
+                    <h3>Smart Auto Formatting</h3>
+                    <p>Detects numbered lists, threads, markdown headings, and hook/CTA format to auto-split your slides perfectly.</p>
+                </div>
+                <div class="feature-card reveal">
+                    <div class="feature-icon">🎨</div>
+                    <h3>11 Premium Themes</h3>
+                    <p>From Midnight gradients to Aurora Borealis — choose stunning color schemes that make your content stand out.</p>
+                </div>
+                <div class="feature-card reveal">
+                    <div class="feature-icon">🚀</div>
+                    <h3>Fast & Installable</h3>
+                    <p>Install CarouselForge as a lightweight app on your phone or desktop for quick access directly from your home screen.</p>
+                </div>
+                <div class="feature-card reveal">
+                    <div class="feature-icon">🤖</div>
+                    <h3>AI Prompt Generator</h3>
+                    <p>Built-in prompt templates for ChatGPT, Gemini & Claude to generate perfectly formatted carousel content.</p>
+                </div>
+                <div class="feature-card reveal">
+                    <div class="feature-icon">✏️</div>
+                    <h3>Inline Slide Editing</h3>
+                    <p>Edit any slide's title and body text directly. Drag and drop to reorder. Split long slides automatically.</p>
+                </div>
+                <div class="feature-card reveal">
+                    <div class="feature-icon">📐</div>
+                    <h3>Multi-Platform Sizes</h3>
+                    <p>Optimized exports for Instagram (1:1), LinkedIn (4:5), Stories (9:16), Twitter, Pinterest, and more.</p>
+                </div>
             </div>
-            <div class="feature-card">
-                <div class="feature-icon">🚀</div>
-                <h3>Offline Capable</h3>
-                <p>Install as a Progressive Web App (PWA) and use it anywhere, even without internet.</p>
+        </section>
+
+        <!-- Testimonials Section -->
+        <section class="testimonials-section" id="testimonials">
+            <h2 class="section-title reveal">Loved by Content Creators</h2>
+            <p class="section-subtitle reveal">Join thousands who create stunning carousels every day</p>
+            <div class="testimonials-grid reveal-stagger">
+                <div class="testimonial-card reveal">
+                    <div class="testimonial-stars">★★★★★</div>
+                    <p class="testimonial-text">"This tool saved me hours of design work. I just paste my LinkedIn post and get beautiful slides in seconds!"</p>
+                    <div class="testimonial-author">
+                        <div class="testimonial-avatar">S</div>
+                        <div>
+                            <strong>Sarah K.</strong>
+                            <span>LinkedIn Creator</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="testimonial-card reveal">
+                    <div class="testimonial-stars">★★★★★</div>
+                    <p class="testimonial-text">"The AI prompt generator is genius. I enter a topic, copy the prompt to ChatGPT, paste the result, and boom — perfect carousel."</p>
+                    <div class="testimonial-author">
+                        <div class="testimonial-avatar">M</div>
+                        <div>
+                            <strong>Mike R.</strong>
+                            <span>Content Marketer</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="testimonial-card reveal">
+                    <div class="testimonial-stars">★★★★★</div>
+                    <p class="testimonial-text">"Best free carousel tool I've found. The themes are beautiful, incredibly fast, and there's no signup. Absolutely no reason to pay for alternatives."</p>
+                    <div class="testimonial-author">
+                        <div class="testimonial-avatar">A</div>
+                        <div>
+                            <strong>Aisha T.</strong>
+                            <span>Social Media Manager</span>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="feature-card">
-                <div class="feature-icon">🤖</div>
-                <h3>AI Prompt Generator</h3>
-                <p>Get perfectly formatted responses from ChatGPT or Claude to instantly copy-paste.</p>
+        </section>
+
+        <!-- FAQ Section -->
+        <section class="faq-section" id="faq">
+            <h2 class="section-title reveal">Frequently Asked Questions</h2>
+            <div class="faq-grid reveal-stagger">
+                <details class="faq-item reveal">
+                    <summary>Is CarouselForge really 100% free?</summary>
+                    <p>Yes! CarouselForge is completely free to use with no hidden costs, no signup walls, and no feature limitations. All themes, fonts, and export options are available to everyone.</p>
+                </details>
+                <details class="faq-item reveal">
+                    <summary>What text formats are supported?</summary>
+                    <p>We support 10+ formats including numbered lists (1. 2. 3.), slide markers (Slide 1:), hook/CTA format, Twitter threads (1/ 2/), markdown headings (## Title), bold markers (**Title**), and more.</p>
+                </details>
+                <details class="faq-item reveal">
+                    <summary>Can I use it without an internet connection?</summary>
+                    <p>Yes! CarouselForge is a Progressive Web App (PWA). Install it on your device to launch it directly from your home screen like a native app.</p>
+                </details>
+                <details class="faq-item reveal">
+                    <summary>What platforms can I create carousels for?</summary>
+                    <p>We support optimized sizes for Instagram (1080×1080), LinkedIn (1080×1350), Instagram Stories (1080×1920), Twitter/X (1600×900), and Pinterest (1000×1500).</p>
+                </details>
+                <details class="faq-item reveal">
+                    <summary>Do you store my data?</summary>
+                    <p>No. Everything runs entirely in your browser. We don't collect, store, or transmit any of your content. Your text, images, and settings stay on your device. Read our <a href="./privacy.html">Privacy Policy</a> for details.</p>
+                </details>
+                <details class="faq-item reveal">
+                    <summary>Can I use CarouselForge for commercial purposes?</summary>
+                    <p>Absolutely! You're free to use the generated carousels for your business, personal brand, client work, or any commercial purpose. See our <a href="./terms.html">Terms of Service</a>.</p>
+                </details>
             </div>
+        </section>
+
+        <!-- Internal Links Bar -->
+        <nav class="internal-links-bar reveal" aria-label="Quick navigation">
+            <a href="./about.html" class="internal-link-chip">📖 About CarouselForge</a>
+            <a href="./privacy.html" class="internal-link-chip">🔒 Privacy Policy</a>
+            <a href="./terms.html" class="internal-link-chip">📋 Terms of Service</a>
+            <a href="./disclaimer.html" class="internal-link-chip">⚠️ Disclaimer</a>
+            <a href="./contact.html" class="internal-link-chip">📧 Contact Us</a>
+            <a href="#how-it-works" class="internal-link-chip">🔄 How It Works</a>
+            <a href="#features" class="internal-link-chip">⚡ Features</a>
+        </nav>
+
+        <!-- CTA Banner -->
+        <section class="cta-banner reveal from-scale">
+            <h2>Ready to Create Your First Carousel?</h2>
+            <p>No signup. No credit card. Just paste and create.</p>
+            <button id="ctaBannerBtn" class="hero-cta-btn">
+                <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                Start Creating — It's Free
+            </button>
         </section>
 
         <!-- Footer -->
         <footer class="home-footer">
-            <p>© 2026 CarouselForge. All rights reserved.</p>
+            <div class="footer-grid">
+                <div class="footer-brand">
+                    <div class="logo">
+                        <div class="logo-icon" aria-hidden="true">
+                            <svg width="24" height="24" viewBox="0 0 28 28" fill="none">
+                                <rect x="2" y="2" width="10" height="10" rx="2" fill="#818cf8"/>
+                                <rect x="16" y="2" width="10" height="10" rx="2" fill="#c084fc"/>
+                                <rect x="2" y="16" width="10" height="10" rx="2" fill="#f472b6"/>
+                                <rect x="16" y="16" width="10" height="10" rx="2" fill="#fb923c"/>
+                            </svg>
+                        </div>
+                        <span class="logo-text">CarouselForge</span>
+                    </div>
+                    <p class="footer-desc">The fastest way to create beautiful social media carousels. 100% free and no signup required.</p>
+                </div>
+                <div class="footer-links-col">
+                    <h4>Product</h4>
+                    <ul>
+                        <li><a href="#how-it-works">How It Works</a></li>
+                        <li><a href="#faq">FAQ</a></li>
+                        <li><a href="./about.html">About Us</a></li>
+                    </ul>
+                </div>
+                <div class="footer-links-col">
+                    <h4>Legal</h4>
+                    <ul>
+                        <li><a href="./privacy.html">Privacy Policy</a></li>
+                        <li><a href="./terms.html">Terms of Service</a></li>
+                        <li><a href="./disclaimer.html">Disclaimer</a></li>
+                    </ul>
+                </div>
+                <div class="footer-links-col">
+                    <h4>Support</h4>
+                    <ul>
+                        <li><a href="./contact.html">Contact Us</a></li>
+                        <li><a href="#faq">Help & FAQ</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>© 2026 CarouselForge. All rights reserved.</p>
+            </div>
         </footer>
     </div>
 
-    <!-- MAIN APP WORKSPACE (Hidden until authenticated) -->
+    <!-- MAIN APP WORKSPACE -->
     <div id="appWorkspace" style="display: none;">
-        <!-- Header -->
-        <header class="header" role="banner">
+        <!-- Header (matches homepage nav) -->
+        <nav class="home-nav app-header-nav" id="appNav">
             <div class="logo">
-                <div class="logo-icon" aria-hidden="true">
-                    <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
-                        <rect x="2" y="2" width="10" height="10" rx="2" fill="#818cf8"/>
-                        <rect x="16" y="2" width="10" height="10" rx="2" fill="#c084fc"/>
-                        <rect x="2" y="16" width="10" height="10" rx="2" fill="#f472b6"/>
-                        <rect x="16" y="16" width="10" height="10" rx="2" fill="#fb923c"/>
-                    </svg>
-                </div>
-                <span class="logo-text">CarouselForge</span>
-                <span class="version-badge">v2</span>
+                <a href="./" class="logo-link" id="backToHome" title="Back to Home">
+                    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="color:var(--text-muted);margin-right:4px;"><path d="M15 18l-6-6 6-6"/></svg>
+                    <div class="logo-icon" aria-hidden="true">
+                        <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+                            <rect x="2" y="2" width="10" height="10" rx="2" fill="#818cf8"/>
+                            <rect x="16" y="2" width="10" height="10" rx="2" fill="#c084fc"/>
+                            <rect x="2" y="16" width="10" height="10" rx="2" fill="#f472b6"/>
+                            <rect x="16" y="16" width="10" height="10" rx="2" fill="#fb923c"/>
+                        </svg>
+                    </div>
+                    <span class="logo-text">CarouselForge</span>
+                </a>
+                
             </div>
-            <div class="header-right">
-                <p class="tagline">Paste text → Get beautiful carousel slides instantly</p>
-                <button id="installBtn" class="install-btn" aria-label="Install CarouselForge as app">
+            <div class="home-nav-actions">
+                <p class="tagline nav-link-item" style="cursor:default;padding:0;">Paste text → Get slides</p>
+                <a href="./about.html" class="nav-link-item">About</a>
+                <a href="./contact.html" class="nav-link-item">Contact</a>
+                <button id="installBtn" class="nav-btn-primary install-btn" aria-label="Install CarouselForge as app">
                     <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
                     Install App
                 </button>
-                <button id="signOutBtn" class="nav-btn-secondary" style="margin-left: 10px; padding: 6px 12px; font-size: 0.8rem;">Sign Out</button>
             </div>
-        </header>
+        </nav>
 
     <main class="app-container">
         <!-- Sidebar Controls -->
@@ -530,7 +681,9 @@ Rules:
     <footer class="app-footer" role="contentinfo">
         <span>© 2026 CarouselForge</span>
         <span>•</span>
-        <span class="not-for-sale"></span>
+        <a href="./privacy.html">Privacy</a>
+        <span>•</span>
+        <a href="./terms.html">Terms</a>
     </footer>
     </div> <!-- /#appWorkspace -->
 
@@ -549,8 +702,7 @@ Rules:
     <!-- Toast notification -->
     <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
-    <!-- Local libraries (offline-capable) -->
-    <script src="./lib/supabase.min.js"></script>
+    <!-- Local libraries -->
     <script src="./lib/html2canvas.min.js"></script>
     <script src="./lib/jszip.min.js"></script>
     <script src="./lib/FileSaver.min.js"></script>

@@ -2,10 +2,7 @@
  * ============================================================
  *  CarouselForge v2.0 — Progressive Web App
  *  © 2026 CarouselForge. All rights reserved.
- * 
- *  LICENSE: Personal Use Only — Not for Resale
- *  This software is provided for personal, non-commercial use.
- *  Redistribution, resale, or sublicensing is strictly prohibited.
+ *  Free to use — No signup required
  * ============================================================
  */
 
@@ -15,17 +12,6 @@
     // ===== CONSTANTS =====
     var MAX_SLIDES = 20;
     var TOAST_DURATION = 3000;
-
-    // ===== SUPABASE CONFIG =====
-    var SUPABASE_URL = 'https://eyjybwkoucwoabzpatvm.supabase.co';
-    var SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV5anlid2tvdWN3b2FienBhdHZtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ5NDYyODYsImV4cCI6MjA5MDUyMjI4Nn0.byVDA_bMry8xqO9htPIyLLZxZGcorvy5MooFyV5RcIU';
-
-    var supabase = null;
-    try {
-        supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-    } catch (e) {
-        console.warn('Supabase init failed:', e);
-    }
 
     // ===== STATE =====
     var state = {
@@ -1714,369 +1700,142 @@
     }
 
     // =============================================
-    // ===== ACCESS GATE SYSTEM (Supabase Auth) ====
     // =============================================
-    var accessGate = document.getElementById('accessGate');
-    var tokenInput = document.getElementById('tokenInput');
-    var tokenError = document.getElementById('tokenError');
-    var unlockBtn = document.getElementById('unlockBtn');
-    var unlockBtnText = document.getElementById('unlockBtnText');
-    var requestSuccess = document.getElementById('requestSuccess');
-    var modalTitle = document.getElementById('modalTitle');
-    
-    // New DOM elements
+    // ===== VIEW TOGGLE (Homepage / Workspace) ====
+    // =============================================
     var homepageView = document.getElementById('homepageView');
     var appWorkspace = document.getElementById('appWorkspace');
-    var navLoginBtn = document.getElementById('navLoginBtn');
-    var navSignupBtn = document.getElementById('navSignupBtn');
-    var heroCtaBtn = document.getElementById('heroCtaBtn');
-    var closeModalBtn = document.getElementById('closeModalBtn');
-    var signOutBtn = document.getElementById('signOutBtn');
 
-    function grantAccess() {
-        if (accessGate) accessGate.style.display = 'none';
+    function showApp() {
         if (homepageView) homepageView.style.display = 'none';
         if (appWorkspace) appWorkspace.style.display = 'block';
-        
-        // Remove URL hash if it contains auth tokens
-        if (window.location.hash.includes('access_token')) {
-            window.history.replaceState(null, '', window.location.pathname + window.location.search);
-        }
+        window.scrollTo(0, 0);
+        // Close mobile menu if open
+        closeMobileMenu();
     }
 
-    function revokeAccess() {
-        if (accessGate) accessGate.style.display = 'none'; // Hidden by default now
+    function showHome() {
         if (homepageView) homepageView.style.display = 'flex';
         if (appWorkspace) appWorkspace.style.display = 'none';
+        window.scrollTo(0, 0);
     }
 
-    // Check if user is already authenticated
-    function checkAccess() {
-        if (!supabase) {
-            revokeAccess();
-            return;
-        }
+    // Mobile menu
+    var mobileMenuBtn = document.getElementById('mobileMenuBtn');
+    var mobileMenu = document.getElementById('mobileMenu');
 
-        // Check active session
-        supabase.auth.getSession().then(function(result) {
-            if (result.data && result.data.session) {
-                grantAccess();
-            } else {
-                revokeAccess();
-            }
-        }).catch(function() {
-            revokeAccess();
-        });
-
-        // Listen for auth state changes (e.g. returning from magic link or password recovery)
-        supabase.auth.onAuthStateChange(function(event, session) {
-            if (event === 'PASSWORD_RECOVERY') {
-                // Show the password recovery UI securely
-                if (accessGate) accessGate.style.display = 'flex';
-                var tv = document.getElementById('tokenView');
-                var fv = document.getElementById('forgotPasswordView');
-                var uv = document.getElementById('updatePasswordView');
-                if (tv) tv.style.display = 'none';
-                if (fv) fv.style.display = 'none';
-                if (uv) uv.style.display = 'block';
-            } else if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
-                grantAccess();
-            } else if (event === 'SIGNED_OUT') {
-                revokeAccess();
-            }
-        });
+    function closeMobileMenu() {
+        if (mobileMenu) mobileMenu.classList.remove('active');
+        if (mobileMenuBtn) mobileMenuBtn.classList.remove('active');
+        document.body.style.overflow = '';
     }
 
-    // Handle Email & Password Auth via Supabase
-    function handlePasswordAuth(email, password, mode) {
-        if (!supabase) {
-            showToast('Unable to connect. Please try again later.', true);
-            return Promise.resolve(false);
+    function toggleMobileMenu() {
+        var isOpen = mobileMenu.classList.contains('active');
+        if (isOpen) {
+            closeMobileMenu();
+        } else {
+            mobileMenu.classList.add('active');
+            mobileMenuBtn.classList.add('active');
+            document.body.style.overflow = 'hidden';
         }
-        
-        if (mode === 'signup') {
-            return supabase.auth.signUp({
-                email: email,
-                password: password
-            }).then(function(result) {
-                if (result.error) {
-                    console.error('Signup error:', result.error.message);
-                    return { success: false, error: result.error.message };
-                }
-                return { success: true };
-            }).catch(function(err) {
-                return { success: false, error: 'Network error' };
+    }
+
+    function initNavigation() {
+        // All CTA buttons that should open the app
+        var ctaButtons = [
+            document.getElementById('heroCtaBtn'),
+            document.getElementById('navStartBtn'),
+            document.getElementById('ctaBannerBtn'),
+            document.getElementById('mobileStartBtn')
+        ];
+        ctaButtons.forEach(function(btn) {
+            if (btn) btn.addEventListener('click', showApp);
+        });
+
+        // Back to home from app header logo
+        var backBtn = document.getElementById('backToHome');
+        if (backBtn) {
+            backBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                showHome();
+            });
+        }
+
+        // Mobile menu toggle
+        if (mobileMenuBtn) {
+            mobileMenuBtn.addEventListener('click', toggleMobileMenu);
+        }
+        // Close mobile menu on link clicks
+        if (mobileMenu) {
+            mobileMenu.querySelectorAll('a').forEach(function(link) {
+                link.addEventListener('click', function() {
+                    closeMobileMenu();
+                });
+            });
+        }
+    }
+
+    // =============================================
+    // ===== SCROLL REVEAL ANIMATIONS =====
+    // =============================================
+    function initScrollReveal() {
+        var revealElements = document.querySelectorAll('.reveal');
+        if (!revealElements.length) return;
+
+        // Use IntersectionObserver for performance
+        if ('IntersectionObserver' in window) {
+            var observer = new IntersectionObserver(function(entries) {
+                entries.forEach(function(entry) {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                        observer.unobserve(entry.target); // Only animate once
+                    }
+                });
+            }, {
+                threshold: 0.15,
+                rootMargin: '0px 0px -50px 0px'
+            });
+
+            revealElements.forEach(function(el) {
+                observer.observe(el);
             });
         } else {
-            return supabase.auth.signInWithPassword({
-                email: email,
-                password: password
-            }).then(function(result) {
-                if (result.error) {
-                    console.error('Login error:', result.error.message);
-                    return { success: false, error: result.error.message };
-                }
-                return { success: true };
-            }).catch(function(err) {
-                return { success: false, error: 'Network error' };
+            // Fallback: show everything immediately
+            revealElements.forEach(function(el) {
+                el.classList.add('visible');
             });
         }
     }
 
-    function initAccessGate() {
-        var authMode = 'login'; // 'login' or 'signup'
-        var passwordInput = document.getElementById('passwordInput');
+    // =============================================
+    // ===== STICKY NAV SCROLL EFFECT =====
+    // =============================================
+    function initStickyNav() {
+        var navs = document.querySelectorAll('.home-nav');
+        if (!navs.length) return;
 
-        // Open Modal functions
-        function openLoginModal() {
-            authMode = 'login';
-            if (modalTitle) modalTitle.textContent = 'Log In';
-            if (unlockBtnText) unlockBtnText.textContent = 'Log In';
-            if (accessGate) accessGate.style.display = 'flex';
-        }
+        var scrollThreshold = 40;
+        var ticking = false;
 
-        function openSignupModal() {
-            authMode = 'signup';
-            if (modalTitle) modalTitle.textContent = 'Sign Up';
-            if (unlockBtnText) unlockBtnText.textContent = 'Create Account';
-            if (accessGate) accessGate.style.display = 'flex';
-        }
-
-        if (navLoginBtn) navLoginBtn.addEventListener('click', openLoginModal);
-        if (navSignupBtn) navSignupBtn.addEventListener('click', openSignupModal);
-        if (heroCtaBtn) heroCtaBtn.addEventListener('click', openSignupModal);
-
-        if (closeModalBtn) {
-            closeModalBtn.addEventListener('click', function() {
-                if (accessGate) accessGate.style.display = 'none';
-            });
-        }
-
-        if (signOutBtn && supabase) {
-            signOutBtn.addEventListener('click', function() {
-                supabase.auth.signOut();
-            });
-        }
-
-        if (!accessGate || !unlockBtn || !tokenInput || !passwordInput) return;
-
-        // Password visibility togglers
-        function setupEyeToggle(toggleBtnId, inputId) {
-            var btn = document.getElementById(toggleBtnId);
-            var input = document.getElementById(inputId);
-            if (!btn || !input) return;
-            
-            var showIcon = btn.querySelector('.eye-icon-show');
-            var hideIcon = btn.querySelector('.eye-icon-hide');
-            
-            btn.addEventListener('click', function() {
-                if (input.type === 'password') {
-                    input.type = 'text';
-                    showIcon.style.display = 'none';
-                    hideIcon.style.display = 'block';
-                } else {
-                    input.type = 'password';
-                    showIcon.style.display = 'block';
-                    hideIcon.style.display = 'none';
-                }
-            });
-        }
-        setupEyeToggle('passwordToggleBtn', 'passwordInput');
-        setupEyeToggle('newPasswordToggleBtn', 'newPasswordInput');
-
-        // References for Reset / Update flows
-        var showForgotBtn = document.getElementById('showForgotPasswordBtn');
-        var backToLoginBtn = document.getElementById('backToLoginBtn');
-        var closeForgotBtn = document.getElementById('closeForgotModalBtn');
-        
-        var tokenView = document.getElementById('tokenView');
-        var forgotView = document.getElementById('forgotPasswordView');
-        var updateView = document.getElementById('updatePasswordView');
-        
-        var resetEmailInput = document.getElementById('resetEmailInput');
-        var sendResetBtn = document.getElementById('sendResetBtn');
-        var resetError = document.getElementById('resetError');
-        var resetSuccess = document.getElementById('resetSuccess');
-        
-        var newPasswordInput = document.getElementById('newPasswordInput');
-        var updatePasswordBtn = document.getElementById('updatePasswordBtn');
-        var cancelUpdateBtn = document.getElementById('cancelUpdateBtn');
-        var updateError = document.getElementById('updateError');
-        var updateSuccess = document.getElementById('updateSuccess');
-
-        // Navigation between Modals
-        if (showForgotBtn) {
-            showForgotBtn.addEventListener('click', function() {
-                if (tokenView) tokenView.style.display = 'none';
-                if (forgotView) forgotView.style.display = 'block';
-                resetError.style.display = 'none';
-                resetSuccess.style.display = 'none';
-                resetEmailInput.value = tokenInput.value; // pre-fill if typed
-            });
-        }
-        
-        if (backToLoginBtn) {
-            backToLoginBtn.addEventListener('click', function() {
-                if (forgotView) forgotView.style.display = 'none';
-                if (tokenView) tokenView.style.display = 'block';
-            });
-        }
-        
-        if (closeForgotBtn) {
-            closeForgotBtn.addEventListener('click', function() {
-                if (accessGate) accessGate.style.display = 'none';
-                // Reset views for next time
-                if (forgotView) forgotView.style.display = 'none';
-                if (tokenView) tokenView.style.display = 'block';
-            });
-        }
-        
-        if (cancelUpdateBtn) {
-            cancelUpdateBtn.addEventListener('click', function() {
-                supabase.auth.signOut(); // cancel recovery session
-                if (updateView) updateView.style.display = 'none';
-                if (tokenView) tokenView.style.display = 'block';
-                if (accessGate) accessGate.style.display = 'none';
-            });
-        }
-
-        // Send Reset Email
-        if (sendResetBtn && resetEmailInput) {
-            sendResetBtn.addEventListener('click', function() {
-                var email = resetEmailInput.value.trim().toLowerCase();
-                if (!email || email.indexOf('@') === -1) {
-                    resetError.textContent = 'Please enter a valid email address';
-                    resetError.style.display = 'block';
-                    return;
-                }
-                
-                resetError.style.display = 'none';
-                sendResetBtn.disabled = true;
-                sendResetBtn.innerHTML = 'Sending...';
-                
-                // Root redirect ensures user lands back on main index
-                supabase.auth.resetPasswordForEmail(email, {
-                    redirectTo: window.location.origin + window.location.pathname
-                }).then(function(result) {
-                    sendResetBtn.disabled = false;
-                    sendResetBtn.innerHTML = 'Send Reset Link';
-                    
-                    if (result.error) {
-                        // Rate limit handling
-                        if (result.error.status === 429) {
-                            resetError.textContent = 'Too many requests. Please check your inbox or try again later.';
+        function onScroll() {
+            if (!ticking) {
+                requestAnimationFrame(function() {
+                    var isScrolled = window.scrollY > scrollThreshold;
+                    navs.forEach(function(nav) {
+                        if (isScrolled) {
+                            nav.classList.add('scrolled');
                         } else {
-                            resetError.textContent = result.error.message;
+                            nav.classList.remove('scrolled');
                         }
-                        resetError.style.display = 'block';
-                    } else {
-                        resetSuccess.style.display = 'block';
-                        resetEmailInput.value = '';
-                    }
-                }).catch(function(err) {
-                    sendResetBtn.disabled = false;
-                    sendResetBtn.innerHTML = 'Send Reset Link';
-                    resetError.textContent = 'Network error. Please try again.';
-                    resetError.style.display = 'block';
+                    });
+                    ticking = false;
                 });
-            });
-        }
-
-        // Update Password
-        if (updatePasswordBtn && newPasswordInput) {
-            updatePasswordBtn.addEventListener('click', function() {
-                var password = newPasswordInput.value;
-                if (!password || password.length < 6) {
-                    updateError.textContent = 'Password must be at least 6 characters';
-                    updateError.style.display = 'block';
-                    return;
-                }
-                
-                updateError.style.display = 'none';
-                updatePasswordBtn.disabled = true;
-                updatePasswordBtn.innerHTML = 'Updating...';
-                
-                supabase.auth.updateUser({ password: password }).then(function(result) {
-                    updatePasswordBtn.disabled = false;
-                    updatePasswordBtn.innerHTML = 'Update Password';
-                    
-                    if (result.error) {
-                        updateError.textContent = result.error.message;
-                        updateError.style.display = 'block';
-                    } else {
-                        updateSuccess.style.display = 'block';
-                        newPasswordInput.value = '';
-                        setTimeout(function() {
-                            updateSuccess.style.display = 'none';
-                            updateView.style.display = 'none';
-                            grantAccess(); // Successful update -> login user
-                        }, 2000);
-                    }
-                }).catch(function() {
-                    updatePasswordBtn.disabled = false;
-                    updatePasswordBtn.innerHTML = 'Update Password';
-                    updateError.textContent = 'Network error. Please try again.';
-                    updateError.style.display = 'block';
-                });
-            });
-        }
-
-        // Passwword Auth Submit
-        unlockBtn.addEventListener('click', function () {
-            var email = tokenInput.value.trim().toLowerCase();
-            var password = passwordInput.value;
-            
-            if (!email || email.indexOf('@') === -1 || !password || password.length < 6) {
-                tokenError.textContent = 'Please enter a valid email and a password (min 6 chars)';
-                tokenError.style.display = 'block';
-                return;
+                ticking = true;
             }
-            
-            tokenError.style.display = 'none';
-            unlockBtn.disabled = true;
-            unlockBtn.innerHTML = '<svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg> Processing...';
-
-            handlePasswordAuth(email, password, authMode).then(function (result) {
-                if (result.success) {
-                    // Check if we need email confirmation on signup
-                    if (authMode === 'signup') {
-                        unlockBtn.style.display = 'none';
-                        tokenInput.style.display = 'none';
-                        // Keep new structured password invisible
-                        document.querySelector('.password-wrapper').style.display = 'none';
-                        var labels = document.querySelectorAll('.gate-label');
-                        labels.forEach(l => l.style.display = 'none');
-                        
-                        if (requestSuccess) {
-                            requestSuccess.innerHTML = '✅ Account created! If required, check your email to verify your account.';
-                            requestSuccess.style.display = 'block';
-                        }
-                    } else {
-                        // Successful login will auto-close the modal via the onAuthStateChange listener
-                        if (accessGate) accessGate.style.display = 'none';
-                    }
-                } else {
-                    tokenError.textContent = result.error || 'Failed to authenticate';
-                    tokenError.style.display = 'block';
-                    unlockBtn.disabled = false;
-                    unlockBtn.innerHTML = '<svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg> <span id="unlockBtnText">Try Again</span>';
-                }
-            });
-        });
-
-        // Enter key on inputs
-        function handleEnter(e) {
-            if (e.key === 'Enter') { e.preventDefault(); unlockBtn.click(); }
         }
-        tokenInput.addEventListener('keydown', handleEnter);
-        passwordInput.addEventListener('keydown', handleEnter);
-        if (resetEmailInput) resetEmailInput.addEventListener('keydown', function(e) { if(e.key === 'Enter') { e.preventDefault(); sendResetBtn.click(); } });
-        if (newPasswordInput) newPasswordInput.addEventListener('keydown', function(e) { if(e.key === 'Enter') { e.preventDefault(); updatePasswordBtn.click(); } });
-        
-        tokenInput.addEventListener('input', function () { tokenError.style.display = 'none'; });
-        passwordInput.addEventListener('input', function () { tokenError.style.display = 'none'; });
-        if (resetEmailInput) resetEmailInput.addEventListener('input', function() { if (resetError) resetError.style.display='none'; });
-        if (newPasswordInput) newPasswordInput.addEventListener('input', function() { if (updateError) updateError.style.display='none'; });
+
+        window.addEventListener('scroll', onScroll, { passive: true });
     }
 
     // =============================================
@@ -2225,8 +1984,9 @@
 
     // ===== INIT =====
     function init() {
-        initAccessGate();
-        checkAccess();
+        initNavigation();
+        initScrollReveal();
+        initStickyNav();
 
         initTheme();
         initSize();
@@ -2265,4 +2025,12 @@
     } else {
         init();
     }
+
+    // Force refresh if loaded from browser cache (e.g. back button)
+    window.addEventListener('pageshow', function (event) {
+        if (event.persisted) {
+            window.location.reload();
+        }
+    });
+
 })();

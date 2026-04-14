@@ -1,7 +1,7 @@
 {
     "name": "CarouselForge — Instant Carousel Generator",
     "short_name": "CarouselForge",
-    "description": "Paste your text, get stunning carousel slides instantly. Works offline.",
+    "description": "Paste your text, get stunning carousel slides instantly.",
     "start_url": "./index.html",
     "display": "standalone",
     "background_color": "#0a0a0f",
