@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Python Vault — CarouselForge</title>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Fira+Code:wght@400;600&display=swap" rel="stylesheet">
+    
+    <!-- Prism.js CSS (Dark Theme for code) -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
+    
+    <!-- Supabase Client -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <link rel="stylesheet" href="./style.css">
+    
+    <style>
+        /* Premium Dark Mode Vault Styles */
+        body {
+            background-color: #0f172a; /* Sleek slate dark background */
+            color: #f8fafc;
+        }
+        
+        /* Navbar overrides for dark mode */
+        .home-nav {
+            background: rgba(15, 23, 42, 0.8) !important;
+            backdrop-filter: blur(12px) !important;
+            border-bottom: 1px solid rgba(255,255,255,0.1) !important;
+        }
+        .nav-link-item, .logo-text { color: #f8fafc !important; }
+        .nav-link-item:hover { color: #3b82f6 !important; }
+
+        .vault-container {
+            max-width: 1200px;
+            margin: 60px auto;
+            padding: 20px;
+        }
+        .vault-header {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+        .vault-header h1 {
+            font-size: 3.5rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, #60a5fa, #a78bfa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 15px;
+        }
+        .search-bar {
+            width: 100%;
+            max-width: 500px;
+            padding: 16px 24px;
+            border-radius: 30px;
+            border: 1px solid rgba(255,255,255,0.2);
+            background: rgba(255,255,255,0.05);
+            color: white;
+            font-size: 1.1rem;
+            margin-bottom: 30px;
+            outline: none;
+            transition: all 0.3s;
+            backdrop-filter: blur(10px);
+        }
+        .search-bar::placeholder { color: #94a3b8; }
+        .search-bar:focus {
+            border-color: #60a5fa;
+            box-shadow: 0 0 15px rgba(96, 165, 250, 0.3);
+            background: rgba(255,255,255,0.1);
+        }
+        
+        /* Pinterest-style Masonry Grid */
+        .tricks-grid {
+            column-count: 1;
+            column-gap: 24px;
+        }
+        @media (min-width: 768px) { .tricks-grid { column-count: 2; } }
+        @media (min-width: 1024px) { .tricks-grid { column-count: 3; } }
+
+        /* Trick Cards (Glassmorphism & Micro-animations) */
+        .trick-card {
+            break-inside: avoid; /* Prevents card from breaking across columns */
+            margin-bottom: 24px;
+            background: rgba(30, 41, 59, 0.6);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 24px;
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s ease, border-color 0.3s;
+        }
+        .trick-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 12px 30px -10px rgba(96, 165, 250, 0.4);
+            border-color: rgba(96, 165, 250, 0.5);
+        }
+        .trick-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #f8fafc;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            line-height: 1.4;
+        }
+        .trick-number {
+            background: rgba(96, 165, 250, 0.2);
+            color: #60a5fa;
+            padding: 4px 10px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 700;
+        }
+        
+        /* Code Block Wrapper */
+        .code-wrapper {
+            position: relative;
+            border-radius: 8px;
+            overflow: hidden;
+            background: #1e1e1e; /* Prism dark bg */
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+        .code-container {
+            max-height: 250px;
+            overflow: hidden;
+            transition: max-height 0.4s ease;
+        }
+        .code-container.expanded {
+            max-height: 5000px; /* Big enough to fit any script */
+        }
+        
+        /* Prism overrides */
+        .trick-code {
+            margin: 0 !important;
+            border-radius: 0 !important;
+            font-family: 'Fira Code', monospace !important;
+            font-size: 13px !important;
+            padding-top: 40px !important; /* Space for copy btn */
+        }
+        
+        /* Copy Button */
+        .btn-copy {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+            color: #cbd5e1;
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-weight: 600;
+            z-index: 10;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .btn-copy:hover {
+            background: rgba(255,255,255,0.2);
+            color: white;
+        }
+        .btn-copy.copied {
+            background: #10b981;
+            border-color: #059669;
+            color: white;
+        }
+        
+        /* Fade Overlay & Show More */
+        .fade-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 100px;
+            background: linear-gradient(to bottom, transparent, #1e1e1e);
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            padding-bottom: 15px;
+            pointer-events: none; /* Let clicks pass through if needed */
+        }
+        .code-container.expanded + .fade-overlay {
+            display: none; /* Hide fade when expanded */
+        }
+        .btn-show-more {
+            pointer-events: auto; /* Enable clicks on button */
+            background: rgba(96, 165, 250, 0.15);
+            color: #60a5fa;
+            border: 1px solid rgba(96, 165, 250, 0.5);
+            border-radius: 20px;
+            padding: 6px 16px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 600;
+            transition: all 0.2s;
+            backdrop-filter: blur(4px);
+        }
+        .btn-show-more:hover {
+            background: #3b82f6;
+            color: white;
+            border-color: #3b82f6;
+        }
+        
+        .vault-loading {
+            text-align: center;
+            font-size: 1.2rem;
+            color: #94a3b8;
+            padding: 40px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="home-nav" id="homeNav">
+        <div class="logo">
+            <a href="./index.html" style="text-decoration: none; display: flex; align-items: center; color: inherit;">
+                <div class="logo-icon" aria-hidden="true">
+                    <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+                        <rect x="2" y="2" width="10" height="10" rx="2" fill="#818cf8"/>
+                        <rect x="16" y="2" width="10" height="10" rx="2" fill="#c084fc"/>
+                        <rect x="2" y="16" width="10" height="10" rx="2" fill="#f472b6"/>
+                        <rect x="16" y="16" width="10" height="10" rx="2" fill="#fb923c"/>
+                    </svg>
+                </div>
+                <span class="logo-text">CarouselForge</span>
+            </a>
+        </div>
+        <div class="home-nav-actions">
+            <a href="./index.html" class="nav-link-item">Carousel Maker</a>
+            <a href="./python-vault.html" class="nav-link-item" style="color: #60a5fa; font-weight: 600;">🐍 Python Vault</a>
+            <a href="./about.html" class="nav-link-item">About</a>
+        </div>
+    </nav>
+
+    <!-- Vault Content -->
+    <main class="vault-container">
+        <div class="vault-header">
+            <h1>The Python Vault</h1>
+            <p style="font-size: 1.2rem; color: #94a3b8; margin-top: 10px;">Free access to 50+ viral Python automation scripts.</p>
+            <br>
+            <input type="text" id="searchInput" class="search-bar" placeholder="🔍 Search tricks (e.g. 'whatsapp', 'scraper')...">
+        </div>
+
+        <div id="loading" class="vault-loading">
+            Loading tricks from Supabase...
+        </div>
+
+        <div id="tricksContainer" class="tricks-grid">
+            <!-- Tricks will be injected here via JS -->
+        </div>
+    </main>
+
+    <!-- Prism.js Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+
+    <!-- Supabase Logic -->
+    <script>
+        const SUPABASE_URL = 'https://eyjybwkoucwoabzpatvm.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV5anlid2tvdWN3b2FienBhdHZtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ5NDYyODYsImV4cCI6MjA5MDUyMjI4Nn0.byVDA_bMry8xqO9htPIyLLZxZGcorvy5MooFyV5RcIU';
+        
+        const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        let allTricks = [];
+
+        async function fetchTricks() {
+            try {
+                const { data, error } = await supabaseClient
+                    .from('python_tricks')
+                    .select('*')
+                    .order('id', { ascending: true });
+                
+                if (error) throw error;
+                
+                allTricks = data;
+                document.getElementById('loading').style.display = 'none';
+                renderTricks(allTricks);
+            } catch (err) {
+                console.error("Error fetching tricks:", err);
+                document.getElementById('loading').innerHTML = `
+                    <div style="color: #ef4444;">
+                        Failed to load tricks from Supabase.<br>
+                        Error: ${err.message}
+                    </div>
+                `;
+            }
+        }
+
+        function copyCode(btnElement, codeText) {
+            navigator.clipboard.writeText(codeText).then(() => {
+                const originalText = btnElement.innerHTML;
+                btnElement.innerHTML = '✅ Copied!';
+                btnElement.classList.add('copied');
+                
+                setTimeout(() => {
+                    btnElement.innerHTML = originalText;
+                    btnElement.classList.remove('copied');
+                }, 2000);
+            });
+        }
+
+        function toggleCode(btnElement, containerId) {
+            const container = document.getElementById(containerId);
+            if (container.classList.contains('expanded')) {
+                container.classList.remove('expanded');
+                btnElement.innerHTML = 'Show Full Code ↓';
+                // Scroll back up slightly if the user is lost at the bottom of a huge script
+                container.parentElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            } else {
+                container.classList.add('expanded');
+                btnElement.innerHTML = 'Collapse ↑';
+            }
+        }
+
+        function renderTricks(tricks) {
+            const container = document.getElementById('tricksContainer');
+            container.innerHTML = '';
+
+            if (tricks.length === 0) {
+                container.innerHTML = '<p style="text-align:center; color:#94a3b8;">No tricks found.</p>';
+                return;
+            }
+
+            tricks.forEach(trick => {
+                const card = document.createElement('div');
+                card.className = 'trick-card';
+                
+                // Escape HTML for code block
+                const escapedCode = trick.code
+                    .replace(/&/g, "&amp;")
+                    .replace(/</g, "&lt;")
+                    .replace(/>/g, "&gt;")
+                    .replace(/"/g, "&quot;")
+                    .replace(/'/g, "&#039;");
+                    
+                const containerId = `code-container-${trick.id}`;
+                
+                // Check if code is long (roughly more than 12 lines)
+                const lineCount = trick.code.split('\\n').length;
+                const isLong = lineCount > 12;
+
+                let codeBlockHTML = `
+                    <div class="code-wrapper">
+                        <button class="btn-copy" onclick="copyCode(this, \`${escapedCode.replace(/\\/g, '\\\\').replace(/\`/g, '\\\`')}\`)">
+                            📋 Copy
+                        </button>
+                        <div id="${containerId}" class="code-container ${isLong ? '' : 'expanded'}">
+                            <pre class="trick-code language-python"><code>${escapedCode}</code></pre>
+                        </div>
+                        ${isLong ? `
+                        <div class="fade-overlay">
+                            <button class="btn-show-more" onclick="toggleCode(this, '${containerId}')">Show Full Code ↓</button>
+                        </div>
+                        ` : ''}
+                    </div>
+                `;
+
+                card.innerHTML = `
+                    <div class="trick-title">
+                        <span class="trick-number">#${trick.id}</span>
+                        ${trick.title}
+                    </div>
+                    ${codeBlockHTML}
+                `;
+                container.appendChild(card);
+            });
+
+            // Re-highlight syntax
+            Prism.highlightAll();
+        }
+
+        // Search Functionality
+        document.getElementById('searchInput').addEventListener('input', (e) => {
+            const searchTerm = e.target.value.toLowerCase();
+            const filtered = allTricks.filter(t => 
+                t.title.toLowerCase().includes(searchTerm) || 
+                t.code.toLowerCase().includes(searchTerm)
+            );
+            renderTricks(filtered);
+        });
+
+        // Initialize
+        fetchTricks();
+    </script>
+</body>
+</html>
