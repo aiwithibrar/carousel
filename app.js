@@ -9,6 +9,16 @@
 (function () {
     'use strict';
 
+    // ===== GOOGLE ANALYTICS HELPER =====
+    function trackEvent(action, category, label) {
+        if (typeof gtag === 'function') {
+            gtag('event', action, {
+                'event_category': category,
+                'event_label': label || '(not set)'
+            });
+        }
+    }
+
     // ===== CONSTANTS =====
     var MAX_SLIDES = 20;
     var TOAST_DURATION = 3000;
@@ -995,6 +1005,7 @@
                 if (active) active.classList.remove('active');
                 btn.classList.add('active');
                 state.theme = btn.dataset.theme;
+                trackEvent('change_theme', 'Customization', 'Theme: ' + state.theme);
                 saveDraft();
                 if (state.slides.length > 0) generatePreview();
             });
@@ -1007,6 +1018,7 @@
                 document.querySelectorAll('.size-btn').forEach(function (b) { b.classList.remove('active'); });
                 btn.classList.add('active');
                 state.size = btn.dataset.size;
+                trackEvent('change_aspect_ratio', 'Customization', 'Ratio: ' + state.size);
                 saveDraft();
                 if (state.slides.length > 0) generatePreview();
             });
@@ -1172,6 +1184,7 @@
         }
 
         renderSlidesPreview();
+        trackEvent('generate_carousel', 'Engagement', 'Generate with ' + state.slides.length + ' slides');
         showToast(state.slides.length + ' slides generated!');
     }
 
@@ -1431,6 +1444,7 @@
     function downloadSingle(index) {
         var slide = state.slides[index];
         if (!slide) return;
+        trackEvent('download_single_png', 'Conversion', 'PNG Download Slide ' + (index + 1));
         showLoading('Rendering slide...', 'Slide ' + (index + 1));
         renderSlideToCanvas(slide, index).then(function (canvas) {
             canvas.toBlob(function (blob) {
@@ -1448,6 +1462,7 @@
     function downloadAll() {
         var slides = state.slides;
         if (!slides.length) return;
+        trackEvent('download_all_zip', 'Conversion', 'ZIP Download');
         showLoading('Preparing download...', '0 / ' + slides.length + ' slides');
         var zip = new JSZip();
         var i = 0;
