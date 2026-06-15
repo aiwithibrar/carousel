@@ -1853,47 +1853,7 @@
         window.addEventListener('scroll', onScroll, { passive: true });
     }
 
-    // =============================================
-    // ===== PWA INSTALL PROMPT =====
-    // =============================================
-    var deferredPrompt = null;
-    window.addEventListener('beforeinstallprompt', function (e) {
-        e.preventDefault();
-        deferredPrompt = e;
-        var installBtn = document.getElementById('installBtn');
-        if (installBtn) {
-            installBtn.classList.add('visible');
-            installBtn.addEventListener('click', function () {
-                if (deferredPrompt) {
-                    deferredPrompt.prompt();
-                    deferredPrompt.userChoice.then(function (result) {
-                        if (result.outcome === 'accepted') showToast('App installed successfully!');
-                        deferredPrompt = null;
-                        installBtn.classList.remove('visible');
-                    });
-                }
-            });
-        }
-    });
-    window.addEventListener('appinstalled', function () {
-        showToast('CarouselForge installed!');
-        deferredPrompt = null;
-        var installBtn = document.getElementById('installBtn');
-        if (installBtn) installBtn.classList.remove('visible');
-    });
 
-    // =============================================
-    // ===== SERVICE WORKER =====
-    // =============================================
-    function registerServiceWorker() {
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('./sw.js').then(function (reg) {
-                console.log('ServiceWorker registered:', reg.scope);
-            }).catch(function (err) {
-                console.log('ServiceWorker registration failed:', err);
-            });
-        }
-    }
 
     // =============================================
     // ===== DRAFT SAVE/LOAD SYSTEM =====
@@ -2032,7 +1992,7 @@
             }
         });
 
-        registerServiceWorker();
+
     }
 
     if (document.readyState === 'loading') {

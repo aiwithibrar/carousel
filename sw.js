@@ -1,6 +1,9 @@
-self.options = {
-    "domain": "3nbf4.com",
-    "zoneId": 11028665
-}
-self.lary = ""
-importScripts('https://3nbf4.com/act/files/service-worker.min.js?r=sw')
+// Service worker disabled
+self.addEventListener('install', function(e) { self.skipWaiting(); });
+self.addEventListener('activate', function(e) {
+    e.waitUntil(
+        caches.keys().then(function(keys) {
+            return Promise.all(keys.map(function(k) { return caches.delete(k); }));
+        }).then(function() { return self.clients.claim(); })
+    );
+});
