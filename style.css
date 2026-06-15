@@ -3358,7 +3358,9 @@ html { scroll-behavior: smooth; }
     .hero-subtitle { font-size: 0.9rem; }
     .hero-cta-btn { padding: 14px 24px; font-size: 0.9rem; width: 100%; justify-content: center; }
     .hero-cta-note { font-size: 0.75rem; }
-    .abstract-carousel { width: 200px; height: 260px; }
+    /* Hide decorative hero visual on very small screens to save space */
+    .hero-visual { display: none; }
+    .hero-cta-group { flex-direction: column; align-items: stretch; gap: 12px; }
     .mock-slide-content { padding: 20px; gap: 8px; }
     .mock-number { font-size: 1.5rem; }
     .home-features, .how-it-works, .testimonials-section, .faq-section {
@@ -3394,8 +3396,11 @@ html { scroll-behavior: smooth; }
     .legal-content p, .legal-content li { font-size: 0.88rem; }
     .about-lead { font-size: 1.05rem; }
     .about-value { padding: 20px; }
-    .contact-card { padding: 24px; }
+    .contact-card { padding: 20px; }
     .contact-icon { font-size: 2rem; }
+    /* 2-column footer at 480px to prevent excessive single-column scroll */
+    .footer-grid { grid-template-columns: 1fr 1fr; gap: 20px; padding: 28px 16px 16px; }
+    .footer-brand { grid-column: 1 / -1; }
     .breadcrumb { font-size: 0.8rem; flex-wrap: wrap; }
     .internal-links-bar { padding: 16px; gap: 6px; }
     .internal-link-chip { font-size: 0.75rem; padding: 5px 12px; }
@@ -3408,6 +3413,66 @@ html { scroll-behavior: smooth; }
     .abstract-carousel { width: 180px; height: 230px; }
     .section-title { font-size: 1.35rem; }
     .stat-number { font-size: 1.4rem; }
+}
+
+/* ===== APP WORKSPACE MOBILE ===== */
+/* Sidebar toggles to a collapsible panel on mobile */
+@media (max-width: 768px) {
+    .app-container {
+        flex-direction: column;
+    }
+    .sidebar {
+        width: 100%;
+        min-width: 0;
+        border-right: none;
+        border-bottom: 1px solid var(--border-subtle);
+        max-height: 0;
+        overflow: hidden;
+        padding: 0 16px;
+        gap: 0;
+        transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+                    padding 0.3s ease;
+    }
+    .sidebar.mobile-open {
+        max-height: 2000px;
+        padding: 16px;
+        gap: 20px;
+        overflow-y: auto;
+    }
+    .preview-area {
+        padding: 16px;
+    }
+    /* Mobile sidebar toggle button */
+    .mobile-sidebar-toggle {
+        display: flex !important;
+    }
+    /* Slide cards full-width on mobile */
+    .slides-container {
+        gap: 16px;
+        justify-content: center;
+    }
+    .slide-inner {
+        width: 280px;
+    }
+    /* Preview header wraps on mobile */
+    .preview-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+    .preview-actions {
+        width: 100%;
+    }
+    .preview-actions .action-btn {
+        flex: 1;
+        justify-content: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .slide-inner {
+        width: 250px;
+    }
 }
 
 /* Prevent animation on reduced motion */

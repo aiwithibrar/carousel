@@ -2001,6 +2001,42 @@
         init();
     }
 
+    // ===== MOBILE SIDEBAR TOGGLE =====
+    (function() {
+        function setupMobileSidebarToggle() {
+            var toggleBtn = document.getElementById('mobileSidebarToggle');
+            var sidebar = document.querySelector('.sidebar');
+            var label = document.getElementById('sidebarToggleLabel');
+            if (!toggleBtn || !sidebar) return;
+
+            function onResize() {
+                if (window.innerWidth <= 768) {
+                    toggleBtn.style.display = 'flex';
+                } else {
+                    toggleBtn.style.display = 'none';
+                    sidebar.classList.remove('mobile-open');
+                    toggleBtn.setAttribute('aria-expanded', 'false');
+                    if (label) label.textContent = 'Show Controls ⚙️';
+                }
+            }
+
+            toggleBtn.addEventListener('click', function() {
+                var isOpen = sidebar.classList.toggle('mobile-open');
+                toggleBtn.setAttribute('aria-expanded', String(isOpen));
+                if (label) label.textContent = isOpen ? 'Hide Controls ✕' : 'Show Controls ⚙️';
+            });
+
+            window.addEventListener('resize', onResize);
+            onResize();
+        }
+
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', setupMobileSidebarToggle);
+        } else {
+            setupMobileSidebarToggle();
+        }
+    })();
+
     // Force refresh if loaded from browser cache (e.g. back button)
     window.addEventListener('pageshow', function (event) {
         if (event.persisted) {
