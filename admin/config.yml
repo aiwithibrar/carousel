@@ -13,12 +13,155 @@ collections:
     slug: "{{slug}}"
     sortable_fields: ["date", "title"]
     summary: "{{title}} — {{date}}"
+    preview_path: "blog/post.html?slug={{slug}}"
     fields:
-      - { label: "Title", name: "title", widget: "string", hint: "Used as SEO page title" }
-      - { label: "Publish Date", name: "date", widget: "datetime" }
-      - { label: "Meta Description", name: "description", widget: "string", hint: "1-2 sentence summary for Google (150-160 chars)" }
-      - { label: "Keywords", name: "keywords", widget: "string", hint: "Comma-separated SEO keywords" }
-      - { label: "Thumbnail / OG Image", name: "thumbnail", widget: "image", required: false, hint: "Featured image (also used for social sharing)" }
-      - { label: "Author", name: "author", widget: "string", default: "CarouselForge Team" }
-      - { label: "Category", name: "category", widget: "select", options: ["Tips & Tricks", "LinkedIn", "Instagram", "Design", "Social Media", "News"], default: "Tips & Tricks" }
-      - { label: "Body", name: "body", widget: "markdown" }
+
+      # ── BASIC INFO ──────────────────────────────────────────
+      - label: "Title"
+        name: "title"
+        widget: "string"
+        hint: "The main headline of your post"
+
+      - label: "Publish Date"
+        name: "date"
+        widget: "datetime"
+
+      - label: "Author"
+        name: "author"
+        widget: "string"
+        default: "CarouselForge Team"
+
+      - label: "Category"
+        name: "category"
+        widget: "select"
+        options: ["Tips & Tricks", "LinkedIn", "Instagram", "Design", "Social Media", "News"]
+        default: "Tips & Tricks"
+
+      - label: "Featured Image"
+        name: "thumbnail"
+        widget: "image"
+        required: false
+        hint: "Used as post cover image and social share image (OG Image)"
+
+      - label: "Body"
+        name: "body"
+        widget: "markdown"
+
+      # ── SEO ─────────────────────────────────────────────────
+      - label: "SEO"
+        name: "seo"
+        widget: "object"
+        collapsed: false
+        summary: "{{fields.meta_title}}"
+        fields:
+
+          - label: "SEO Title"
+            name: "meta_title"
+            widget: "string"
+            required: false
+            hint: "Custom title for browser tab & Google (if empty, uses Post Title). Recommended: 50–60 characters"
+            pattern: [".{0,60}", "Max 60 characters"]
+
+          - label: "Meta Description"
+            name: "meta_description"
+            widget: "string"
+            required: false
+            hint: "1–2 sentence summary shown in Google results. Recommended: 140–160 characters"
+            pattern: [".{0,160}", "Max 160 characters"]
+
+          - label: "Focus Keyword"
+            name: "focus_keyword"
+            widget: "string"
+            required: false
+            hint: "The primary keyword this post should rank for (e.g. 'linkedin carousel tips')"
+
+          - label: "Keywords"
+            name: "keywords"
+            widget: "string"
+            required: false
+            hint: "Comma-separated additional keywords (e.g. 'carousel maker, social media slides')"
+
+          - label: "Canonical URL"
+            name: "canonical_url"
+            widget: "string"
+            required: false
+            hint: "Leave blank to auto-generate. Only set if this content exists elsewhere and you want to point to the original."
+
+          - label: "No Index (Hide from Google)"
+            name: "noindex"
+            widget: "boolean"
+            default: false
+            hint: "Turn ON to prevent Google from indexing this post (useful for drafts)"
+
+      # ── OPEN GRAPH (Facebook / LinkedIn preview) ─────────────
+      - label: "Open Graph (Social Sharing)"
+        name: "og"
+        widget: "object"
+        collapsed: true
+        hint: "Controls how this post looks when shared on Facebook, LinkedIn, WhatsApp, etc."
+        fields:
+
+          - label: "OG Title"
+            name: "og_title"
+            widget: "string"
+            required: false
+            hint: "Title shown in social share previews. If empty, uses SEO Title or Post Title."
+
+          - label: "OG Description"
+            name: "og_description"
+            widget: "string"
+            required: false
+            hint: "Description shown in social share previews. If empty, uses Meta Description."
+
+          - label: "OG Image"
+            name: "og_image"
+            widget: "image"
+            required: false
+            hint: "Custom image for social share cards (1200×630 recommended). If empty, uses Featured Image."
+
+      # ── TWITTER CARD ─────────────────────────────────────────
+      - label: "Twitter Card"
+        name: "twitter"
+        widget: "object"
+        collapsed: true
+        hint: "Controls how this post looks when shared on Twitter / X"
+        fields:
+
+          - label: "Twitter Card Type"
+            name: "twitter_card"
+            widget: "select"
+            options:
+              - { label: "Large Image (recommended)", value: "summary_large_image" }
+              - { label: "Small Image", value: "summary" }
+            default: "summary_large_image"
+
+          - label: "Twitter Title"
+            name: "twitter_title"
+            widget: "string"
+            required: false
+            hint: "If empty, uses OG Title or Post Title"
+
+          - label: "Twitter Description"
+            name: "twitter_description"
+            widget: "string"
+            required: false
+            hint: "If empty, uses OG Description or Meta Description"
+
+          - label: "Twitter Image"
+            name: "twitter_image"
+            widget: "image"
+            required: false
+            hint: "If empty, uses OG Image or Featured Image"
+
+      # ── SCHEMA / STRUCTURED DATA ──────────────────────────────
+      - label: "Schema Type (Structured Data)"
+        name: "schema_type"
+        widget: "select"
+        required: false
+        default: "BlogPosting"
+        hint: "Tells Google what type of content this is — helps with rich results"
+        options:
+          - { label: "Blog Post (default)", value: "BlogPosting" }
+          - { label: "How-To Guide", value: "HowTo" }
+          - { label: "News Article", value: "NewsArticle" }
+          - { label: "FAQ Page", value: "FAQPage" }

@@ -3,20 +3,17 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <!-- SEO tags injected dynamically by JS -->
   <title>Blog — CarouselForge</title>
   <link rel="icon" type="image/png" sizes="512x512" href="../icons/icon-512.png">
   <link rel="stylesheet" href="../style.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Merriweather:wght@400;700&display=swap" rel="stylesheet">
-  <!-- Marked.js for Markdown rendering -->
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
       --bg-primary: #0a0a0f;
-      --bg-secondary: #111118;
       --bg-card: #16161f;
       --border: #1e1e2e;
       --border-subtle: rgba(255,255,255,0.06);
@@ -28,105 +25,43 @@
       --accent-glow: rgba(129,140,248,0.15);
       --radius: 16px;
     }
-    body {
-      font-family: 'Inter', system-ui, sans-serif;
-      background: var(--bg-primary);
-      color: var(--text-primary);
-      min-height: 100vh;
-      line-height: 1.6;
-    }
+    body { font-family: 'Inter', system-ui, sans-serif; background: var(--bg-primary); color: var(--text-primary); min-height: 100vh; line-height: 1.6; }
 
     /* NAV */
-    nav {
-      position: sticky; top: 0; z-index: 100;
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 0 24px; height: 60px;
-      background: rgba(10,10,15,0.85);
-      backdrop-filter: blur(12px);
-      border-bottom: 1px solid var(--border-subtle);
-    }
+    nav { position: sticky; top: 0; z-index: 100; display: flex; align-items: center; justify-content: space-between; padding: 0 24px; height: 60px; background: rgba(10,10,15,0.85); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border-subtle); }
     .nav-logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
     .nav-logo span { font-size: 1.1rem; font-weight: 700; color: var(--text-primary); }
     .nav-links { display: flex; align-items: center; gap: 20px; }
     .nav-links a { color: var(--text-secondary); text-decoration: none; font-size: 0.9rem; transition: color 0.2s; }
     .nav-links a:hover { color: var(--accent); }
-    .nav-btn {
-      background: linear-gradient(135deg, var(--accent), var(--accent-2));
-      color: #fff; border: none; border-radius: 8px;
-      padding: 8px 16px; font-size: 0.85rem; font-weight: 600;
-      cursor: pointer; text-decoration: none; font-family: inherit;
-      transition: opacity 0.2s;
-    }
+    .nav-btn { background: linear-gradient(135deg, var(--accent), var(--accent-2)); color: #fff; border: none; border-radius: 8px; padding: 8px 16px; font-size: 0.85rem; font-weight: 600; cursor: pointer; text-decoration: none; font-family: inherit; transition: opacity 0.2s; }
     .nav-btn:hover { opacity: 0.85; }
 
     /* LOADING */
-    .loading-wrap {
-      display: flex; flex-direction: column; align-items: center;
-      justify-content: center; min-height: 60vh; gap: 16px;
-      color: var(--text-secondary);
-    }
-    .loading-spinner {
-      width: 44px; height: 44px; border: 3px solid var(--border);
-      border-top-color: var(--accent); border-radius: 50%;
-      animation: spin 0.8s linear infinite;
-    }
+    .loading-wrap { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 60vh; gap: 16px; color: var(--text-secondary); }
+    .loading-spinner { width: 44px; height: 44px; border: 3px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.8s linear infinite; }
     @keyframes spin { to { transform: rotate(360deg); } }
 
-    /* ARTICLE LAYOUT */
+    /* ARTICLE */
     .article-wrap { max-width: 760px; margin: 0 auto; padding: 40px 24px 80px; }
-
-    /* BREADCRUMB */
     .breadcrumb { display: flex; align-items: center; gap: 6px; font-size: 0.82rem; color: var(--text-muted); margin-bottom: 32px; flex-wrap: wrap; }
     .breadcrumb a { color: var(--text-muted); text-decoration: none; transition: color 0.2s; }
     .breadcrumb a:hover { color: var(--accent); }
     .breadcrumb span { color: var(--border); }
-
-    /* ARTICLE HEADER */
     .article-header { margin-bottom: 40px; }
-    .article-category {
-      display: inline-block;
-      font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em;
-      background: var(--accent-glow); color: var(--accent);
-      padding: 4px 12px; border-radius: 999px; border: 1px solid rgba(129,140,248,0.2);
-      margin-bottom: 16px;
-    }
-    .article-title {
-      font-size: clamp(1.8rem, 4vw, 2.8rem);
-      font-weight: 800; line-height: 1.2;
-      background: linear-gradient(135deg, #f1f5f9 60%, var(--accent));
-      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
-      margin-bottom: 16px;
-    }
+    .article-category { display: inline-block; font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; background: var(--accent-glow); color: var(--accent); padding: 4px 12px; border-radius: 999px; border: 1px solid rgba(129,140,248,0.2); margin-bottom: 16px; }
+    .article-title { font-size: clamp(1.8rem, 4vw, 2.8rem); font-weight: 800; line-height: 1.2; background: linear-gradient(135deg, #f1f5f9 60%, var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin-bottom: 16px; }
     .article-desc { font-size: 1.1rem; color: var(--text-secondary); line-height: 1.7; margin-bottom: 20px; }
     .article-meta { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
     .article-author { display: flex; align-items: center; gap: 8px; }
-    .author-avatar {
-      width: 36px; height: 36px; border-radius: 50%;
-      background: linear-gradient(135deg, var(--accent), var(--accent-2));
-      display: flex; align-items: center; justify-content: center;
-      font-size: 0.85rem; font-weight: 700; color: #fff; flex-shrink: 0;
-    }
+    .author-avatar { width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, var(--accent), var(--accent-2)); display: flex; align-items: center; justify-content: center; font-size: 0.85rem; font-weight: 700; color: #fff; flex-shrink: 0; }
     .author-name { font-size: 0.9rem; font-weight: 600; color: var(--text-primary); }
     .article-date { font-size: 0.85rem; color: var(--text-muted); }
+    .featured-image { width: 100%; border-radius: var(--radius); object-fit: cover; max-height: 440px; margin-bottom: 40px; border: 1px solid var(--border-subtle); }
 
-    /* FEATURED IMAGE */
-    .featured-image {
-      width: 100%; border-radius: var(--radius);
-      object-fit: cover; max-height: 440px;
-      margin-bottom: 40px;
-      border: 1px solid var(--border-subtle);
-    }
-
-    /* ARTICLE CONTENT */
-    .article-content {
-      font-family: 'Merriweather', Georgia, serif;
-      font-size: 1.05rem; line-height: 1.85; color: #cbd5e1;
-    }
-    .article-content h1, .article-content h2, .article-content h3,
-    .article-content h4, .article-content h5 {
-      font-family: 'Inter', sans-serif;
-      color: var(--text-primary); margin: 2em 0 0.75em; line-height: 1.3;
-    }
+    /* CONTENT */
+    .article-content { font-family: 'Merriweather', Georgia, serif; font-size: 1.05rem; line-height: 1.85; color: #cbd5e1; }
+    .article-content h1, .article-content h2, .article-content h3, .article-content h4 { font-family: 'Inter', sans-serif; color: var(--text-primary); margin: 2em 0 0.75em; line-height: 1.3; }
     .article-content h2 { font-size: 1.5rem; font-weight: 700; }
     .article-content h3 { font-size: 1.25rem; font-weight: 600; }
     .article-content p { margin-bottom: 1.4em; }
@@ -135,72 +70,25 @@
     .article-content strong { color: var(--text-primary); font-weight: 700; }
     .article-content em { color: var(--accent); font-style: italic; }
     .article-content a { color: var(--accent); text-decoration: underline; }
-    .article-content blockquote {
-      border-left: 3px solid var(--accent);
-      padding: 12px 20px; margin: 1.5em 0;
-      background: var(--accent-glow); border-radius: 0 8px 8px 0;
-      color: var(--text-secondary); font-style: italic;
-    }
-    .article-content code {
-      background: var(--bg-card); border: 1px solid var(--border);
-      border-radius: 4px; padding: 2px 6px;
-      font-size: 0.88em; font-family: 'Courier New', monospace; color: var(--accent-2);
-    }
-    .article-content pre {
-      background: var(--bg-card); border: 1px solid var(--border);
-      border-radius: 10px; padding: 20px; overflow-x: auto;
-      margin-bottom: 1.4em;
-    }
+    .article-content blockquote { border-left: 3px solid var(--accent); padding: 12px 20px; margin: 1.5em 0; background: var(--accent-glow); border-radius: 0 8px 8px 0; color: var(--text-secondary); font-style: italic; }
+    .article-content code { background: var(--bg-card); border: 1px solid var(--border); border-radius: 4px; padding: 2px 6px; font-size: 0.88em; font-family: 'Courier New', monospace; color: var(--accent-2); }
+    .article-content pre { background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px; padding: 20px; overflow-x: auto; margin-bottom: 1.4em; }
     .article-content pre code { background: none; border: none; padding: 0; }
-    .article-content img {
-      max-width: 100%; border-radius: 10px; margin: 1em 0;
-      border: 1px solid var(--border-subtle);
-    }
-    .article-content hr {
-      border: none; border-top: 1px solid var(--border);
-      margin: 2.5em 0;
-    }
+    .article-content img { max-width: 100%; border-radius: 10px; margin: 1em 0; border: 1px solid var(--border-subtle); }
+    .article-content hr { border: none; border-top: 1px solid var(--border); margin: 2.5em 0; }
 
-    /* CTA BOX */
-    .cta-box {
-      margin-top: 60px; padding: 32px;
-      background: linear-gradient(135deg, rgba(129,140,248,0.1), rgba(192,132,252,0.1));
-      border: 1px solid rgba(129,140,248,0.2); border-radius: var(--radius);
-      text-align: center;
-    }
+    /* CTA */
+    .cta-box { margin-top: 60px; padding: 32px; background: linear-gradient(135deg, rgba(129,140,248,0.1), rgba(192,132,252,0.1)); border: 1px solid rgba(129,140,248,0.2); border-radius: var(--radius); text-align: center; }
     .cta-box h3 { font-size: 1.3rem; font-weight: 700; margin-bottom: 8px; color: var(--text-primary); }
     .cta-box p { color: var(--text-secondary); margin-bottom: 20px; font-family: 'Inter', sans-serif; font-size: 0.95rem; }
-    .cta-box a {
-      display: inline-flex; align-items: center; gap: 8px;
-      background: linear-gradient(135deg, var(--accent), var(--accent-2));
-      color: #fff; text-decoration: none; font-weight: 600; font-family: 'Inter', sans-serif;
-      padding: 12px 24px; border-radius: 10px; font-size: 0.95rem;
-      transition: opacity 0.2s;
-    }
+    .cta-box a { display: inline-flex; align-items: center; gap: 8px; background: linear-gradient(135deg, var(--accent), var(--accent-2)); color: #fff; text-decoration: none; font-weight: 600; font-family: 'Inter', sans-serif; padding: 12px 24px; border-radius: 10px; font-size: 0.95rem; transition: opacity 0.2s; }
     .cta-box a:hover { opacity: 0.85; }
-
-    /* DIVIDER */
     .divider { border: none; border-top: 1px solid var(--border-subtle); margin: 48px 0; }
-
-    /* BACK LINK */
-    .back-link {
-      display: inline-flex; align-items: center; gap: 6px;
-      color: var(--text-muted); text-decoration: none; font-size: 0.88rem;
-      font-family: 'Inter', sans-serif; transition: color 0.2s; margin-top: 24px;
-    }
+    .back-link { display: inline-flex; align-items: center; gap: 6px; color: var(--text-muted); text-decoration: none; font-size: 0.88rem; font-family: 'Inter', sans-serif; transition: color 0.2s; margin-top: 24px; }
     .back-link:hover { color: var(--accent); }
+    .error-wrap { text-align: center; padding: 80px 24px; color: var(--text-secondary); }
 
-    /* ERROR */
-    .error-wrap {
-      text-align: center; padding: 80px 24px; color: var(--text-secondary);
-    }
-
-    /* FOOTER */
-    footer {
-      border-top: 1px solid var(--border-subtle);
-      text-align: center; padding: 24px;
-      font-size: 0.82rem; color: var(--text-muted);
-    }
+    footer { border-top: 1px solid var(--border-subtle); text-align: center; padding: 24px; font-size: 0.82rem; color: var(--text-muted); }
     footer a { color: var(--text-muted); text-decoration: none; margin: 0 8px; }
     footer a:hover { color: var(--accent); }
 
@@ -212,7 +100,6 @@
 </head>
 <body>
 
-  <!-- NAV -->
   <nav>
     <a href="../" class="nav-logo">
       <svg width="24" height="24" viewBox="0 0 28 28" fill="none">
@@ -227,11 +114,10 @@
       <a href="../" class="hide-mobile">Home</a>
       <a href="../blog/">Blog</a>
       <a href="../about.html" class="hide-mobile">About</a>
-      <a href="../" class="nav-btn">Create Free →</a>
+      <a href="../" class="nav-btn">Create Free</a>
     </div>
   </nav>
 
-  <!-- CONTENT (injected by JS) -->
   <div id="pageContent">
     <div class="loading-wrap">
       <div class="loading-spinner"></div>
@@ -239,9 +125,8 @@
     </div>
   </div>
 
-  <!-- FOOTER -->
   <footer>
-    <span>© 2026 CarouselForge</span>
+    <span>&#169; 2026 CarouselForge</span>
     <a href="../privacy.html">Privacy</a>
     <a href="../terms.html">Terms</a>
     <a href="../contact.html">Contact</a>
@@ -250,146 +135,221 @@
   <script>
     const REPO = 'aiwithibrar/carousel';
     const BRANCH = 'main';
-    const RAW_BASE = `https://raw.githubusercontent.com/${REPO}/${BRANCH}/`;
+    const RAW_BASE = 'https://raw.githubusercontent.com/' + REPO + '/' + BRANCH + '/';
 
+    // Parse YAML frontmatter — supports nested objects (seo:, og:, twitter:)
     function parseFrontmatter(text) {
-      const match = text.match(/^---\n([\s\S]*?)\n---/);
+      var match = text.match(/^---\n([\s\S]*?)\n---/);
       if (!match) return { body: text, meta: {} };
-      const yamlStr = match[1];
-      const body = text.slice(match[0].length).trim();
-      const meta = {};
-      yamlStr.split('\n').forEach(line => {
-        const colonIdx = line.indexOf(':');
+      var yamlStr = match[1];
+      var body = text.slice(match[0].length).trim();
+      var meta = {};
+      var currentParent = null;
+
+      yamlStr.split('\n').forEach(function(line) {
+        if (!line.trim() || line.trim().charAt(0) === '#') return;
+        var isIndented = line.charAt(0) === ' ' || line.charAt(0) === '\t';
+        var colonIdx = line.indexOf(':');
         if (colonIdx === -1) return;
-        const key = line.slice(0, colonIdx).trim();
-        let val = line.slice(colonIdx + 1).trim();
-        if ((val.startsWith('"') && val.endsWith('"')) || (val.startsWith("'") && val.endsWith("'"))) {
+        var key = line.slice(0, colonIdx).trim();
+        var val = line.slice(colonIdx + 1).trim();
+        // Remove surrounding quotes
+        if (val.length >= 2 &&
+          ((val.charAt(0) === '"' && val.charAt(val.length-1) === '"') ||
+           (val.charAt(0) === "'" && val.charAt(val.length-1) === "'"))) {
           val = val.slice(1, -1);
         }
-        meta[key] = val;
+        if (!isIndented && val === '') {
+          // Parent key (e.g. "seo:", "og:", "twitter:")
+          currentParent = key;
+          meta[key] = {};
+        } else if (isIndented && currentParent) {
+          meta[currentParent][key] = val;
+        } else {
+          currentParent = null;
+          meta[key] = val;
+        }
       });
-      return { body, meta };
+      return { body: body, meta: meta };
     }
 
     function formatDate(dateStr) {
       if (!dateStr) return '';
       try {
         return new Date(dateStr).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
-      } catch { return dateStr; }
+      } catch(e) { return dateStr; }
     }
 
     function injectSEO(meta, slug) {
-      document.title = `${meta.title || 'Article'} | CarouselForge Blog`;
+      // Resolve nested objects with fallbacks
+      var seo = (meta.seo && typeof meta.seo === 'object') ? meta.seo : {};
+      var og  = (meta.og  && typeof meta.og  === 'object') ? meta.og  : {};
+      var tw  = (meta.twitter && typeof meta.twitter === 'object') ? meta.twitter : {};
 
-      const setMeta = (name, content, prop = false) => {
+      var pageUrl    = 'https://carouselforge.app/blog/post.html?slug=' + slug;
+      var seoTitle   = seo.meta_title          || meta.title       || 'Article';
+      var metaDesc   = seo.meta_description    || meta.description || '';
+      var keywords   = seo.keywords            || meta.keywords    || '';
+      var canonical  = seo.canonical_url       || pageUrl;
+      var noindex    = (seo.noindex === 'true' || seo.noindex === true);
+
+      var ogTitle    = og.og_title             || seoTitle;
+      var ogDesc     = og.og_description       || metaDesc;
+      var ogImage    = og.og_image             || meta.thumbnail   || 'https://carouselforge.app/icons/icon-512.png';
+
+      var twCard     = tw.twitter_card         || 'summary_large_image';
+      var twTitle    = tw.twitter_title        || ogTitle;
+      var twDesc     = tw.twitter_description  || ogDesc;
+      var twImage    = tw.twitter_image        || ogImage;
+
+      var schemaType = meta.schema_type        || 'BlogPosting';
+
+      document.title = seoTitle + ' | CarouselForge Blog';
+
+      function setMeta(name, content, isProp) {
         if (!content) return;
-        const sel = prop ? `meta[property="${name}"]` : `meta[name="${name}"]`;
-        let el = document.querySelector(sel);
-        if (!el) { el = document.createElement('meta'); prop ? el.setAttribute('property', name) : el.setAttribute('name', name); document.head.appendChild(el); }
+        var attr = isProp ? 'property' : 'name';
+        var sel = 'meta[' + attr + '="' + name + '"]';
+        var el = document.querySelector(sel);
+        if (!el) {
+          el = document.createElement('meta');
+          el.setAttribute(attr, name);
+          document.head.appendChild(el);
+        }
         el.setAttribute('content', content);
-      };
-      const setLink = (rel, href) => {
-        let el = document.querySelector(`link[rel="${rel}"]`);
+      }
+
+      function setLink(rel, href) {
+        var el = document.querySelector('link[rel="' + rel + '"]');
         if (!el) { el = document.createElement('link'); el.setAttribute('rel', rel); document.head.appendChild(el); }
         el.setAttribute('href', href);
-      };
+      }
 
-      setMeta('description', meta.description);
-      setMeta('keywords', meta.keywords);
+      // Basic SEO
+      setMeta('description', metaDesc);
+      setMeta('keywords', keywords);
       setMeta('author', meta.author);
-      setLink('canonical', `https://carouselforge.app/blog/post.html?slug=${slug}`);
-      setMeta('og:title', meta.title, true);
-      setMeta('og:description', meta.description, true);
-      setMeta('og:type', 'article', true);
-      setMeta('og:url', `https://carouselforge.app/blog/post.html?slug=${slug}`, true);
-      if (meta.thumbnail) setMeta('og:image', meta.thumbnail, true);
-      setMeta('twitter:card', 'summary_large_image');
-      setMeta('twitter:title', meta.title);
-      setMeta('twitter:description', meta.description);
+      setMeta('robots', noindex ? 'noindex, nofollow' : 'index, follow');
+      if (seo.focus_keyword) setMeta('news_keywords', seo.focus_keyword);
+      setLink('canonical', canonical);
 
-      // JSON-LD Article structured data
-      const ld = {
+      // Open Graph
+      setMeta('og:type',             'article', true);
+      setMeta('og:url',              pageUrl,   true);
+      setMeta('og:title',            ogTitle,   true);
+      setMeta('og:description',      ogDesc,    true);
+      setMeta('og:image',            ogImage,   true);
+      setMeta('og:image:width',      '1200',    true);
+      setMeta('og:image:height',     '630',     true);
+      setMeta('og:site_name',        'CarouselForge', true);
+      if (meta.date)     setMeta('article:published_time', meta.date,     true);
+      if (meta.author)   setMeta('article:author',         meta.author,   true);
+      if (meta.category) setMeta('article:section',        meta.category, true);
+
+      // Twitter Card
+      setMeta('twitter:card',        twCard);
+      setMeta('twitter:title',       twTitle);
+      setMeta('twitter:description', twDesc);
+      setMeta('twitter:image',       twImage);
+      setMeta('twitter:site',        '@CarouselForge');
+
+      // JSON-LD Structured Data
+      var ld = {
         "@context": "https://schema.org",
-        "@type": "BlogPosting",
-        "headline": meta.title,
-        "description": meta.description,
-        "author": { "@type": "Organization", "name": meta.author || "CarouselForge Team" },
-        "publisher": { "@type": "Organization", "name": "CarouselForge", "url": "https://carouselforge.app" },
+        "@type": schemaType,
+        "headline": seoTitle,
+        "description": metaDesc,
+        "url": pageUrl,
+        "image": ogImage,
         "datePublished": meta.date,
-        "url": `https://carouselforge.app/blog/post.html?slug=${slug}`,
-        "image": meta.thumbnail || "https://carouselforge.app/icons/icon-512.png",
-        "keywords": meta.keywords
+        "dateModified": meta.date,
+        "author": { "@type": "Person", "name": meta.author || "CarouselForge Team" },
+        "publisher": {
+          "@type": "Organization",
+          "name": "CarouselForge",
+          "url": "https://carouselforge.app",
+          "logo": { "@type": "ImageObject", "url": "https://carouselforge.app/icons/icon-512.png" }
+        },
+        "mainEntityOfPage": { "@type": "WebPage", "@id": pageUrl },
+        "keywords": keywords,
+        "articleSection": meta.category || "Blog"
       };
-      const ldScript = document.createElement('script');
+      var ldScript = document.createElement('script');
       ldScript.type = 'application/ld+json';
-      ldScript.textContent = JSON.stringify(ld);
+      ldScript.textContent = JSON.stringify(ld, null, 2);
       document.head.appendChild(ldScript);
     }
 
     function renderArticle(meta, bodyHtml, slug) {
-      const authorInitial = (meta.author || 'C')[0].toUpperCase();
-      const thumbHtml = meta.thumbnail
-        ? `<img class="featured-image" src="${meta.thumbnail}" alt="${meta.title}" loading="eager">`
+      var authorInitial = (meta.author || 'C').charAt(0).toUpperCase();
+      var thumbHtml = meta.thumbnail
+        ? '<img class="featured-image" src="' + meta.thumbnail + '" alt="' + (meta.title || '') + '" loading="eager">'
         : '';
+      var descHtml = (meta.seo && meta.seo.meta_description)
+        ? meta.seo.meta_description
+        : (meta.description || '');
 
-      document.getElementById('pageContent').innerHTML = `
-        <div class="article-wrap">
-          <div class="breadcrumb">
-            <a href="../">Home</a><span>›</span>
-            <a href="../blog/">Blog</a><span>›</span>
-            <span>${meta.title || 'Article'}</span>
-          </div>
-          <header class="article-header">
-            ${meta.category ? `<div class="article-category">${meta.category}</div>` : ''}
-            <h1 class="article-title">${meta.title || 'Untitled'}</h1>
-            ${meta.description ? `<p class="article-desc">${meta.description}</p>` : ''}
-            <div class="article-meta">
-              <div class="article-author">
-                <div class="author-avatar">${authorInitial}</div>
-                <div>
-                  <div class="author-name">${meta.author || 'CarouselForge Team'}</div>
-                  ${meta.date ? `<div class="article-date">${formatDate(meta.date)}</div>` : ''}
-                </div>
-              </div>
-            </div>
-          </header>
-          ${thumbHtml}
-          <article class="article-content" id="articleBody">
-            ${bodyHtml}
-          </article>
-          <hr class="divider">
-          <div class="cta-box">
-            <h3>✨ Ready to create your own carousels?</h3>
-            <p>Turn any text into beautiful social media slides — free, no signup needed.</p>
-            <a href="../">
-              <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
-              Create Carousel Free
-            </a>
-          </div>
-          <a href="../blog/" class="back-link">← Back to all articles</a>
-        </div>`;
+      document.getElementById('pageContent').innerHTML =
+        '<div class="article-wrap">' +
+          '<div class="breadcrumb">' +
+            '<a href="../">Home</a><span>&#8250;</span>' +
+            '<a href="../blog/">Blog</a><span>&#8250;</span>' +
+            '<span>' + (meta.title || 'Article') + '</span>' +
+          '</div>' +
+          '<header class="article-header">' +
+            (meta.category ? '<div class="article-category">' + meta.category + '</div>' : '') +
+            '<h1 class="article-title">' + (meta.title || 'Untitled') + '</h1>' +
+            (descHtml ? '<p class="article-desc">' + descHtml + '</p>' : '') +
+            '<div class="article-meta">' +
+              '<div class="article-author">' +
+                '<div class="author-avatar">' + authorInitial + '</div>' +
+                '<div>' +
+                  '<div class="author-name">' + (meta.author || 'CarouselForge Team') + '</div>' +
+                  (meta.date ? '<div class="article-date">' + formatDate(meta.date) + '</div>' : '') +
+                '</div>' +
+              '</div>' +
+            '</div>' +
+          '</header>' +
+          thumbHtml +
+          '<article class="article-content" id="articleBody">' + bodyHtml + '</article>' +
+          '<hr class="divider">' +
+          '<div class="cta-box">' +
+            '<h3>&#10024; Ready to create your own carousels?</h3>' +
+            '<p>Turn any text into beautiful social media slides &#8212; free, no signup needed.</p>' +
+            '<a href="../">Create Carousel Free &#8594;</a>' +
+          '</div>' +
+          '<a href="../blog/" class="back-link">&#8592; Back to all articles</a>' +
+        '</div>';
     }
 
     async function loadPost() {
-      const params = new URLSearchParams(window.location.search);
-      const slug = params.get('slug');
+      var params = new URLSearchParams(window.location.search);
+      var slug = params.get('slug');
 
       if (!slug) {
-        document.getElementById('pageContent').innerHTML = `<div class="error-wrap"><div style="font-size:3rem;margin-bottom:16px;">🔍</div><h2 style="color:var(--text-primary);margin-bottom:8px;">Post not found</h2><p>No post slug provided.</p><a href="../blog/" style="color:var(--accent)">← Back to Blog</a></div>`;
+        document.getElementById('pageContent').innerHTML =
+          '<div class="error-wrap"><div style="font-size:3rem;margin-bottom:16px;">&#128269;</div>' +
+          '<h2 style="color:var(--text-primary);margin-bottom:8px;">Post not found</h2>' +
+          '<p>No post slug provided.</p><br>' +
+          '<a href="../blog/" style="color:var(--accent)">&#8592; Back to Blog</a></div>';
         return;
       }
 
       try {
-        const url = `${RAW_BASE}blog/posts/${slug}.md`;
-        const res = await fetch(url);
-        if (!res.ok) throw new Error('Post not found');
-        const text = await res.text();
-        const { body, meta } = parseFrontmatter(text);
-        const bodyHtml = marked.parse(body);
-        injectSEO(meta, slug);
-        renderArticle(meta, bodyHtml, slug);
-      } catch (err) {
-        document.getElementById('pageContent').innerHTML = `<div class="error-wrap"><div style="font-size:3rem;margin-bottom:16px;">😕</div><h2 style="color:var(--text-primary);margin-bottom:8px;">Post not found</h2><p style="margin-bottom:20px;">This article doesn't exist or may have been moved.</p><a href="../blog/" style="color:var(--accent)">← Back to Blog</a></div>`;
+        var url = RAW_BASE + 'blog/posts/' + slug + '.md';
+        var res = await fetch(url);
+        if (!res.ok) throw new Error('Not found');
+        var text = await res.text();
+        var parsed = parseFrontmatter(text);
+        var bodyHtml = marked.parse(parsed.body);
+        injectSEO(parsed.meta, slug);
+        renderArticle(parsed.meta, bodyHtml, slug);
+      } catch(err) {
+        document.getElementById('pageContent').innerHTML =
+          '<div class="error-wrap"><div style="font-size:3rem;margin-bottom:16px;">&#128533;</div>' +
+          '<h2 style="color:var(--text-primary);margin-bottom:8px;">Post not found</h2>' +
+          '<p style="margin-bottom:20px;">This article does not exist or may have been moved.</p>' +
+          '<a href="../blog/" style="color:var(--accent)">&#8592; Back to Blog</a></div>';
       }
     }
 
