@@ -42,7 +42,7 @@ Keep each slide focused on **one idea only**. The structure should be:
 2. **Slides 2-8 (Content):** One point per slide, with a short title and 2-3 lines of explanation
 3. **Last Slide (CTA):** Tell people what to do next follow, comment, or share
 
-**Tip:** Write your content first as a numbered list, then paste it into CarouselForge. The tool will automatically split it into slides for you.
+**Tip:** Write your content first as a numbered list, then paste it into [CarouselForge's free LinkedIn Carousel Generator](https://carouselforge.app/linkedin-carousel-generator.html). The tool will automatically split it into slides for you. If you are starting from a published article, check out our guide on [how to turn blog posts into LinkedIn carousels](https://carouselforge.app/blog/post.html?slug=turn-blog-post-into-linkedin-carousel).
 
 ## Step 3: Pick the Right Design
 
@@ -101,4 +101,4 @@ That's it. Consistency beats perfection  start with one carousel this week and b
 
 - - -
 
-Ready to create your first LinkedIn carousel? Use CarouselForge  it's free, no signup required, and you'll have beautiful slides in under a minute.
+Ready to create your first LinkedIn carousel? Use [CarouselForge's free LinkedIn Carousel Generator](https://carouselforge.app/linkedin-carousel-generator.html) — it's free, no signup required, and you'll have beautiful slides in under a minute.

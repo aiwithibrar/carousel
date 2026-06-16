@@ -135,12 +135,12 @@ A 5% improvement in open rate compounds massively over time. Test every single e
 
 ## Step 4 — Generate Your Carousel
 
-1. Go to **[CarouselForge](https://carouselforge.app)**
+1. Go to the [free LinkedIn Carousel Generator on CarouselForge](https://carouselforge.app/linkedin-carousel-generator.html) (or use our [Instagram Carousel Maker](https://carouselforge.app/instagram-carousel-maker.html) for IG sized posts)
 2. Paste your formatted content into the text box
 3. Click **Generate Slides**
 4. The tool auto-detects the numbered list format and creates one slide per point
 
-You'll see a live preview instantly.
+You'll see a live preview instantly. If you need a more basic walkthrough, check out our guide on [how to create a LinkedIn carousel in 60 seconds](https://carouselforge.app/blog/post.html?slug=how-to-create-linkedin-carousel-free-60-seconds).
 
 ---
 
@@ -213,6 +213,6 @@ Pick your best-performing blog post from the last 6 months. Extract the key poin
 
 By the time you finish reading this sentence, you could have your first slide preview ready.
 
-**[Create your carousel now — it's free →](https://carouselforge.app)**
+**[Create your carousel now — it's free →](https://carouselforge.app/linkedin-carousel-generator.html)**
 
 No signup. No design skills. No watermark. Just your best content, reimagined for LinkedIn.

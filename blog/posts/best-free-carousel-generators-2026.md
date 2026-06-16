@@ -37,14 +37,14 @@ We tested 5 of the most popular free carousel generators to find out which ones 
 
 ## 1. CarouselForge — Best Overall Free Tool
 
-**URL:** [carouselforge.app](https://carouselforge.app)
+**URL:** [carouselforge.app](https://carouselforge.app) (with dedicated pages like the [LinkedIn Carousel Generator](https://carouselforge.app/linkedin-carousel-generator.html) and [Instagram Carousel Maker](https://carouselforge.app/instagram-carousel-maker.html))
 **Price:** 100% Free
 **Signup required:** No
 **Watermark:** No
 
 CarouselForge is the only tool we tested that is genuinely, completely free with no strings attached.
 
-**How it works:** Paste your text, pick a theme, click generate — your slides are ready in seconds. No account, no credit card, no watermark.
+**How it works:** Paste your text, pick a theme, click generate — your slides are ready in seconds. No account, no credit card, no watermark. If you have an existing article, you can read our guide on [how to turn blog posts into carousels](https://carouselforge.app/blog/post.html?slug=turn-blog-post-into-linkedin-carousel) to do this even faster.
 
 **What makes it stand out:**
 - **11 premium themes** — the most of any free tool

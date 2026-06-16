@@ -30,9 +30,9 @@ You don't. Here's how to make a professional LinkedIn carousel in under 60 secon
 
 - Your content (a tip list, a lesson, a story — anything)
 - 60 seconds
-- [CarouselForge](https://carouselforge.app) (free, no account required)
+- [CarouselForge's free LinkedIn Carousel Generator](https://carouselforge.app/linkedin-carousel-generator.html) (free, no account required)
 
-That's it. No Canva. No Photoshop. No design skills.
+That's it. No Canva. No Photoshop. No design skills. If you want to make sure your slides perform well, read our guide on [how to create a viral LinkedIn carousel](https://carouselforge.app/blog/post.html?slug=how-to-create-viral-linkedin-carousel).
 
 ---
 
@@ -167,6 +167,6 @@ Your final slide should always include:
 
 You now have everything you need. The tool is free, takes under 60 seconds, and requires zero design experience.
 
-**[Start creating your LinkedIn carousel →](https://carouselforge.app)**
+**[Start creating your LinkedIn carousel →](https://carouselforge.app/linkedin-carousel-generator.html)**
 
 No signup. No credit card. No watermark. Just stunning slides.
