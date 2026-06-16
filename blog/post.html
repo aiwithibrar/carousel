@@ -3,105 +3,103 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Blog — CarouselForge</title>
+  <title>Blog &#8212; CarouselForge</title>
   <link rel="icon" type="image/png" sizes="512x512" href="../icons/icon-512.png">
-  <link rel="stylesheet" href="../style.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Merriweather:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../style.css">
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    :root {
-      --bg-primary: #0a0a0f;
-      --bg-card: #16161f;
-      --border: #1e1e2e;
-      --border-subtle: rgba(255,255,255,0.06);
-      --text-primary: #f1f5f9;
-      --text-secondary: #94a3b8;
-      --text-muted: #64748b;
-      --accent: #818cf8;
-      --accent-2: #c084fc;
-      --accent-glow: rgba(129,140,248,0.15);
-      --radius: 16px;
+    /* Post-specific styles — inherits all colours from ../style.css */
+    .blog-nav {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 40px; height: 64px; position: sticky; top: 0; z-index: 100;
+      background: rgba(255,255,255,0.9); backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border-subtle);
     }
-    body { font-family: 'Inter', system-ui, sans-serif; background: var(--bg-primary); color: var(--text-primary); min-height: 100vh; line-height: 1.6; }
-
-    /* NAV */
-    nav { position: sticky; top: 0; z-index: 100; display: flex; align-items: center; justify-content: space-between; padding: 0 24px; height: 60px; background: rgba(10,10,15,0.85); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border-subtle); }
-    .nav-logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
-    .nav-logo span { font-size: 1.1rem; font-weight: 700; color: var(--text-primary); }
-    .nav-links { display: flex; align-items: center; gap: 20px; }
-    .nav-links a { color: var(--text-secondary); text-decoration: none; font-size: 0.9rem; transition: color 0.2s; }
-    .nav-links a:hover { color: var(--accent); }
-    .nav-btn { background: linear-gradient(135deg, var(--accent), var(--accent-2)); color: #fff; border: none; border-radius: 8px; padding: 8px 16px; font-size: 0.85rem; font-weight: 600; cursor: pointer; text-decoration: none; font-family: inherit; transition: opacity 0.2s; }
-    .nav-btn:hover { opacity: 0.85; }
+    .blog-nav-logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+    .blog-nav-logo span { font-size: 1.1rem; font-weight: 800; background: var(--accent-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .blog-nav-links { display: flex; align-items: center; gap: 24px; }
+    .blog-nav-links a { color: var(--text-secondary); text-decoration: none; font-size: 0.9rem; font-weight: 500; transition: color 0.2s; }
+    .blog-nav-links a:hover { color: var(--accent-primary); }
+    .blog-nav-btn { background: var(--accent-primary); color: #fff; border: none; border-radius: 8px; padding: 9px 18px; font-size: 0.85rem; font-weight: 600; cursor: pointer; text-decoration: none; font-family: inherit; transition: all 0.2s; }
+    .blog-nav-btn:hover { background: #2563eb; transform: translateY(-1px); }
 
     /* LOADING */
     .loading-wrap { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 60vh; gap: 16px; color: var(--text-secondary); }
-    .loading-spinner { width: 44px; height: 44px; border: 3px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.8s linear infinite; }
+    .loading-spinner { width: 44px; height: 44px; border: 3px solid var(--border-subtle); border-top-color: var(--accent-primary); border-radius: 50%; animation: spin 0.8s linear infinite; }
     @keyframes spin { to { transform: rotate(360deg); } }
 
-    /* ARTICLE */
-    .article-wrap { max-width: 760px; margin: 0 auto; padding: 40px 24px 80px; }
+    /* ARTICLE LAYOUT */
+    .article-wrap { max-width: 760px; margin: 0 auto; padding: 48px 24px 80px; }
+
     .breadcrumb { display: flex; align-items: center; gap: 6px; font-size: 0.82rem; color: var(--text-muted); margin-bottom: 32px; flex-wrap: wrap; }
     .breadcrumb a { color: var(--text-muted); text-decoration: none; transition: color 0.2s; }
-    .breadcrumb a:hover { color: var(--accent); }
-    .breadcrumb span { color: var(--border); }
-    .article-header { margin-bottom: 40px; }
-    .article-category { display: inline-block; font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; background: var(--accent-glow); color: var(--accent); padding: 4px 12px; border-radius: 999px; border: 1px solid rgba(129,140,248,0.2); margin-bottom: 16px; }
-    .article-title { font-size: clamp(1.8rem, 4vw, 2.8rem); font-weight: 800; line-height: 1.2; background: linear-gradient(135deg, #f1f5f9 60%, var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin-bottom: 16px; }
-    .article-desc { font-size: 1.1rem; color: var(--text-secondary); line-height: 1.7; margin-bottom: 20px; }
-    .article-meta { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
-    .article-author { display: flex; align-items: center; gap: 8px; }
-    .author-avatar { width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, var(--accent), var(--accent-2)); display: flex; align-items: center; justify-content: center; font-size: 0.85rem; font-weight: 700; color: #fff; flex-shrink: 0; }
-    .author-name { font-size: 0.9rem; font-weight: 600; color: var(--text-primary); }
-    .article-date { font-size: 0.85rem; color: var(--text-muted); }
-    .featured-image { width: 100%; border-radius: var(--radius); object-fit: cover; max-height: 440px; margin-bottom: 40px; border: 1px solid var(--border-subtle); }
+    .breadcrumb a:hover { color: var(--accent-primary); }
+    .breadcrumb-sep { color: var(--border-subtle); }
 
-    /* CONTENT */
-    .article-content { font-family: 'Merriweather', Georgia, serif; font-size: 1.05rem; line-height: 1.85; color: #cbd5e1; }
-    .article-content h1, .article-content h2, .article-content h3, .article-content h4 { font-family: 'Inter', sans-serif; color: var(--text-primary); margin: 2em 0 0.75em; line-height: 1.3; }
-    .article-content h2 { font-size: 1.5rem; font-weight: 700; }
-    .article-content h3 { font-size: 1.25rem; font-weight: 600; }
+    .article-header { margin-bottom: 40px; }
+    .article-category { display: inline-block; font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.07em; background: rgba(59,130,246,0.08); color: var(--accent-primary); padding: 4px 12px; border-radius: 999px; border: 1px solid rgba(59,130,246,0.15); margin-bottom: 16px; }
+    .article-title { font-size: clamp(1.8rem, 4vw, 2.6rem); font-weight: 900; line-height: 1.15; letter-spacing: -0.03em; color: var(--text-primary); margin-bottom: 16px; }
+    .article-desc { font-size: 1.1rem; color: var(--text-secondary); line-height: 1.7; margin-bottom: 24px; }
+    .article-meta { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; padding-top: 16px; border-top: 1px solid var(--border-subtle); }
+    .author-avatar { width: 36px; height: 36px; border-radius: 50%; background: var(--accent-gradient); display: flex; align-items: center; justify-content: center; font-size: 0.85rem; font-weight: 700; color: #fff; flex-shrink: 0; }
+    .author-name { font-size: 0.9rem; font-weight: 600; color: var(--text-primary); }
+    .article-date { font-size: 0.82rem; color: var(--text-muted); }
+
+    .featured-image { width: 100%; border-radius: var(--radius-lg); object-fit: cover; max-height: 440px; margin-bottom: 40px; border: 1px solid var(--border-subtle); box-shadow: var(--shadow-md); }
+
+    /* ARTICLE CONTENT */
+    .article-content { font-family: 'Merriweather', Georgia, serif; font-size: 1.05rem; line-height: 1.85; color: var(--text-secondary); }
+    .article-content h1, .article-content h2, .article-content h3, .article-content h4 { font-family: 'Inter', sans-serif; color: var(--text-primary); margin: 2em 0 0.75em; line-height: 1.3; letter-spacing: -0.02em; }
+    .article-content h2 { font-size: 1.5rem; font-weight: 800; }
+    .article-content h3 { font-size: 1.2rem; font-weight: 700; }
     .article-content p { margin-bottom: 1.4em; }
     .article-content ul, .article-content ol { margin: 0 0 1.4em 1.5em; }
     .article-content li { margin-bottom: 0.5em; }
     .article-content strong { color: var(--text-primary); font-weight: 700; }
-    .article-content em { color: var(--accent); font-style: italic; }
-    .article-content a { color: var(--accent); text-decoration: underline; }
-    .article-content blockquote { border-left: 3px solid var(--accent); padding: 12px 20px; margin: 1.5em 0; background: var(--accent-glow); border-radius: 0 8px 8px 0; color: var(--text-secondary); font-style: italic; }
-    .article-content code { background: var(--bg-card); border: 1px solid var(--border); border-radius: 4px; padding: 2px 6px; font-size: 0.88em; font-family: 'Courier New', monospace; color: var(--accent-2); }
-    .article-content pre { background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px; padding: 20px; overflow-x: auto; margin-bottom: 1.4em; }
+    .article-content em { color: var(--accent-primary); font-style: italic; }
+    .article-content a { color: var(--accent-primary); text-decoration: underline; }
+    .article-content a:hover { color: #2563eb; }
+    .article-content blockquote { border-left: 3px solid var(--accent-primary); padding: 14px 20px; margin: 1.5em 0; background: rgba(59,130,246,0.04); border-radius: 0 8px 8px 0; color: var(--text-secondary); font-style: italic; }
+    .article-content code { background: var(--bg-tertiary); border: 1px solid var(--border-subtle); border-radius: 4px; padding: 2px 6px; font-size: 0.88em; font-family: 'Courier New', monospace; color: var(--accent-primary); }
+    .article-content pre { background: var(--bg-secondary); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 20px; overflow-x: auto; margin-bottom: 1.4em; }
     .article-content pre code { background: none; border: none; padding: 0; }
-    .article-content img { max-width: 100%; border-radius: 10px; margin: 1em 0; border: 1px solid var(--border-subtle); }
-    .article-content hr { border: none; border-top: 1px solid var(--border); margin: 2.5em 0; }
+    .article-content img { max-width: 100%; border-radius: var(--radius-md); margin: 1em 0; border: 1px solid var(--border-subtle); }
+    .article-content hr { border: none; border-top: 1px solid var(--border-subtle); margin: 2.5em 0; }
+    .article-content table { width: 100%; border-collapse: collapse; margin-bottom: 1.4em; font-family: 'Inter', sans-serif; font-size: 0.9rem; }
+    .article-content th { background: var(--bg-secondary); color: var(--text-primary); font-weight: 700; padding: 10px 14px; text-align: left; border: 1px solid var(--border-subtle); }
+    .article-content td { padding: 10px 14px; border: 1px solid var(--border-subtle); color: var(--text-secondary); }
+    .article-content tr:nth-child(even) td { background: rgba(59,130,246,0.02); }
 
-    /* CTA */
-    .cta-box { margin-top: 60px; padding: 32px; background: linear-gradient(135deg, rgba(129,140,248,0.1), rgba(192,132,252,0.1)); border: 1px solid rgba(129,140,248,0.2); border-radius: var(--radius); text-align: center; }
-    .cta-box h3 { font-size: 1.3rem; font-weight: 700; margin-bottom: 8px; color: var(--text-primary); }
+    /* CTA BOX */
+    .cta-box { margin-top: 60px; padding: 36px; background: linear-gradient(135deg, #eff6ff, #f5f3ff); border: 1px solid rgba(59,130,246,0.2); border-radius: var(--radius-lg); text-align: center; }
+    .cta-box h3 { font-size: 1.3rem; font-weight: 800; margin-bottom: 8px; color: var(--text-primary); }
     .cta-box p { color: var(--text-secondary); margin-bottom: 20px; font-family: 'Inter', sans-serif; font-size: 0.95rem; }
-    .cta-box a { display: inline-flex; align-items: center; gap: 8px; background: linear-gradient(135deg, var(--accent), var(--accent-2)); color: #fff; text-decoration: none; font-weight: 600; font-family: 'Inter', sans-serif; padding: 12px 24px; border-radius: 10px; font-size: 0.95rem; transition: opacity 0.2s; }
-    .cta-box a:hover { opacity: 0.85; }
+    .cta-box a { display: inline-flex; align-items: center; gap: 8px; background: var(--accent-primary); color: #fff; text-decoration: none; font-weight: 700; font-family: 'Inter', sans-serif; padding: 13px 26px; border-radius: 10px; font-size: 0.95rem; transition: all 0.2s; box-shadow: var(--shadow-md); }
+    .cta-box a:hover { background: #2563eb; transform: translateY(-2px); box-shadow: var(--shadow-lg); }
+
     .divider { border: none; border-top: 1px solid var(--border-subtle); margin: 48px 0; }
-    .back-link { display: inline-flex; align-items: center; gap: 6px; color: var(--text-muted); text-decoration: none; font-size: 0.88rem; font-family: 'Inter', sans-serif; transition: color 0.2s; margin-top: 24px; }
-    .back-link:hover { color: var(--accent); }
+    .back-link { display: inline-flex; align-items: center; gap: 6px; color: var(--text-muted); text-decoration: none; font-size: 0.88rem; font-family: 'Inter', sans-serif; transition: color 0.2s; margin-top: 8px; }
+    .back-link:hover { color: var(--accent-primary); }
     .error-wrap { text-align: center; padding: 80px 24px; color: var(--text-secondary); }
 
-    footer { border-top: 1px solid var(--border-subtle); text-align: center; padding: 24px; font-size: 0.82rem; color: var(--text-muted); }
-    footer a { color: var(--text-muted); text-decoration: none; margin: 0 8px; }
-    footer a:hover { color: var(--accent); }
+    .blog-footer { border-top: 1px solid var(--border-subtle); text-align: center; padding: 24px; font-size: 0.82rem; color: var(--text-muted); display: flex; align-items: center; justify-content: center; gap: 16px; }
+    .blog-footer a { color: var(--text-muted); text-decoration: none; transition: color 0.2s; }
+    .blog-footer a:hover { color: var(--accent-primary); }
 
-    @media (max-width: 600px) {
+    @media (max-width: 640px) {
+      .blog-nav { padding: 0 16px; }
+      .blog-nav-links .hide-mobile { display: none; }
       .article-wrap { padding: 24px 16px 60px; }
-      .nav-links .hide-mobile { display: none; }
     }
   </style>
 </head>
 <body>
 
-  <nav>
-    <a href="../" class="nav-logo">
+  <nav class="blog-nav">
+    <a href="../" class="blog-nav-logo">
       <svg width="24" height="24" viewBox="0 0 28 28" fill="none">
         <rect x="2" y="2" width="10" height="10" rx="2" fill="#818cf8"/>
         <rect x="16" y="2" width="10" height="10" rx="2" fill="#c084fc"/>
@@ -110,11 +108,11 @@
       </svg>
       <span>CarouselForge</span>
     </a>
-    <div class="nav-links">
+    <div class="blog-nav-links">
       <a href="../" class="hide-mobile">Home</a>
       <a href="../blog/">Blog</a>
       <a href="../about.html" class="hide-mobile">About</a>
-      <a href="../" class="nav-btn">Create Free</a>
+      <a href="../" class="blog-nav-btn">Create Free &#8594;</a>
     </div>
   </nav>
 
@@ -125,7 +123,7 @@
     </div>
   </div>
 
-  <footer>
+  <footer class="blog-footer">
     <span>&#169; 2026 CarouselForge</span>
     <a href="../privacy.html">Privacy</a>
     <a href="../terms.html">Terms</a>
@@ -133,11 +131,10 @@
   </footer>
 
   <script>
-    const REPO = 'aiwithibrar/carousel';
-    const BRANCH = 'main';
-    const RAW_BASE = 'https://raw.githubusercontent.com/' + REPO + '/' + BRANCH + '/';
+    var REPO = 'aiwithibrar/carousel';
+    var BRANCH = 'main';
+    var RAW_BASE = 'https://raw.githubusercontent.com/' + REPO + '/' + BRANCH + '/';
 
-    // Parse YAML frontmatter — supports nested objects (seo:, og:, twitter:)
     function parseFrontmatter(text) {
       var match = text.match(/^---\n([\s\S]*?)\n---/);
       if (!match) return { body: text, meta: {} };
@@ -145,7 +142,6 @@
       var body = text.slice(match[0].length).trim();
       var meta = {};
       var currentParent = null;
-
       yamlStr.split('\n').forEach(function(line) {
         if (!line.trim() || line.trim().charAt(0) === '#') return;
         var isIndented = line.charAt(0) === ' ' || line.charAt(0) === '\t';
@@ -153,126 +149,81 @@
         if (colonIdx === -1) return;
         var key = line.slice(0, colonIdx).trim();
         var val = line.slice(colonIdx + 1).trim();
-        // Remove surrounding quotes
-        if (val.length >= 2 &&
-          ((val.charAt(0) === '"' && val.charAt(val.length-1) === '"') ||
-           (val.charAt(0) === "'" && val.charAt(val.length-1) === "'"))) {
-          val = val.slice(1, -1);
-        }
-        if (!isIndented && val === '') {
-          // Parent key (e.g. "seo:", "og:", "twitter:")
-          currentParent = key;
-          meta[key] = {};
-        } else if (isIndented && currentParent) {
-          meta[currentParent][key] = val;
-        } else {
-          currentParent = null;
-          meta[key] = val;
-        }
+        if (val.length >= 2 && ((val.charAt(0) === '"' && val.charAt(val.length-1) === '"') || (val.charAt(0) === "'" && val.charAt(val.length-1) === "'"))) val = val.slice(1,-1);
+        if (!isIndented && val === '') { currentParent = key; meta[key] = {}; }
+        else if (isIndented && currentParent) { meta[currentParent][key] = val; }
+        else { currentParent = null; meta[key] = val; }
       });
       return { body: body, meta: meta };
     }
 
-    function formatDate(dateStr) {
-      if (!dateStr) return '';
-      try {
-        return new Date(dateStr).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
-      } catch(e) { return dateStr; }
+    function formatDate(d) {
+      if (!d) return '';
+      try { return new Date(d).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }); }
+      catch(e) { return d; }
     }
 
     function injectSEO(meta, slug) {
-      // Resolve nested objects with fallbacks
       var seo = (meta.seo && typeof meta.seo === 'object') ? meta.seo : {};
       var og  = (meta.og  && typeof meta.og  === 'object') ? meta.og  : {};
       var tw  = (meta.twitter && typeof meta.twitter === 'object') ? meta.twitter : {};
 
-      var pageUrl    = 'https://carouselforge.app/blog/post.html?slug=' + slug;
-      var seoTitle   = seo.meta_title          || meta.title       || 'Article';
-      var metaDesc   = seo.meta_description    || meta.description || '';
-      var keywords   = seo.keywords            || meta.keywords    || '';
-      var canonical  = seo.canonical_url       || pageUrl;
-      var noindex    = (seo.noindex === 'true' || seo.noindex === true);
-
-      var ogTitle    = og.og_title             || seoTitle;
-      var ogDesc     = og.og_description       || metaDesc;
-      var ogImage    = og.og_image             || meta.thumbnail   || 'https://carouselforge.app/icons/icon-512.png';
-
-      var twCard     = tw.twitter_card         || 'summary_large_image';
-      var twTitle    = tw.twitter_title        || ogTitle;
-      var twDesc     = tw.twitter_description  || ogDesc;
-      var twImage    = tw.twitter_image        || ogImage;
-
-      var schemaType = meta.schema_type        || 'BlogPosting';
+      var pageUrl   = 'https://carouselforge.app/blog/post.html?slug=' + slug;
+      var seoTitle  = seo.meta_title || meta.title || 'Article';
+      var metaDesc  = seo.meta_description || meta.description || '';
+      var keywords  = seo.keywords || meta.keywords || '';
+      var canonical = seo.canonical_url || pageUrl;
+      var noindex   = (seo.noindex === 'true' || seo.noindex === true);
+      var ogImage   = og.og_image || meta.thumbnail || 'https://carouselforge.app/icons/icon-512.png';
+      var twCard    = tw.twitter_card || 'summary_large_image';
+      var schemaType = meta.schema_type || 'BlogPosting';
 
       document.title = seoTitle + ' | CarouselForge Blog';
 
       function setMeta(name, content, isProp) {
         if (!content) return;
         var attr = isProp ? 'property' : 'name';
-        var sel = 'meta[' + attr + '="' + name + '"]';
-        var el = document.querySelector(sel);
-        if (!el) {
-          el = document.createElement('meta');
-          el.setAttribute(attr, name);
-          document.head.appendChild(el);
-        }
+        var el = document.querySelector('meta[' + attr + '="' + name + '"]');
+        if (!el) { el = document.createElement('meta'); el.setAttribute(attr, name); document.head.appendChild(el); }
         el.setAttribute('content', content);
       }
-
       function setLink(rel, href) {
         var el = document.querySelector('link[rel="' + rel + '"]');
         if (!el) { el = document.createElement('link'); el.setAttribute('rel', rel); document.head.appendChild(el); }
         el.setAttribute('href', href);
       }
 
-      // Basic SEO
       setMeta('description', metaDesc);
       setMeta('keywords', keywords);
       setMeta('author', meta.author);
-      setMeta('robots', noindex ? 'noindex, nofollow' : 'index, follow');
+      setMeta('robots', noindex ? 'noindex,nofollow' : 'index,follow');
       if (seo.focus_keyword) setMeta('news_keywords', seo.focus_keyword);
       setLink('canonical', canonical);
 
-      // Open Graph
-      setMeta('og:type',             'article', true);
-      setMeta('og:url',              pageUrl,   true);
-      setMeta('og:title',            ogTitle,   true);
-      setMeta('og:description',      ogDesc,    true);
-      setMeta('og:image',            ogImage,   true);
-      setMeta('og:image:width',      '1200',    true);
-      setMeta('og:image:height',     '630',     true);
+      setMeta('og:type',             'article',  true);
+      setMeta('og:url',              pageUrl,    true);
+      setMeta('og:title',            og.og_title || seoTitle, true);
+      setMeta('og:description',      og.og_description || metaDesc, true);
+      setMeta('og:image',            ogImage,    true);
       setMeta('og:site_name',        'CarouselForge', true);
       if (meta.date)     setMeta('article:published_time', meta.date,     true);
-      if (meta.author)   setMeta('article:author',         meta.author,   true);
       if (meta.category) setMeta('article:section',        meta.category, true);
 
-      // Twitter Card
       setMeta('twitter:card',        twCard);
-      setMeta('twitter:title',       twTitle);
-      setMeta('twitter:description', twDesc);
-      setMeta('twitter:image',       twImage);
+      setMeta('twitter:title',       tw.twitter_title || og.og_title || seoTitle);
+      setMeta('twitter:description', tw.twitter_description || og.og_description || metaDesc);
+      setMeta('twitter:image',       tw.twitter_image || ogImage);
       setMeta('twitter:site',        '@CarouselForge');
 
-      // JSON-LD Structured Data
       var ld = {
-        "@context": "https://schema.org",
-        "@type": schemaType,
-        "headline": seoTitle,
-        "description": metaDesc,
-        "url": pageUrl,
-        "image": ogImage,
-        "datePublished": meta.date,
-        "dateModified": meta.date,
+        "@context": "https://schema.org", "@type": schemaType,
+        "headline": seoTitle, "description": metaDesc, "url": pageUrl, "image": ogImage,
+        "datePublished": meta.date, "dateModified": meta.date,
         "author": { "@type": "Person", "name": meta.author || "CarouselForge Team" },
-        "publisher": {
-          "@type": "Organization",
-          "name": "CarouselForge",
-          "url": "https://carouselforge.app",
-          "logo": { "@type": "ImageObject", "url": "https://carouselforge.app/icons/icon-512.png" }
-        },
+        "publisher": { "@type": "Organization", "name": "CarouselForge", "url": "https://carouselforge.app",
+          "logo": { "@type": "ImageObject", "url": "https://carouselforge.app/icons/icon-512.png" } },
         "mainEntityOfPage": { "@type": "WebPage", "@id": pageUrl },
-        "keywords": keywords,
-        "articleSection": meta.category || "Blog"
+        "keywords": keywords, "articleSection": meta.category || "Blog"
       };
       var ldScript = document.createElement('script');
       ldScript.type = 'application/ld+json';
@@ -282,18 +233,15 @@
 
     function renderArticle(meta, bodyHtml, slug) {
       var authorInitial = (meta.author || 'C').charAt(0).toUpperCase();
+      var descHtml = (meta.seo && meta.seo.meta_description) ? meta.seo.meta_description : (meta.description || '');
       var thumbHtml = meta.thumbnail
-        ? '<img class="featured-image" src="' + meta.thumbnail + '" alt="' + (meta.title || '') + '" loading="eager">'
+        ? '<img class="featured-image" src="' + meta.thumbnail + '" alt="' + (meta.title||'') + '" loading="eager">'
         : '';
-      var descHtml = (meta.seo && meta.seo.meta_description)
-        ? meta.seo.meta_description
-        : (meta.description || '');
-
       document.getElementById('pageContent').innerHTML =
         '<div class="article-wrap">' +
           '<div class="breadcrumb">' +
-            '<a href="../">Home</a><span>&#8250;</span>' +
-            '<a href="../blog/">Blog</a><span>&#8250;</span>' +
+            '<a href="../">Home</a><span class="breadcrumb-sep"> &#8250; </span>' +
+            '<a href="../blog/">Blog</a><span class="breadcrumb-sep"> &#8250; </span>' +
             '<span>' + (meta.title || 'Article') + '</span>' +
           '</div>' +
           '<header class="article-header">' +
@@ -301,17 +249,15 @@
             '<h1 class="article-title">' + (meta.title || 'Untitled') + '</h1>' +
             (descHtml ? '<p class="article-desc">' + descHtml + '</p>' : '') +
             '<div class="article-meta">' +
-              '<div class="article-author">' +
-                '<div class="author-avatar">' + authorInitial + '</div>' +
-                '<div>' +
-                  '<div class="author-name">' + (meta.author || 'CarouselForge Team') + '</div>' +
-                  (meta.date ? '<div class="article-date">' + formatDate(meta.date) + '</div>' : '') +
-                '</div>' +
+              '<div class="author-avatar">' + authorInitial + '</div>' +
+              '<div>' +
+                '<div class="author-name">' + (meta.author || 'CarouselForge Team') + '</div>' +
+                (meta.date ? '<div class="article-date">' + formatDate(meta.date) + '</div>' : '') +
               '</div>' +
             '</div>' +
           '</header>' +
           thumbHtml +
-          '<article class="article-content" id="articleBody">' + bodyHtml + '</article>' +
+          '<article class="article-content">' + bodyHtml + '</article>' +
           '<hr class="divider">' +
           '<div class="cta-box">' +
             '<h3>&#10024; Ready to create your own carousels?</h3>' +
@@ -325,31 +271,20 @@
     async function loadPost() {
       var params = new URLSearchParams(window.location.search);
       var slug = params.get('slug');
-
       if (!slug) {
-        document.getElementById('pageContent').innerHTML =
-          '<div class="error-wrap"><div style="font-size:3rem;margin-bottom:16px;">&#128269;</div>' +
-          '<h2 style="color:var(--text-primary);margin-bottom:8px;">Post not found</h2>' +
-          '<p>No post slug provided.</p><br>' +
-          '<a href="../blog/" style="color:var(--accent)">&#8592; Back to Blog</a></div>';
+        document.getElementById('pageContent').innerHTML = '<div class="error-wrap"><div style="font-size:3rem;margin-bottom:16px">&#128269;</div><h2 style="color:var(--text-primary);margin-bottom:8px">Post not found</h2><p>No post slug provided.</p><br><a href="../blog/" style="color:var(--accent-primary)">&#8592; Back to Blog</a></div>';
         return;
       }
-
       try {
-        var url = RAW_BASE + 'blog/posts/' + slug + '.md';
-        var res = await fetch(url);
-        if (!res.ok) throw new Error('Not found');
+        var res = await fetch(RAW_BASE + 'blog/posts/' + slug + '.md');
+        if (!res.ok) throw new Error('not found');
         var text = await res.text();
         var parsed = parseFrontmatter(text);
         var bodyHtml = marked.parse(parsed.body);
         injectSEO(parsed.meta, slug);
         renderArticle(parsed.meta, bodyHtml, slug);
       } catch(err) {
-        document.getElementById('pageContent').innerHTML =
-          '<div class="error-wrap"><div style="font-size:3rem;margin-bottom:16px;">&#128533;</div>' +
-          '<h2 style="color:var(--text-primary);margin-bottom:8px;">Post not found</h2>' +
-          '<p style="margin-bottom:20px;">This article does not exist or may have been moved.</p>' +
-          '<a href="../blog/" style="color:var(--accent)">&#8592; Back to Blog</a></div>';
+        document.getElementById('pageContent').innerHTML = '<div class="error-wrap"><div style="font-size:3rem;margin-bottom:16px">&#128533;</div><h2 style="color:var(--text-primary);margin-bottom:8px">Post not found</h2><p style="margin-bottom:20px">This article does not exist or may have been moved.</p><a href="../blog/" style="color:var(--accent-primary)">&#8592; Back to Blog</a></div>';
       }
     }
 
