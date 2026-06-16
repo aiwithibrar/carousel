@@ -2,6 +2,8 @@
 <html lang="en">
 <head>
 <script src="https://quge5.com/88/tag.min.js" data-zone="240916" async data-cfasync="false"></script>
+<!-- Netlify Identity — handles email confirmation/recovery redirects -->
+<script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-NQ7Z1SX6WJ"></script>
 <script>
@@ -12,7 +14,7 @@
   gtag('config', 'G-NQ7Z1SX6WJ');
 </script>
     <meta charset="UTF-8">
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://cdn.jsdelivr.net https://quge5.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https:; connect-src 'self' https://www.google-analytics.com https://eyjybwkoucwoabzpatvm.supabase.co https://quge5.com;">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://cdn.jsdelivr.net https://quge5.com https://identity.netlify.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https:; connect-src 'self' https://www.google-analytics.com https://eyjybwkoucwoabzpatvm.supabase.co https://quge5.com https://identity.netlify.com;">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>CarouselForge — Free Instant Carousel Generator | Create Stunning Slides</title>
     <meta name="description" content="Create beautiful, professional carousel slides for LinkedIn, Instagram, Twitter & more. Paste your text, get stunning slides instantly. 100% free, no signup required.">
@@ -768,5 +770,17 @@ Rules:
     <script src="./app.js"></script>
     <!-- Feedback logic -->
     <script src="./feedback.js"></script>
+    <!-- Netlify Identity redirect handler -->
+    <script>
+      if (window.netlifyIdentity) {
+        window.netlifyIdentity.on('init', function(user) {
+          if (!user) {
+            window.netlifyIdentity.on('login', function() {
+              document.location.href = '/admin/';
+            });
+          }
+        });
+      }
+    </script>
 </body>
 </html>
