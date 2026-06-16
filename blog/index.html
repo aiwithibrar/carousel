@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Blog — CarouselForge | Carousel Tips, LinkedIn & Instagram Guides</title>
+  <meta name="description" content="Learn how to create stunning social media carousels. Tips, guides and strategies for LinkedIn, Instagram, Twitter and more.">
+  <meta name="keywords" content="carousel tips, linkedin carousel guide, instagram carousel, social media strategy, content creation">
+  <meta name="author" content="CarouselForge">
+  <link rel="canonical" href="https://carouselforge.app/blog/">
+  <meta property="og:title" content="Blog — CarouselForge">
+  <meta property="og:description" content="Tips, guides and strategies for creating stunning social media carousels.">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="https://carouselforge.app/icons/icon-512.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" type="image/png" sizes="512x512" href="../icons/icon-512.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Blog",
+    "name": "CarouselForge Blog",
+    "url": "https://carouselforge.app/blog/",
+    "description": "Tips, guides and strategies for creating stunning social media carousels.",
+    "publisher": {
+      "@type": "Organization",
+      "name": "CarouselForge",
+      "url": "https://carouselforge.app"
+    }
+  }
+  </script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg-primary: #0a0a0f;
+      --bg-secondary: #111118;
+      --bg-card: #16161f;
+      --border: #1e1e2e;
+      --border-subtle: rgba(255,255,255,0.06);
+      --text-primary: #f1f5f9;
+      --text-secondary: #94a3b8;
+      --text-muted: #64748b;
+      --accent: #818cf8;
+      --accent-2: #c084fc;
+      --accent-glow: rgba(129,140,248,0.15);
+      --radius: 16px;
+    }
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      min-height: 100vh;
+      line-height: 1.6;
+    }
+
+    /* NAV */
+    nav {
+      position: sticky; top: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 24px; height: 60px;
+      background: rgba(10,10,15,0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .nav-logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+    .nav-logo span { font-size: 1.1rem; font-weight: 700; color: var(--text-primary); }
+    .nav-links { display: flex; align-items: center; gap: 20px; }
+    .nav-links a { color: var(--text-secondary); text-decoration: none; font-size: 0.9rem; transition: color 0.2s; }
+    .nav-links a:hover, .nav-links a.active { color: var(--accent); }
+    .nav-btn {
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      color: #fff; border: none; border-radius: 8px;
+      padding: 8px 16px; font-size: 0.85rem; font-weight: 600;
+      cursor: pointer; text-decoration: none; font-family: inherit;
+      transition: opacity 0.2s;
+    }
+    .nav-btn:hover { opacity: 0.85; }
+
+    /* HERO */
+    .blog-hero {
+      text-align: center;
+      padding: 80px 24px 60px;
+      background: radial-gradient(ellipse 80% 60% at 50% -20%, rgba(129,140,248,0.12), transparent);
+    }
+    .blog-hero h1 {
+      font-size: clamp(2rem, 5vw, 3.5rem);
+      font-weight: 800;
+      background: linear-gradient(135deg, #f1f5f9, var(--accent), var(--accent-2));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+      margin-bottom: 16px;
+    }
+    .blog-hero p { font-size: 1.1rem; color: var(--text-secondary); max-width: 520px; margin: 0 auto; }
+
+    /* FILTERS */
+    .filters {
+      display: flex; flex-wrap: wrap; gap: 8px; justify-content: center;
+      padding: 0 24px 40px;
+    }
+    .filter-btn {
+      padding: 6px 16px; border-radius: 999px; font-size: 0.82rem; font-weight: 500;
+      border: 1px solid var(--border); background: var(--bg-card);
+      color: var(--text-secondary); cursor: pointer; font-family: inherit;
+      transition: all 0.2s;
+    }
+    .filter-btn:hover, .filter-btn.active {
+      background: var(--accent-glow); border-color: var(--accent); color: var(--accent);
+    }
+
+    /* GRID */
+    .blog-container { max-width: 1100px; margin: 0 auto; padding: 0 24px 80px; }
+    .posts-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 24px;
+    }
+    .post-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius);
+      overflow: hidden;
+      transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
+      text-decoration: none;
+      display: flex; flex-direction: column;
+    }
+    .post-card:hover {
+      transform: translateY(-4px);
+      border-color: rgba(129,140,248,0.3);
+      box-shadow: 0 16px 40px rgba(0,0,0,0.4);
+    }
+    .post-thumb {
+      width: 100%; aspect-ratio: 16/9; object-fit: cover;
+      background: linear-gradient(135deg, #1e1b4b, #312e81);
+    }
+    .post-thumb-placeholder {
+      width: 100%; aspect-ratio: 16/9;
+      background: linear-gradient(135deg, #1e1b4b 0%, #312e81 50%, #4c1d95 100%);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 2.5rem;
+    }
+    .post-body { padding: 20px; flex: 1; display: flex; flex-direction: column; gap: 10px; }
+    .post-meta { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+    .post-category {
+      font-size: 0.72rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;
+      background: var(--accent-glow); color: var(--accent);
+      padding: 2px 10px; border-radius: 999px; border: 1px solid rgba(129,140,248,0.2);
+    }
+    .post-date { font-size: 0.78rem; color: var(--text-muted); }
+    .post-title {
+      font-size: 1.05rem; font-weight: 700; color: var(--text-primary);
+      line-height: 1.4;
+    }
+    .post-desc { font-size: 0.85rem; color: var(--text-secondary); line-height: 1.6; flex: 1; }
+    .post-read-more {
+      font-size: 0.82rem; font-weight: 600; color: var(--accent);
+      display: inline-flex; align-items: center; gap: 4px; margin-top: 4px;
+    }
+
+    /* STATES */
+    .loading-state, .empty-state, .error-state {
+      text-align: center; padding: 80px 24px;
+      color: var(--text-secondary); grid-column: 1/-1;
+    }
+    .loading-spinner {
+      width: 40px; height: 40px; border: 3px solid var(--border);
+      border-top-color: var(--accent); border-radius: 50%;
+      animation: spin 0.8s linear infinite; margin: 0 auto 16px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* FOOTER */
+    footer {
+      border-top: 1px solid var(--border-subtle);
+      text-align: center; padding: 24px;
+      font-size: 0.82rem; color: var(--text-muted);
+    }
+    footer a { color: var(--text-muted); text-decoration: none; margin: 0 8px; }
+    footer a:hover { color: var(--accent); }
+
+    @media (max-width: 600px) {
+      .nav-links .hide-mobile { display: none; }
+      .blog-hero { padding: 60px 16px 40px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav>
+    <a href="../" class="nav-logo">
+      <svg width="24" height="24" viewBox="0 0 28 28" fill="none">
+        <rect x="2" y="2" width="10" height="10" rx="2" fill="#818cf8"/>
+        <rect x="16" y="2" width="10" height="10" rx="2" fill="#c084fc"/>
+        <rect x="2" y="16" width="10" height="10" rx="2" fill="#f472b6"/>
+        <rect x="16" y="16" width="10" height="10" rx="2" fill="#fb923c"/>
+      </svg>
+      <span>CarouselForge</span>
+    </a>
+    <div class="nav-links">
+      <a href="../" class="hide-mobile">Home</a>
+      <a href="../blog/" class="active">Blog</a>
+      <a href="../about.html" class="hide-mobile">About</a>
+      <a href="../" id="navAppBtn" class="nav-btn">Create Free →</a>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <div class="blog-hero">
+    <h1>CarouselForge Blog</h1>
+    <p>Tips, guides & strategies to create scroll-stopping social media carousels.</p>
+  </div>
+
+  <!-- FILTERS -->
+  <div class="filters" id="filtersBar">
+    <button class="filter-btn active" data-filter="all">All</button>
+    <button class="filter-btn" data-filter="Tips & Tricks">Tips & Tricks</button>
+    <button class="filter-btn" data-filter="LinkedIn">LinkedIn</button>
+    <button class="filter-btn" data-filter="Instagram">Instagram</button>
+    <button class="filter-btn" data-filter="Design">Design</button>
+    <button class="filter-btn" data-filter="Social Media">Social Media</button>
+  </div>
+
+  <!-- POSTS GRID -->
+  <div class="blog-container">
+    <div class="posts-grid" id="postsGrid">
+      <div class="loading-state">
+        <div class="loading-spinner"></div>
+        <p>Loading posts...</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer>
+    <span>© 2026 CarouselForge</span>
+    <a href="../privacy.html">Privacy</a>
+    <a href="../terms.html">Terms</a>
+    <a href="../contact.html">Contact</a>
+  </footer>
+
+  <script>
+    const REPO = 'aiwithibrar/carousel';
+    const BRANCH = 'main';
+    const POSTS_PATH = 'blog/posts';
+    const RAW_BASE = `https://raw.githubusercontent.com/${REPO}/${BRANCH}/`;
+    const API_BASE = `https://api.github.com/repos/${REPO}/contents/${POSTS_PATH}`;
+
+    let allPosts = [];
+    let activeFilter = 'all';
+
+    // Parse YAML-like frontmatter between --- delimiters
+    function parseFrontmatter(text) {
+      const match = text.match(/^---\n([\s\S]*?)\n---/);
+      if (!match) return { body: text, meta: {} };
+      const yamlStr = match[1];
+      const body = text.slice(match[0].length).trim();
+      const meta = {};
+      yamlStr.split('\n').forEach(line => {
+        const colonIdx = line.indexOf(':');
+        if (colonIdx === -1) return;
+        const key = line.slice(0, colonIdx).trim();
+        let val = line.slice(colonIdx + 1).trim();
+        // Remove surrounding quotes
+        if ((val.startsWith('"') && val.endsWith('"')) || (val.startsWith("'") && val.endsWith("'"))) {
+          val = val.slice(1, -1);
+        }
+        meta[key] = val;
+      });
+      return { body, meta };
+    }
+
+    function formatDate(dateStr) {
+      if (!dateStr) return '';
+      try {
+        return new Date(dateStr).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+      } catch { return dateStr; }
+    }
+
+    function categoryEmoji(cat) {
+      const map = { 'LinkedIn': '💼', 'Instagram': '📸', 'Tips & Tricks': '💡', 'Design': '🎨', 'Social Media': '📱', 'News': '📰' };
+      return map[cat] || '📝';
+    }
+
+    function renderPosts(posts) {
+      const grid = document.getElementById('postsGrid');
+      if (!posts.length) {
+        grid.innerHTML = `<div class="empty-state"><div style="font-size:3rem;margin-bottom:16px;">📭</div><h3 style="color:var(--text-primary);margin-bottom:8px;">No posts yet</h3><p>Check back soon for tips and guides!</p></div>`;
+        return;
+      }
+      grid.innerHTML = posts.map(post => {
+        const thumb = post.thumbnail
+          ? `<img class="post-thumb" src="${post.thumbnail}" alt="${post.title}" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">`
+          : '';
+        const placeholder = `<div class="post-thumb-placeholder" ${post.thumbnail ? 'style="display:none"' : ''}>${categoryEmoji(post.category)}</div>`;
+        return `
+          <a href="../blog/post.html?slug=${encodeURIComponent(post.slug)}" class="post-card">
+            ${thumb}${placeholder}
+            <div class="post-body">
+              <div class="post-meta">
+                ${post.category ? `<span class="post-category">${post.category}</span>` : ''}
+                <span class="post-date">${formatDate(post.date)}</span>
+              </div>
+              <div class="post-title">${post.title || 'Untitled'}</div>
+              <div class="post-desc">${post.description || ''}</div>
+              <span class="post-read-more">Read article →</span>
+            </div>
+          </a>`;
+      }).join('');
+    }
+
+    function applyFilter(filter) {
+      activeFilter = filter;
+      document.querySelectorAll('.filter-btn').forEach(b => b.classList.toggle('active', b.dataset.filter === filter));
+      const filtered = filter === 'all' ? allPosts : allPosts.filter(p => p.category === filter);
+      renderPosts(filtered);
+    }
+
+    document.getElementById('filtersBar').addEventListener('click', e => {
+      const btn = e.target.closest('.filter-btn');
+      if (btn) applyFilter(btn.dataset.filter);
+    });
+
+    async function loadPosts() {
+      const grid = document.getElementById('postsGrid');
+      try {
+        const res = await fetch(API_BASE);
+        if (!res.ok) throw new Error('Could not fetch posts list');
+        const files = await res.json();
+        const mdFiles = files.filter(f => f.name.endsWith('.md'));
+
+        if (!mdFiles.length) {
+          grid.innerHTML = `<div class="empty-state"><div style="font-size:3rem;margin-bottom:16px;">✍️</div><h3 style="color:var(--text-primary);margin-bottom:8px;">Coming soon!</h3><p>First posts are on the way.</p></div>`;
+          return;
+        }
+
+        const posts = await Promise.all(mdFiles.map(async file => {
+          const raw = await fetch(`${RAW_BASE}${POSTS_PATH}/${file.name}`);
+          const text = await raw.text();
+          const { meta } = parseFrontmatter(text);
+          return { ...meta, slug: file.name.replace('.md', '') };
+        }));
+
+        // Sort by date descending
+        allPosts = posts.filter(p => p.title).sort((a, b) => new Date(b.date) - new Date(a.date));
+        renderPosts(allPosts);
+      } catch (err) {
+        grid.innerHTML = `<div class="error-state"><div style="font-size:2.5rem;margin-bottom:12px;">⚠️</div><p>Could not load posts. Please try again later.</p></div>`;
+        console.error(err);
+      }
+    }
+
+    loadPosts();
+  </script>
+</body>
+</html>

@@ -1,0 +1,24 @@
+backend:
+  name: git-gateway
+  branch: main
+
+media_folder: "blog/images"
+public_folder: "/blog/images"
+
+collections:
+  - name: "blog"
+    label: "Blog Posts"
+    folder: "blog/posts"
+    create: true
+    slug: "{{slug}}"
+    sortable_fields: ["date", "title"]
+    summary: "{{title}} — {{date}}"
+    fields:
+      - { label: "Title", name: "title", widget: "string", hint: "Used as SEO page title" }
+      - { label: "Publish Date", name: "date", widget: "datetime" }
+      - { label: "Meta Description", name: "description", widget: "string", hint: "1-2 sentence summary for Google (150-160 chars)" }
+      - { label: "Keywords", name: "keywords", widget: "string", hint: "Comma-separated SEO keywords" }
+      - { label: "Thumbnail / OG Image", name: "thumbnail", widget: "image", required: false, hint: "Featured image (also used for social sharing)" }
+      - { label: "Author", name: "author", widget: "string", default: "CarouselForge Team" }
+      - { label: "Category", name: "category", widget: "select", options: ["Tips & Tricks", "LinkedIn", "Instagram", "Design", "Social Media", "News"], default: "Tips & Tricks" }
+      - { label: "Body", name: "body", widget: "markdown" }
