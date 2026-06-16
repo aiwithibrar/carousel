@@ -1,0 +1,94 @@
+{
+  "pages": [
+    {
+      "id": "home",
+      "path": "/",
+      "title": "CarouselForge — Free Instant Carousel Generator | Create Stunning Slides",
+      "description": "Create beautiful, professional carousel slides for LinkedIn, Instagram, Twitter & more. Paste your text, get stunning slides instantly. 100% free, no signup required.",
+      "keywords": "carousel generator, social media carousel, LinkedIn carousel, Instagram carousel, slide maker, free carousel tool",
+      "og_image": "https://carouselforge.app/icons/icon-512.png",
+      "schema_type": "WebApplication",
+      "noindex": false
+    },
+    {
+      "id": "blog",
+      "path": "/blog/",
+      "title": "Blog — CarouselForge | Carousel Tips, LinkedIn & Instagram Guides",
+      "description": "Learn how to create stunning social media carousels. Tips, guides and strategies for LinkedIn, Instagram, Twitter and more.",
+      "keywords": "carousel tips, linkedin carousel guide, instagram carousel, social media strategy, content creation",
+      "og_image": "https://carouselforge.app/icons/icon-512.png",
+      "schema_type": "Blog",
+      "noindex": false
+    },
+    {
+      "id": "linkedin",
+      "path": "/linkedin-carousel-generator.html",
+      "title": "LinkedIn Carousel Generator — Free, No Signup | CarouselForge",
+      "description": "Create professional LinkedIn carousels from text in seconds. Best free LinkedIn carousel maker online. No signup, no watermark.",
+      "keywords": "linkedin carousel generator, linkedin carousel maker, linkedin slides, linkedin content creator, free linkedin tool",
+      "og_image": "https://carouselforge.app/icons/icon-512.png",
+      "schema_type": "WebApplication",
+      "noindex": false
+    },
+    {
+      "id": "instagram",
+      "path": "/instagram-carousel-maker.html",
+      "title": "Instagram Carousel Maker — Free, Instant & Beautiful | CarouselForge",
+      "description": "Make seamless Instagram carousels from text instantly. Our free Instagram carousel generator is perfect for creators. No signup required.",
+      "keywords": "instagram carousel maker, instagram carousel generator, instagram slides, instagram content creator, free instagram tool",
+      "og_image": "https://carouselforge.app/icons/icon-512.png",
+      "schema_type": "WebApplication",
+      "noindex": false
+    },
+    {
+      "id": "about",
+      "path": "/about.html",
+      "title": "About CarouselForge — The Free Carousel Generator for Creators",
+      "description": "Learn about CarouselForge — the free, instant carousel generator for social media creators, marketers, and anyone who wants stunning slides.",
+      "keywords": "about carouselforge, carousel tool, social media tool, free carousel maker",
+      "og_image": "https://carouselforge.app/icons/icon-512.png",
+      "schema_type": "AboutPage",
+      "noindex": false
+    },
+    {
+      "id": "contact",
+      "path": "/contact.html",
+      "title": "Contact CarouselForge — Get in Touch",
+      "description": "Get in touch with CarouselForge. Send us your questions, feedback, or feature requests.",
+      "keywords": "contact carouselforge, carouselforge support, carousel tool help",
+      "og_image": "https://carouselforge.app/icons/icon-512.png",
+      "schema_type": "ContactPage",
+      "noindex": false
+    },
+    {
+      "id": "privacy",
+      "path": "/privacy.html",
+      "title": "Privacy Policy — CarouselForge",
+      "description": "CarouselForge Privacy Policy. Learn how we handle your data — spoiler: everything stays on your device.",
+      "keywords": "carouselforge privacy policy, data privacy, carousel tool privacy",
+      "og_image": "https://carouselforge.app/icons/icon-512.png",
+      "schema_type": "WebPage",
+      "noindex": false
+    },
+    {
+      "id": "terms",
+      "path": "/terms.html",
+      "title": "Terms of Service — CarouselForge",
+      "description": "CarouselForge Terms of Service. Understand the terms for using our free carousel generator.",
+      "keywords": "carouselforge terms of service, carousel tool terms, terms and conditions",
+      "og_image": "https://carouselforge.app/icons/icon-512.png",
+      "schema_type": "WebPage",
+      "noindex": false
+    },
+    {
+      "id": "disclaimer",
+      "path": "/disclaimer.html",
+      "title": "Disclaimer — CarouselForge",
+      "description": "CarouselForge Disclaimer. Important information about the use of our free carousel generator tool.",
+      "keywords": "carouselforge disclaimer, carousel tool disclaimer",
+      "og_image": "https://carouselforge.app/icons/icon-512.png",
+      "schema_type": "WebPage",
+      "noindex": false
+    }
+  ]
+}

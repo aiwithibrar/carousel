@@ -6,17 +6,18 @@ media_folder: "blog/images"
 public_folder: "/blog/images"
 
 collections:
+
+  # ── BLOG POSTS ───────────────────────────────────────────────────
   - name: "blog"
     label: "Blog Posts"
     folder: "blog/posts"
     create: true
     slug: "{{slug}}"
     sortable_fields: ["date", "title"]
-    summary: "{{title}} — {{date}}"
+    summary: "{{title}} - {{date}}"
     preview_path: "blog/post.html?slug={{slug}}"
     fields:
 
-      # ── BASIC INFO ──────────────────────────────────────────
       - label: "Title"
         name: "title"
         widget: "string"
@@ -41,127 +42,156 @@ collections:
         name: "thumbnail"
         widget: "image"
         required: false
-        hint: "Used as post cover image and social share image (OG Image)"
+        hint: "Used as post cover image and social share image"
 
       - label: "Body"
         name: "body"
         widget: "markdown"
 
-      # ── SEO ─────────────────────────────────────────────────
       - label: "SEO"
         name: "seo"
         widget: "object"
         collapsed: false
-        summary: "{{fields.meta_title}}"
         fields:
-
           - label: "SEO Title"
             name: "meta_title"
             widget: "string"
             required: false
-            hint: "Custom title for browser tab & Google (if empty, uses Post Title). Recommended: 50–60 characters"
-            pattern: [".{0,60}", "Max 60 characters"]
-
+            hint: "Custom title for Google (50-60 characters). If empty, uses Post Title."
           - label: "Meta Description"
             name: "meta_description"
             widget: "string"
             required: false
-            hint: "1–2 sentence summary shown in Google results. Recommended: 140–160 characters"
-            pattern: [".{0,160}", "Max 160 characters"]
-
+            hint: "Google snippet (140-160 characters)"
           - label: "Focus Keyword"
             name: "focus_keyword"
             widget: "string"
             required: false
-            hint: "The primary keyword this post should rank for (e.g. 'linkedin carousel tips')"
-
+            hint: "Primary keyword to rank for (e.g. 'linkedin carousel tips')"
           - label: "Keywords"
             name: "keywords"
             widget: "string"
             required: false
-            hint: "Comma-separated additional keywords (e.g. 'carousel maker, social media slides')"
-
+            hint: "Comma-separated additional keywords"
           - label: "Canonical URL"
             name: "canonical_url"
             widget: "string"
             required: false
-            hint: "Leave blank to auto-generate. Only set if this content exists elsewhere and you want to point to the original."
-
+            hint: "Leave blank to auto-generate. Set only if content is duplicated elsewhere."
           - label: "No Index (Hide from Google)"
             name: "noindex"
             widget: "boolean"
             default: false
-            hint: "Turn ON to prevent Google from indexing this post (useful for drafts)"
+            hint: "Turn ON to prevent Google from indexing this post"
 
-      # ── OPEN GRAPH (Facebook / LinkedIn preview) ─────────────
       - label: "Open Graph (Social Sharing)"
         name: "og"
         widget: "object"
         collapsed: true
-        hint: "Controls how this post looks when shared on Facebook, LinkedIn, WhatsApp, etc."
+        hint: "Controls how this post looks on Facebook, LinkedIn, WhatsApp"
         fields:
-
           - label: "OG Title"
             name: "og_title"
             widget: "string"
             required: false
-            hint: "Title shown in social share previews. If empty, uses SEO Title or Post Title."
-
+            hint: "Title in social share previews. If empty, uses SEO Title."
           - label: "OG Description"
             name: "og_description"
             widget: "string"
             required: false
-            hint: "Description shown in social share previews. If empty, uses Meta Description."
-
+            hint: "Description in social share previews. If empty, uses Meta Description."
           - label: "OG Image"
             name: "og_image"
             widget: "image"
             required: false
-            hint: "Custom image for social share cards (1200×630 recommended). If empty, uses Featured Image."
+            hint: "Custom share card image (1200x630px recommended)"
 
-      # ── TWITTER CARD ─────────────────────────────────────────
       - label: "Twitter Card"
         name: "twitter"
         widget: "object"
         collapsed: true
-        hint: "Controls how this post looks when shared on Twitter / X"
+        hint: "Controls how this post looks on Twitter / X"
         fields:
-
-          - label: "Twitter Card Type"
+          - label: "Card Type"
             name: "twitter_card"
             widget: "select"
             options:
               - { label: "Large Image (recommended)", value: "summary_large_image" }
               - { label: "Small Image", value: "summary" }
             default: "summary_large_image"
-
           - label: "Twitter Title"
             name: "twitter_title"
             widget: "string"
             required: false
-            hint: "If empty, uses OG Title or Post Title"
-
           - label: "Twitter Description"
             name: "twitter_description"
             widget: "string"
             required: false
-            hint: "If empty, uses OG Description or Meta Description"
-
           - label: "Twitter Image"
             name: "twitter_image"
             widget: "image"
             required: false
-            hint: "If empty, uses OG Image or Featured Image"
 
-      # ── SCHEMA / STRUCTURED DATA ──────────────────────────────
-      - label: "Schema Type (Structured Data)"
+      - label: "Schema Type"
         name: "schema_type"
         widget: "select"
         required: false
         default: "BlogPosting"
-        hint: "Tells Google what type of content this is — helps with rich results"
+        hint: "Tells Google what type of content this is"
         options:
           - { label: "Blog Post (default)", value: "BlogPosting" }
           - { label: "How-To Guide", value: "HowTo" }
           - { label: "News Article", value: "NewsArticle" }
           - { label: "FAQ Page", value: "FAQPage" }
+
+  # ── PAGES SEO ────────────────────────────────────────────────────
+  - name: "pages_seo"
+    label: "Pages SEO"
+    description: "Edit SEO for every static page - title, description, keywords, OG image, and more."
+    files:
+      - label: "All Pages SEO"
+        name: "pages_seo_data"
+        file: "_data/pages-seo.json"
+        fields:
+          - label: "Pages"
+            name: "pages"
+            widget: "list"
+            collapsed: false
+            fields:
+              - { label: "Page ID", name: "id", widget: "string", hint: "Identifier - do not change (e.g. home, about)" }
+              - { label: "URL Path", name: "path", widget: "string", hint: "e.g. /, /about.html" }
+              - label: "SEO Title"
+                name: "title"
+                widget: "string"
+                hint: "Browser tab + Google headline (50-60 chars)"
+              - label: "Meta Description"
+                name: "description"
+                widget: "text"
+                hint: "Google search snippet (140-160 chars)"
+              - label: "Keywords"
+                name: "keywords"
+                widget: "string"
+                required: false
+                hint: "Comma-separated keywords"
+              - label: "OG / Social Share Image"
+                name: "og_image"
+                widget: "image"
+                required: false
+                hint: "Image for social share cards (1200x630px recommended)"
+              - label: "Schema Type"
+                name: "schema_type"
+                widget: "select"
+                required: false
+                options:
+                  - { label: "Web Page", value: "WebPage" }
+                  - { label: "Web Application", value: "WebApplication" }
+                  - { label: "About Page", value: "AboutPage" }
+                  - { label: "Contact Page", value: "ContactPage" }
+                  - { label: "Blog", value: "Blog" }
+                  - { label: "FAQ Page", value: "FAQPage" }
+                hint: "Structured data type for Google"
+              - label: "No Index (Hide from Google)"
+                name: "noindex"
+                widget: "boolean"
+                default: false
+                hint: "Turn ON to hide this page from Google"
