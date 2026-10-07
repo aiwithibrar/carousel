@@ -386,6 +386,37 @@ body::before {
     border-color: var(--accent-primary);
 }
 
+/* 1-Click Load Sample Button */
+.btn-load-sample {
+    margin-left: auto;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 10px;
+    border-radius: 999px;
+    border: 1px solid rgba(59, 130, 246, 0.45);
+    background: rgba(59, 130, 246, 0.12);
+    color: #3b82f6;
+    font-size: 0.72rem;
+    font-weight: 700;
+    font-family: inherit;
+    text-transform: none;
+    letter-spacing: 0;
+    cursor: pointer;
+    transition: all 0.18s ease;
+}
+
+.btn-load-sample:hover {
+    background: #3b82f6;
+    color: #ffffff;
+    transform: translateY(-1px);
+    box-shadow: 0 3px 10px rgba(59, 130, 246, 0.35);
+}
+
+.btn-load-sample:active {
+    transform: translateY(0);
+}
+
 .optional {
     font-weight: 400;
     color: var(--text-muted);

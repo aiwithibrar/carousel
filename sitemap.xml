@@ -53,6 +53,12 @@
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
+  <url>
+    <loc>https://carouselforge.app/blog/post.html?slug=text-to-carousel-slides-create-linkedin-carousel-slides-with-ai-for-free</loc>
+    <lastmod>2026-10-07</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
 
   <!-- Supporting Pages -->
   <url>

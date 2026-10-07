@@ -1992,6 +1992,37 @@
             }
         });
 
+        // 1-Click Load Sample Text
+        var loadSampleBtn = document.getElementById('loadSampleBtn');
+        if (loadSampleBtn) {
+            loadSampleBtn.addEventListener('click', function (e) {
+                e.preventDefault();
+                var sampleText = "10 Rules of High-Impact Creators in 2026\n\n" +
+                    "1. Hook in the First 3 Seconds\n" +
+                    "If your first slide does not spark curiosity or challenge a common belief, no one will swipe to the second.\n\n" +
+                    "2. Retention Beats Reach\n" +
+                    "Building an engaged audience that saves and shares your content is 10x more valuable than fleeting viral views.\n\n" +
+                    "3. One Core Idea Per Carousel\n" +
+                    "Do not cram five topics into one slide deck. Go deep on one specific problem and provide the exact solution.\n\n" +
+                    "4. Contrast & High Readability\n" +
+                    "Big bold headlines, clean spacing, and minimal distraction. People read carousels on small mobile screens on the go.\n\n" +
+                    "5. Always End With a Clear Call to Action\n" +
+                    "Tell your reader exactly what to do next: save for later, share with a friend, or drop a comment below!\n\n" +
+                    "Save this carousel & follow for daily creator frameworks!";
+
+                mainTextInput.value = sampleText;
+                saveDraft();
+                generatePreview();
+                trackEvent('load_sample_text', 'Engagement', '1-Click Sample');
+                showToast('⚡ Sample carousel loaded! Swipe through slides →');
+
+                // On mobile, auto-scroll to preview
+                if (window.innerWidth <= 768 && slidesContainer) {
+                    slidesContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+        }
+
 
     }
 
