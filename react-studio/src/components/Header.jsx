@@ -6,7 +6,8 @@ import {
   FileText, 
   Download, 
   Layers,
-  Sliders
+  Sliders,
+  Home
 } from 'lucide-react';
 
 export default function Header({
@@ -24,6 +25,15 @@ export default function Header({
     <header className="pro-header">
       {/* Left: Menu Drawer Toggle + Logo + Slide count */}
       <div className="header-left">
+        <a
+          href="/"
+          className="header-home-btn"
+          title="Back to CarouselForge Home Page"
+        >
+          <Home size={15} />
+          <span className="desktop-only">Home</span>
+        </a>
+
         <button
           type="button"
           className="header-menu-trigger"

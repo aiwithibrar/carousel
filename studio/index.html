@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://cdn.jsdelivr.net https://quge5.com https://identity.netlify.com https://bauval.org https://*.bauval.org; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https:; frame-src 'self' https://bauval.org https://*.bauval.org https:; connect-src 'self' https://www.google-analytics.com https://eyjybwkoucwoabzpatvm.supabase.co https://quge5.com https://identity.netlify.com https://bauval.org https://*.bauval.org;">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+
+  <!-- Adsterra Tag -->
+  <script src="https://quge5.com/88/tag.min.js" data-zone="240916" async data-cfasync="false"></script>
+  <!-- Netlify Identity -->
+  <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+
+  <!-- Google Analytics with Owner Device Opt-Out (?block_ga) -->
+  <script>
+    (function() {
+      var gaId = 'G-NQ7Z1SX6WJ';
+      var urlParams = new URLSearchParams(window.location.search);
+      if (urlParams.has('block_ga') || urlParams.has('disable_analytics')) {
+        localStorage.setItem('cf_block_analytics', 'true');
+        alert('Google Analytics tracking is now permanently BLOCKED on this device.');
+      } else if (urlParams.has('unblock_ga') || urlParams.has('enable_analytics')) {
+        localStorage.removeItem('cf_block_analytics');
+        alert('Google Analytics tracking is now RESTORED on this device.');
+      }
+      if (localStorage.getItem('cf_block_analytics') === 'true') {
+        window['ga-disable-' + gaId] = true;
+      }
+    })();
+  </script>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-NQ7Z1SX6WJ"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-NQ7Z1SX6WJ');
+  </script>
+
+  <!-- Primary Studio Metadata -->
+  <title>CarouselForge Studio — Create Viral LinkedIn & Instagram Carousels</title>
+  <meta name="description" content="Design stunning social media carousels in seconds with CarouselForge Studio. Live text parser, viral headline hooks, multi-page LinkedIn PDF export, and instant ZIP downloads.">
+  <meta name="author" content="CarouselForge">
+  <meta name="theme-color" content="#2563eb">
+  <link rel="canonical" href="https://carouselforge.app/studio/">
+  <link rel="icon" type="image/png" sizes="512x512" href="/icons/icon-512.png">
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="CarouselForge Studio — Free Carousel Generator">
+  <meta property="og:description" content="Design stunning social media carousels in seconds with CarouselForge Studio.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://carouselforge.app/studio/">
+  <meta property="og:image" content="https://carouselforge.app/icons/icon-512.png">
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Playfair+Display:wght@700;800;900&family=Poppins:wght@400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&family=Merriweather:wght@400;700;900&family=Outfit:wght@400;500;600;700;800&family=Noto+Nastaliq+Urdu:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Production React Studio Assets -->
+  <script type="module" crossorigin src="/assets/index-BiZK9ZhI.js"></script>
+  <link rel="stylesheet" crossorigin href="/assets/index-Dk6O-vyf.css">
+</head>
+<body>
+  <div id="root"></div>
+
+  <!-- Netlify Identity redirect handler -->
+  <script>
+    if (window.netlifyIdentity) {
+      window.netlifyIdentity.on('init', function(user) {
+        if (!user) {
+          window.netlifyIdentity.on('login', function() {
+            document.location.href = '/admin/';
+          });
+        }
+      });
+    }
+  </script>
+
+  <!-- Adsterra Sticky Footer Anchor Ad -->
+  <script src="/sticky-footer-ad.js" defer></script>
+</body>
+</html>

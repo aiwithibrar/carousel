@@ -11,6 +11,16 @@
       "noindex": false
     },
     {
+      "id": "studio",
+      "path": "/studio/",
+      "title": "CarouselForge Studio — Free LinkedIn & Instagram Carousel Generator",
+      "description": "Turn your text into high-converting carousel slides with CarouselForge Studio. Live text parser, viral hooks, 4:5 and 1:1 ratios, multi-page LinkedIn PDF, and PNG ZIP export. 100% free.",
+      "keywords": "carousel studio, free carousel generator, linkedin carousel maker, instagram carousel maker, viral hooks carousel, text to carousel generator, online carousel creator",
+      "og_image": "https://carouselforge.app/icons/icon-512.png",
+      "schema_type": "WebApplication",
+      "noindex": false
+    },
+    {
       "id": "blog",
       "path": "/blog/",
       "title": "Blog — CarouselForge | LinkedIn & Instagram Carousel Tips & Guides",
