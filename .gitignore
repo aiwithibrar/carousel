@@ -1,0 +1,5 @@
+node_modules/
+react-studio/node_modules/
+react-studio/dist/
+.DS_Store
+Thumbs.db

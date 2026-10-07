@@ -3628,9 +3628,126 @@ html { scroll-behavior: smooth; }
 
 @media (max-width: 480px) {
     .feedback-btn {
-        bottom: 16px;
-        right: 16px;
-        width: 48px;
-        height: 48px;
+        bottom: calc(var(--cf-sticky-ad-height, 60px) + 12px) !important;
+        right: 12px;
+        width: 44px;
+        height: 44px;
     }
 }
+
+/* ============================================================
+   STICKY FOOTER ANCHOR AD BAR (ADSTERRA)
+   ============================================================ */
+.cf-sticky-footer-ad {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
+  height: 104px;
+  background: rgba(15, 23, 42, 0.96);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.35);
+  z-index: 99999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.25s ease, height 0.2s ease;
+  user-select: none;
+}
+
+.cf-sticky-footer-ad.cf-minimized {
+  transform: translateY(calc(100% - 22px));
+  background: rgba(15, 23, 42, 0.9);
+  border-top: 1px solid rgba(59, 130, 246, 0.5);
+}
+
+.cf-sticky-ad-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.cf-sticky-ad-close {
+  position: absolute;
+  top: 4px;
+  right: 8px;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(0, 0, 0, 0.65);
+  color: #ffffff;
+  font-size: 12px;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 10;
+  transition: all 0.15s ease;
+}
+
+.cf-sticky-ad-close:hover {
+  background: rgba(220, 38, 38, 0.85);
+  transform: scale(1.1);
+}
+
+.cf-sticky-ad-restore {
+  position: absolute;
+  top: 2px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #2563eb;
+  color: #ffffff;
+  border: none;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  display: none;
+  z-index: 10;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.cf-sticky-footer-ad.cf-minimized .cf-sticky-ad-restore {
+  display: block;
+}
+
+.cf-sticky-footer-ad.cf-minimized .cf-sticky-ad-close {
+  display: none;
+}
+
+.cf-sticky-ad-scaler {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 728px;
+  height: 90px;
+  transform-origin: center center;
+  transition: transform 0.15s ease;
+}
+
+.cf-adsterra-iframe {
+  display: block;
+  width: 728px;
+  height: 90px;
+  border: none;
+  overflow: hidden;
+  background: transparent;
+}
+
+/* Elevate floating feedback button above sticky ad bar */
+.feedback-btn {
+  bottom: calc(var(--cf-sticky-ad-height, 104px) + 16px) !important;
+  transition: bottom 0.25s ease;
+}
+
