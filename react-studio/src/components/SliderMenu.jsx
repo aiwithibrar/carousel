@@ -16,7 +16,9 @@ import {
   Save, 
   ChevronRight,
   ShieldCheck,
-  HelpCircle
+  HelpCircle,
+  BookOpen,
+  ExternalLink
 } from 'lucide-react';
 import { CMP_THEMES, LAYOUT_TYPES, ASPECT_RATIOS } from '../constants/themes';
 
@@ -385,6 +387,34 @@ export default function SliderMenu({
                 <RotateCcw size={15} />
                 <span>Reset to Sample</span>
               </button>
+            </div>
+          </div>
+
+          {/* SECTION 7: NAVIGATION & SITE LINKS */}
+          <div className="drawer-section">
+            <span className="drawer-section-label">🌐 Explore CarouselForge</span>
+            <div className="drawer-nav-links">
+              <a href="/blog/" className="drawer-nav-item">
+                <BookOpen size={14} />
+                <span>Blog & Growth Guides</span>
+              </a>
+              <a href="/linkedin-carousel-generator.html" className="drawer-nav-item">
+                <ExternalLink size={14} />
+                <span>LinkedIn Carousel Maker</span>
+              </a>
+              <a href="/instagram-carousel-maker.html" className="drawer-nav-item">
+                <ExternalLink size={14} />
+                <span>Instagram Carousel Maker</span>
+              </a>
+              <div className="drawer-nav-sublinks">
+                <a href="/about.html">About</a>
+                <span>•</span>
+                <a href="/contact.html">Contact</a>
+                <span>•</span>
+                <a href="/privacy.html">Privacy</a>
+                <span>•</span>
+                <a href="/terms.html">Terms</a>
+              </div>
             </div>
           </div>
         </div>
