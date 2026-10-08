@@ -1,421 +1,119 @@
 import React from 'react';
 import { 
   X, 
-  Flame, 
-  Smartphone, 
-  Sparkles, 
-  Play, 
+  Home, 
+  Wrench, 
   FileText, 
-  Download, 
-  Palette, 
-  Sliders, 
-  MessageSquare, 
-  RotateCcw, 
   Layers, 
-  Upload, 
-  Save, 
-  ChevronRight,
-  ShieldCheck,
+  BookOpen, 
+  ShieldCheck, 
   HelpCircle,
-  BookOpen,
   ExternalLink
 } from 'lucide-react';
-import { CMP_THEMES, LAYOUT_TYPES, ASPECT_RATIOS } from '../constants/themes';
 
 export default function SliderMenu({
   isOpen,
-  onClose,
-  slideCount,
-  themeKey,
-  setThemeKey,
-  ratio,
-  setRatio,
-  globalLayout,
-  setGlobalLayout,
-  texture,
-  setTexture,
-  seamlessConnectors,
-  setSeamlessConnectors,
-  brandKit,
-  setBrandKit,
-  onSaveBrandKit,
-  onResetBrandKit,
-  onOpenViralHooks,
-  onOpenFeedSimulator,
-  onOpenAIPrompt,
-  onOpenFeedback,
-  onReplay,
-  onExportPDF,
-  onExportZIP,
-  onResetDraft
+  onClose
 }) {
   if (!isOpen) return null;
 
-  const handleLogoUpload = (e) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = () => {
-      const img = new Image();
-      img.onload = () => {
-        const s = Math.min(1, 256 / img.height);
-        const cv = document.createElement('canvas');
-        cv.width = img.width * s;
-        cv.height = img.height * s;
-        cv.getContext('2d').drawImage(img, 0, 0, cv.width, cv.height);
-        setBrandKit((prev) => ({ ...prev, logoData: cv.toDataURL('image/png') }));
-      };
-      img.src = reader.result;
-    };
-    reader.readAsDataURL(file);
-  };
-
   return (
-    <div className="slider-menu-backdrop" onClick={onClose}>
-      <div className="slider-menu-drawer" onClick={(e) => e.stopPropagation()}>
+    <div className="mobile-menu-backdrop active" onClick={onClose}>
+      <div className="mobile-menu active" onClick={(e) => e.stopPropagation()}>
         {/* Drawer Header */}
-        <div className="drawer-header">
-          <div className="drawer-title-group">
-            <div className="drawer-brand-badge">
-              <Layers size={18} className="text-acc" />
+        <div className="mobile-drawer-header">
+          <a href="/" className="mobile-drawer-brand">
+            <div className="logo-icon" aria-hidden="true">
+              <svg width="24" height="24" viewBox="0 0 28 28" fill="none">
+                <rect x="2" y="2" width="10" height="10" rx="2" fill="#818cf8"/>
+                <rect x="16" y="2" width="10" height="10" rx="2" fill="#c084fc"/>
+                <rect x="2" y="16" width="10" height="10" rx="2" fill="#f472b6"/>
+                <rect x="16" y="16" width="10" height="10" rx="2" fill="#fb923c"/>
+              </svg>
             </div>
-            <div>
-              <h3 className="drawer-title">Studio Menu</h3>
-              <p className="drawer-subtitle">All features, tools & settings</p>
-            </div>
-          </div>
-          <button type="button" className="drawer-close-btn" onClick={onClose} aria-label="Close menu">
-            <X size={20} />
+            <span>CarouselForge</span>
+          </a>
+          <button 
+            type="button" 
+            className="mobile-drawer-close" 
+            onClick={onClose} 
+            aria-label="Close navigation menu"
+          >
+            ✕
           </button>
         </div>
 
-        {/* Drawer Body Scroll */}
-        <div className="drawer-body">
-          {/* SECTION 1: CREATIVE KILLER TOOLS */}
-          <div className="drawer-section">
-            <span className="drawer-section-label">⚡ Viral Tools & Simulators</span>
-            
-            <div className="drawer-actions-grid">
-              <button
-                type="button"
-                className="drawer-action-card highlight-amber"
-                onClick={() => { onOpenViralHooks(); onClose(); }}
-              >
-                <div className="card-icon-wrap amber">
-                  <Flame size={18} />
-                </div>
-                <div className="card-text">
-                  <span className="card-title">Viral Hooks Library</span>
-                  <span className="card-desc">High-converting headline formulas</span>
-                </div>
-                <ChevronRight size={15} className="card-arrow" />
-              </button>
-
-              <button
-                type="button"
-                className="drawer-action-card highlight-indigo"
-                onClick={() => { onOpenFeedSimulator(); onClose(); }}
-              >
-                <div className="card-icon-wrap indigo">
-                  <Smartphone size={18} />
-                </div>
-                <div className="card-text">
-                  <span className="card-title">Feed Simulator</span>
-                  <span className="card-desc">LinkedIn & Instagram feed mockups</span>
-                </div>
-                <ChevronRight size={15} className="card-arrow" />
-              </button>
-
-              <button
-                type="button"
-                className="drawer-action-card"
-                onClick={() => { onOpenAIPrompt(); onClose(); }}
-              >
-                <div className="card-icon-wrap violet">
-                  <Sparkles size={18} />
-                </div>
-                <div className="card-text">
-                  <span className="card-title">AI Prompt Generator</span>
-                  <span className="card-desc">Prompts for ChatGPT & Claude</span>
-                </div>
-                <ChevronRight size={15} className="card-arrow" />
-              </button>
-
-              <button
-                type="button"
-                className="drawer-action-card"
-                onClick={() => { onReplay(); onClose(); }}
-              >
-                <div className="card-icon-wrap blue">
-                  <Play size={18} />
-                </div>
-                <div className="card-text">
-                  <span className="card-title">Replay Word Motion</span>
-                  <span className="card-desc">Replay rising kinetic typography</span>
-                </div>
-                <ChevronRight size={15} className="card-arrow" />
-              </button>
-            </div>
+        {/* Drawer Content */}
+        <div className="mobile-drawer-content">
+          {/* Section: Free Creator Tools */}
+          <div className="mobile-drawer-section">
+            <span className="mobile-drawer-label">⚡ Free Creator Tools</span>
+            <a href="/tools/instagram-grid-maker" className="mobile-drawer-item highlight-tool">
+              <span className="item-icon">📸</span>
+              <span>Instagram Grid Maker</span>
+              <span className="mobile-drawer-badge" style={{ background: '#ec4899' }}>NEW</span>
+            </a>
+            <a href="/tools/linkedin-text-formator" className="mobile-drawer-item">
+              <span className="item-icon">🔤</span>
+              <span>LinkedIn Text Formatter</span>
+            </a>
+            <a href="/linkedin-carousel-generator" className="mobile-drawer-item">
+              <span className="item-icon">💼</span>
+              <span>LinkedIn Carousel Maker</span>
+            </a>
+            <a href="/instagram-carousel-maker" className="mobile-drawer-item">
+              <span className="item-icon">📱</span>
+              <span>Instagram Carousel Maker</span>
+            </a>
+            <a href="/tools/" className="mobile-drawer-item">
+              <span className="item-icon">🛠️</span>
+              <span>All Free Tools Hub</span>
+            </a>
           </div>
 
-          {/* SECTION 2: EXPORT OPTIONS */}
-          <div className="drawer-section">
-            <span className="drawer-section-label">📦 Export & Downloads</span>
-            
-            <div className="drawer-export-grid">
-              <button
-                type="button"
-                className="drawer-btn-pdf"
-                onClick={() => { onExportPDF(); onClose(); }}
-              >
-                <FileText size={16} />
-                <span>Download LinkedIn PDF</span>
-              </button>
-
-              <button
-                type="button"
-                className="drawer-btn-zip"
-                onClick={() => { onExportZIP(); onClose(); }}
-              >
-                <Download size={16} />
-                <span>Download All PNGs (ZIP)</span>
-              </button>
-            </div>
+          {/* Section: Studio */}
+          <div className="mobile-drawer-section">
+            <span className="mobile-drawer-label">🎨 Studio</span>
+            <button 
+              type="button" 
+              className="mobile-cta" 
+              onClick={onClose}
+              style={{ border: 'none', cursor: 'pointer' }}
+            >
+              ⚡ Carousel Studio (Active)
+            </button>
           </div>
 
-          {/* SECTION 3: STYLE & RATIO */}
-          <div className="drawer-section">
-            <span className="drawer-section-label">🎨 Format & Theme Style</span>
-
-            <div className="drawer-row-unit">
-              <label className="drawer-unit-label">Aspect Ratio</label>
-              <div className="seg-ratio-group full">
-                <button
-                  type="button"
-                  className={ratio === 'r45' ? 'active' : ''}
-                  onClick={() => setRatio('r45')}
-                >
-                  4:5 Portrait (LinkedIn & IG)
-                </button>
-                <button
-                  type="button"
-                  className={ratio === 'r11' ? 'active' : ''}
-                  onClick={() => setRatio('r11')}
-                >
-                  1:1 Square (Feeds)
-                </button>
-              </div>
-            </div>
-
-            <div className="drawer-row-unit">
-              <label className="drawer-unit-label">Slide Theme ({CMP_THEMES[themeKey]?.name || 'Custom'})</label>
-              <div className="drawer-swatches-row">
-                {Object.entries(CMP_THEMES).map(([k, v]) => (
-                  <button
-                    key={k}
-                    type="button"
-                    className={`pro-swatch-btn ${themeKey === k ? 'selected' : ''}`}
-                    style={{
-                      background: `linear-gradient(135deg, ${v.b1}, ${v.b2})`,
-                      boxShadow: `inset 0 0 0 5px ${v.b1}, inset 0 0 0 9px ${v.acc}`
-                    }}
-                    title={`${v.name}: ${v.desc}`}
-                    onClick={() => setThemeKey(k)}
-                  />
-                ))}
-                <button
-                  type="button"
-                  className={`pro-swatch-btn ${themeKey === 'brand' ? 'selected' : ''}`}
-                  style={{
-                    background: `linear-gradient(135deg, ${brandKit.c1}, ${brandKit.c2})`,
-                    boxShadow: `inset 0 0 0 5px ${brandKit.c1}, inset 0 0 0 9px ${brandKit.c4}`
-                  }}
-                  title="Custom Brand Kit Palette"
-                  onClick={() => setThemeKey('brand')}
-                >
-                  <span className="brand-swatch-b">B</span>
-                </button>
-              </div>
-            </div>
-
-            <div className="drawer-row-unit">
-              <label className="drawer-unit-label">Global Slide Layout</label>
-              <select
-                className="pro-select"
-                value={globalLayout}
-                onChange={(e) => setGlobalLayout(e.target.value)}
-              >
-                {LAYOUT_TYPES.map((lt) => (
-                  <option key={lt.id} value={lt.id}>
-                    {lt.name} — {lt.desc}
-                  </option>
-                ))}
-              </select>
-            </div>
+          {/* Section: Navigation */}
+          <div className="mobile-drawer-section">
+            <span className="mobile-drawer-label">🧭 Navigation</span>
+            <a href="/" className="mobile-drawer-item">
+              <span className="item-icon">🏠</span>
+              <span>Home Page</span>
+            </a>
+            <a href="/blog/" className="mobile-drawer-item">
+              <span className="item-icon">📚</span>
+              <span>Blog &amp; Guides</span>
+            </a>
+            <a href="/about" className="mobile-drawer-item">
+              <span className="item-icon">ℹ️</span>
+              <span>About Us</span>
+            </a>
+            <a href="/contact" className="mobile-drawer-item">
+              <span className="item-icon">✉️</span>
+              <span>Contact Us</span>
+            </a>
           </div>
 
-          {/* SECTION 4: PRO FINISHING TOGGLES */}
-          <div className="drawer-section">
-            <span className="drawer-section-label">✨ Pro Visual Effects</span>
-
-            <div className="drawer-toggle-row">
-              <div>
-                <span className="toggle-title">Connected Swipe Connectors</span>
-                <span className="toggle-desc">Continuous arc bridges across slides</span>
-              </div>
-              <button
-                type="button"
-                className={`toggle-switch-btn ${seamlessConnectors ? 'active' : ''}`}
-                onClick={() => setSeamlessConnectors(!seamlessConnectors)}
-              >
-                <span className="toggle-switch-knob" />
-              </button>
-            </div>
-
-            <div className="drawer-toggle-row">
-              <div>
-                <span className="toggle-title">Film Grain Noise Texture</span>
-                <span className="toggle-desc">Organic subtle photographic overlay</span>
-              </div>
-              <button
-                type="button"
-                className={`toggle-switch-btn ${texture === 'grain' ? 'active' : ''}`}
-                onClick={() => setTexture(texture === 'grain' ? 'none' : 'grain')}
-              >
-                <span className="toggle-switch-knob" />
-              </button>
-            </div>
-          </div>
-
-          {/* SECTION 5: BRAND KIT */}
-          <div className="drawer-section">
-            <span className="drawer-section-label">🛡️ Brand Kit & Signature</span>
-
-            <div className="drawer-brand-fields">
-              <div className="field-unit">
-                <label>Brand Name</label>
-                <input
-                  type="text"
-                  className="pro-input"
-                  value={brandKit.name}
-                  onChange={(e) => setBrandKit((prev) => ({ ...prev, name: e.target.value }))}
-                  placeholder="Your Company / Name"
-                />
-              </div>
-
-              <div className="field-unit">
-                <label>Handle / Tagline</label>
-                <input
-                  type="text"
-                  className="pro-input"
-                  value={brandKit.handle}
-                  onChange={(e) => setBrandKit((prev) => ({ ...prev, handle: e.target.value }))}
-                  placeholder="@yourhandle"
-                />
-              </div>
-
-              <div className="field-unit">
-                <label>Logo Signature</label>
-                <label className="logo-upload-trigger">
-                  <Upload size={14} />
-                  <span>{brandKit.logoData ? 'Change Logo' : 'Upload PNG Logo'}</span>
-                  <input type="file" accept="image/*" onChange={handleLogoUpload} style={{ display: 'none' }} />
-                </label>
-              </div>
-
-              <div className="field-unit">
-                <label>Footer Visibility</label>
-                <select
-                  className="pro-select"
-                  value={brandKit.showFooter ? '1' : '0'}
-                  onChange={(e) => setBrandKit((prev) => ({ ...prev, showFooter: e.target.value === '1' }))}
-                >
-                  <option value="1">Show brand & logo in footer</option>
-                  <option value="0">Hide footer</option>
-                </select>
-              </div>
-
-              <div className="drawer-color-pickers">
-                <div>
-                  <label>Background 1</label>
-                  <input type="color" className="color-input" value={brandKit.c1} onChange={(e) => setBrandKit((prev) => ({ ...prev, c1: e.target.value }))} />
-                </div>
-                <div>
-                  <label>Background 2</label>
-                  <input type="color" className="color-input" value={brandKit.c2} onChange={(e) => setBrandKit((prev) => ({ ...prev, c2: e.target.value }))} />
-                </div>
-                <div>
-                  <label>Text Color</label>
-                  <input type="color" className="color-input" value={brandKit.c3} onChange={(e) => setBrandKit((prev) => ({ ...prev, c3: e.target.value }))} />
-                </div>
-                <div>
-                  <label>Accent Color</label>
-                  <input type="color" className="color-input" value={brandKit.c4} onChange={(e) => setBrandKit((prev) => ({ ...prev, c4: e.target.value }))} />
-                </div>
-              </div>
-
-              <div className="drawer-brand-btn-row">
-                <button type="button" className="btn-secondary" onClick={onSaveBrandKit}>
-                  <Save size={14} />
-                  <span>Save on this device</span>
-                </button>
-                <button type="button" className="btn-secondary text-muted" onClick={onResetBrandKit}>
-                  <RotateCcw size={14} />
-                  <span>Reset Kit</span>
-                </button>
-              </div>
-            </div>
-          </div>
-
-          {/* SECTION 6: SYSTEM & FEEDBACK */}
-          <div className="drawer-section">
-            <div className="drawer-system-row">
-              <button
-                type="button"
-                className="drawer-sys-btn"
-                onClick={() => { onOpenFeedback(); onClose(); }}
-              >
-                <MessageSquare size={15} />
-                <span>Send Feedback</span>
-              </button>
-
-              <button
-                type="button"
-                className="drawer-sys-btn danger"
-                onClick={() => { onResetDraft(); onClose(); }}
-              >
-                <RotateCcw size={15} />
-                <span>Reset to Sample</span>
-              </button>
-            </div>
-          </div>
-
-          {/* SECTION 7: NAVIGATION & SITE LINKS */}
-          <div className="drawer-section">
-            <span className="drawer-section-label">🌐 Explore CarouselForge</span>
-            <div className="drawer-nav-links">
-              <a href="/blog/" className="drawer-nav-item">
-                <BookOpen size={14} />
-                <span>Blog & Growth Guides</span>
-              </a>
-              <a href="/linkedin-carousel-generator.html" className="drawer-nav-item">
-                <ExternalLink size={14} />
-                <span>LinkedIn Carousel Maker</span>
-              </a>
-              <a href="/instagram-carousel-maker.html" className="drawer-nav-item">
-                <ExternalLink size={14} />
-                <span>Instagram Carousel Maker</span>
-              </a>
-              <div className="drawer-nav-sublinks">
-                <a href="/about.html">About</a>
-                <span>•</span>
-                <a href="/contact.html">Contact</a>
-                <span>•</span>
-                <a href="/privacy.html">Privacy</a>
-                <span>•</span>
-                <a href="/terms.html">Terms</a>
-              </div>
-            </div>
+          {/* Section: Legal */}
+          <div className="mobile-drawer-section">
+            <span className="mobile-drawer-label">⚖️ Legal</span>
+            <a href="/privacy" className="mobile-drawer-item" style={{ fontSize: '0.84rem', color: 'var(--text-secondary)' }}>
+              Privacy Policy
+            </a>
+            <a href="/terms" className="mobile-drawer-item" style={{ fontSize: '0.84rem', color: 'var(--text-secondary)' }}>
+              Terms of Service
+            </a>
           </div>
         </div>
       </div>

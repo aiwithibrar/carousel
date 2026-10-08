@@ -97,9 +97,10 @@
             <div class="home-nav-actions">
                 <a href="#features" class="nav-link-item">Features</a>
                 <a href="#how-it-works" class="nav-link-item">How It Works</a>
-                <a href="./blog/" class="nav-link-item">Blog</a>
-                <a href="./about.html" class="nav-link-item">About</a>
-                <a href="./contact.html" class="nav-link-item">Contact</a>
+                <a href="/tools/" class="nav-link-item">Tools</a>
+                <a href="/blog/" class="nav-link-item">Blog</a>
+                <a href="/about" class="nav-link-item">About</a>
+                <a href="/contact" class="nav-link-item">Contact</a>
                 <a href="./studio/" id="navStartBtn" class="nav-btn-primary" style="text-decoration:none;">Start Free →</a>
                 <!-- Mobile hamburger -->
                 <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Open navigation menu">
@@ -112,21 +113,71 @@
             </div>
         </nav>
 
-        <!-- Mobile Menu Overlay -->
+        <!-- Mobile Slider Menu Backdrop & Drawer -->
+        <div class="mobile-menu-backdrop" id="mobileMenuBackdrop"></div>
         <div class="mobile-menu" id="mobileMenu">
-            <a href="#how-it-works" class="mobile-nav-link">How It Works</a>
-            <a href="#features" class="mobile-nav-link">Features</a>
-            <a href="#testimonials" class="mobile-nav-link">Testimonials</a>
-            <a href="#faq" class="mobile-nav-link">FAQ</a>
-            <div class="mobile-divider"></div>
+            <div class="mobile-drawer-header">
+                <a href="/" class="mobile-drawer-brand">
+                    <div class="logo-icon" aria-hidden="true">
+                        <svg width="24" height="24" viewBox="0 0 28 28" fill="none">
+                            <rect x="2" y="2" width="10" height="10" rx="2" fill="#818cf8"/>
+                            <rect x="16" y="2" width="10" height="10" rx="2" fill="#c084fc"/>
+                            <rect x="2" y="16" width="10" height="10" rx="2" fill="#f472b6"/>
+                            <rect x="16" y="16" width="10" height="10" rx="2" fill="#fb923c"/>
+                        </svg>
+                    </div>
+                    <span>CarouselForge</span>
+                </a>
+                <button type="button" class="mobile-drawer-close" id="mobileMenuCloseBtn" aria-label="Close navigation menu">✕</button>
+            </div>
+            <div class="mobile-drawer-content">
+                <div class="mobile-drawer-section">
+                    <span class="mobile-drawer-label">⚡ Free Creator Tools</span>
+                    <a href="/tools/instagram-grid-maker" class="mobile-drawer-item highlight-tool">
+                        <span class="item-icon">📸</span>
+                        <span>Instagram Grid Maker</span>
+                        <span class="mobile-drawer-badge" style="background:#ec4899;">NEW</span>
+                    </a>
+                    <a href="/tools/linkedin-text-formator" class="mobile-drawer-item">
+                        <span class="item-icon">🔤</span>
+                        <span>LinkedIn Text Formatter</span>
+                    </a>
+                    <a href="/linkedin-carousel-generator" class="mobile-drawer-item">
+                        <span class="item-icon">💼</span>
+                        <span>LinkedIn Carousel Maker</span>
+                    </a>
+                    <a href="/instagram-carousel-maker" class="mobile-drawer-item">
+                        <span class="item-icon">📱</span>
+                        <span>Instagram Carousel Maker</span>
+                    </a>
+                    <a href="/tools/" class="mobile-drawer-item">
+                        <span class="item-icon">🛠️</span>
+                        <span>All Free Tools Hub</span>
+                    </a>
+                </div>
 
-            <a href="./blog/">Blog</a>
-            <a href="./about.html">About Us</a>
-            <a href="./contact.html">Contact Us</a>
-            <a href="./privacy.html">Privacy Policy</a>
-            <a href="./terms.html">Terms of Service</a>
-            <div class="mobile-divider"></div>
-            <a href="./studio/" id="mobileStartBtn" class="mobile-cta" style="text-decoration:none;display:block;text-align:center;">⚡ Start Creating Now</a>
+                <div class="mobile-drawer-section">
+                    <span class="mobile-drawer-label">🎨 Studio</span>
+                    <a href="./studio/" id="mobileStartBtn" class="mobile-cta" style="text-decoration:none;">⚡ Open Carousel Studio</a>
+                </div>
+
+                <div class="mobile-drawer-section">
+                    <span class="mobile-drawer-label">🧭 Navigation</span>
+                    <a href="#how-it-works" class="mobile-drawer-item">How It Works</a>
+                    <a href="#features" class="mobile-drawer-item">Features</a>
+                    <a href="#testimonials" class="mobile-drawer-item">Testimonials</a>
+                    <a href="#faq" class="mobile-drawer-item">FAQ</a>
+                    <a href="./blog/" class="mobile-drawer-item">Blog &amp; Guides</a>
+                    <a href="/about" class="mobile-drawer-item">About Us</a>
+                    <a href="/contact" class="mobile-drawer-item">Contact Us</a>
+                </div>
+
+                <div class="mobile-drawer-section">
+                    <span class="mobile-drawer-label">⚖️ Legal</span>
+                    <a href="/privacy" class="mobile-drawer-item" style="font-size:0.84rem;color:var(--text-secondary);">Privacy Policy</a>
+                    <a href="/terms" class="mobile-drawer-item" style="font-size:0.84rem;color:var(--text-secondary);">Terms of Service</a>
+                </div>
+            </div>
         </div>
 
         <!-- Hero Section -->
@@ -334,20 +385,20 @@
 
         <!-- Internal Links Bar -->
         <nav class="internal-links-bar reveal" aria-label="Quick navigation">
-            <a href="./studio/" class="internal-link-chip" style="color:var(--accent-primary);border-color:var(--accent-primary);font-weight:700;">🚀 Launch Carousel Studio</a>
-            <a href="./linkedin-carousel-generator.html" class="internal-link-chip" style="color:var(--accent-primary);border-color:var(--accent-primary);">💼 LinkedIn Carousel Generator</a>
-            <a href="./instagram-carousel-maker.html" class="internal-link-chip" style="color:var(--accent-primary);border-color:var(--accent-primary);">📸 Instagram Carousel Maker</a>
-            <a href="./blog/" class="internal-link-chip">📰 Growth Blog</a>
-            <a href="./about.html" class="internal-link-chip">📖 About</a>
-            <a href="./privacy.html" class="internal-link-chip">🔒 Privacy</a>
-            <a href="./terms.html" class="internal-link-chip">📋 Terms</a>
+            <a href="/studio/" class="internal-link-chip" style="color:var(--accent-primary);border-color:var(--accent-primary);font-weight:700;">🚀 Launch Carousel Studio</a>
+            <a href="/linkedin-carousel-generator" class="internal-link-chip" style="color:var(--accent-primary);border-color:var(--accent-primary);">💼 LinkedIn Carousel Generator</a>
+            <a href="/instagram-carousel-maker" class="internal-link-chip" style="color:var(--accent-primary);border-color:var(--accent-primary);">📸 Instagram Carousel Maker</a>
+            <a href="/blog/" class="internal-link-chip">📰 Growth Blog</a>
+            <a href="/about" class="internal-link-chip">📖 About</a>
+            <a href="/privacy" class="internal-link-chip">🔒 Privacy</a>
+            <a href="/terms" class="internal-link-chip">📋 Terms</a>
         </nav>
 
         <!-- CTA Banner -->
         <section class="cta-banner reveal from-scale">
             <h2>Ready to Create Your First Carousel?</h2>
             <p>No signup. No credit card. Just paste and create in the studio.</p>
-            <a href="./studio/" id="ctaBannerBtn" class="hero-cta-btn" style="text-decoration:none;">
+            <a href="/studio/" id="ctaBannerBtn" class="hero-cta-btn" style="text-decoration:none;">
                 <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
                 Launch Studio — It's Free
             </a>
@@ -373,9 +424,9 @@
                 <div class="footer-links-col">
                     <h4>Product</h4>
                     <ul>
-                        <li><a href="./studio/">Carousel Studio</a></li>
-                        <li><a href="./linkedin-carousel-generator.html">LinkedIn Generator</a></li>
-                        <li><a href="./instagram-carousel-maker.html">Instagram Maker</a></li>
+                        <li><a href="/studio/">Carousel Studio</a></li>
+                        <li><a href="/linkedin-carousel-generator">LinkedIn Generator</a></li>
+                        <li><a href="/instagram-carousel-maker">Instagram Maker</a></li>
                         <li><a href="#how-it-works">How It Works</a></li>
                         <li><a href="#faq">FAQ</a></li>
                     </ul>
@@ -384,16 +435,16 @@
                     <h4>Resources</h4>
                     <ul>
                         <li><a href="./blog/">Blog & Guides</a></li>
-                        <li><a href="./about.html">About Us</a></li>
-                        <li><a href="./contact.html">Contact Us</a></li>
+                        <li><a href="/about">About Us</a></li>
+                        <li><a href="/contact">Contact Us</a></li>
                     </ul>
                 </div>
                 <div class="footer-links-col">
                     <h4>Legal</h4>
                     <ul>
-                        <li><a href="./privacy.html">Privacy Policy</a></li>
-                        <li><a href="./terms.html">Terms of Service</a></li>
-                        <li><a href="./disclaimer.html">Disclaimer</a></li>
+                        <li><a href="/privacy">Privacy Policy</a></li>
+                        <li><a href="/terms">Terms of Service</a></li>
+                        <li><a href="/disclaimer">Disclaimer</a></li>
                     </ul>
                 </div>
             </div>
@@ -406,30 +457,40 @@
     <!-- Interactive Navigation & Scroll Reveal Script -->
     <script>
       (function() {
-        // Mobile Menu Toggle
+        // Mobile Slider Menu Toggle & Backdrop
         var mobileMenuBtn = document.getElementById('mobileMenuBtn');
         var mobileMenu = document.getElementById('mobileMenu');
+        var mobileBackdrop = document.getElementById('mobileMenuBackdrop');
+        var mobileCloseBtn = document.getElementById('mobileMenuCloseBtn');
+
         function closeMobileMenu() {
           if (mobileMenu) mobileMenu.classList.remove('active');
           if (mobileMenuBtn) mobileMenuBtn.classList.remove('active');
+          if (mobileBackdrop) mobileBackdrop.classList.remove('active');
           document.body.style.overflow = '';
         }
         function toggleMobileMenu() {
           var isOpen = mobileMenu && mobileMenu.classList.contains('active');
           if (isOpen) {
             closeMobileMenu();
-          } else if (mobileMenu && mobileMenuBtn) {
+          } else if (mobileMenu) {
             mobileMenu.classList.add('active');
-            mobileMenuBtn.classList.add('active');
+            if (mobileMenuBtn) mobileMenuBtn.classList.add('active');
+            if (mobileBackdrop) mobileBackdrop.classList.add('active');
             document.body.style.overflow = 'hidden';
           }
         }
         if (mobileMenuBtn) mobileMenuBtn.addEventListener('click', toggleMobileMenu);
+        if (mobileCloseBtn) mobileCloseBtn.addEventListener('click', closeMobileMenu);
+        if (mobileBackdrop) mobileBackdrop.addEventListener('click', closeMobileMenu);
         if (mobileMenu) {
           mobileMenu.querySelectorAll('a').forEach(function(link) {
             link.addEventListener('click', closeMobileMenu);
           });
         }
+        document.addEventListener('keydown', function(e) {
+          if (e.key === 'Escape') closeMobileMenu();
+        });
 
         // Scroll Reveal Animation
         var revealElements = document.querySelectorAll('.reveal');
@@ -463,6 +524,7 @@
     </script>
 
     <!-- Adsterra Sticky Footer Anchor Ad -->
-    <script src="./sticky-footer-ad.js" defer></script>
+    <script src="/sticky-footer-ad.js" defer></script>
+    <script src="/universal-layout.js" defer></script>
 </body>
 </html>

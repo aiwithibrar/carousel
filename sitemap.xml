@@ -3,97 +3,115 @@
   <!-- Core Site Pages -->
   <url>
     <loc>https://carouselforge.app/</loc>
-    <lastmod>2026-10-08</lastmod>
+    <lastmod>2026-10-09</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
     <loc>https://carouselforge.app/studio/</loc>
-    <lastmod>2026-10-08</lastmod>
+    <lastmod>2026-10-09</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://carouselforge.app/linkedin-carousel-generator.html</loc>
-    <lastmod>2026-10-08</lastmod>
+    <loc>https://carouselforge.app/tools/linkedin-text-formator</loc>
+    <lastmod>2026-10-09</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://carouselforge.app/linkedin-carousel-generator</loc>
+    <lastmod>2026-10-09</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://carouselforge.app/instagram-carousel-maker.html</loc>
-    <lastmod>2026-06-16</lastmod>
+    <loc>https://carouselforge.app/instagram-carousel-maker</loc>
+    <lastmod>2026-10-09</lastmod>
     <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://carouselforge.app/tools/instagram-grid-maker</loc>
+    <lastmod>2026-10-09</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://carouselforge.app/tools/</loc>
+    <lastmod>2026-10-09</lastmod>
+    <changefreq>daily</changefreq>
     <priority>0.9</priority>
   </url>
 
   <!-- Blog Index -->
   <url>
     <loc>https://carouselforge.app/blog/</loc>
-    <lastmod>2026-06-16</lastmod>
+    <lastmod>2026-10-09</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.8</priority>
   </url>
 
-  <!-- Blog Articles -->
+  <!-- Clean Blog Article URLs -->
   <url>
-    <loc>https://carouselforge.app/blog/post.html?slug=how-to-create-linkedin-carousel-free-60-seconds</loc>
-    <lastmod>2026-06-16</lastmod>
+    <loc>https://carouselforge.app/blog/best-free-carousel-generators-2026/</loc>
+    <lastmod>2026-06-15</lastmod>
     <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://carouselforge.app/blog/post.html?slug=best-free-carousel-generators-2026</loc>
+    <loc>https://carouselforge.app/blog/how-to-create-linkedin-carousel-free-60-seconds/</loc>
     <lastmod>2026-06-16</lastmod>
     <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://carouselforge.app/blog/post.html?slug=turn-blog-post-into-linkedin-carousel</loc>
+    <loc>https://carouselforge.app/blog/how-to-create-viral-linkedin-carousel/</loc>
     <lastmod>2026-06-16</lastmod>
     <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://carouselforge.app/blog/post.html?slug=how-to-create-viral-linkedin-carousel</loc>
-    <lastmod>2026-06-16</lastmod>
+    <loc>https://carouselforge.app/blog/text-to-carousel-slides-create-linkedin-carousel-slides-with-ai-for-free/</loc>
+    <lastmod>2026-06-26</lastmod>
     <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://carouselforge.app/blog/post.html?slug=text-to-carousel-slides-create-linkedin-carousel-slides-with-ai-for-free</loc>
-    <lastmod>2026-10-07</lastmod>
+    <loc>https://carouselforge.app/blog/turn-blog-post-into-linkedin-carousel/</loc>
+    <lastmod>2026-06-14</lastmod>
     <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.8</priority>
   </url>
 
-  <!-- Supporting Pages -->
+  <!-- Supporting Pages (Clean URLs) -->
   <url>
-    <loc>https://carouselforge.app/about.html</loc>
-    <lastmod>2026-06-16</lastmod>
+    <loc>https://carouselforge.app/about</loc>
+    <lastmod>2026-10-09</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://carouselforge.app/contact.html</loc>
-    <lastmod>2026-06-16</lastmod>
+    <loc>https://carouselforge.app/contact</loc>
+    <lastmod>2026-10-09</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://carouselforge.app/privacy.html</loc>
-    <lastmod>2026-06-16</lastmod>
+    <loc>https://carouselforge.app/privacy</loc>
+    <lastmod>2026-10-09</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.4</priority>
   </url>
   <url>
-    <loc>https://carouselforge.app/terms.html</loc>
-    <lastmod>2026-06-16</lastmod>
+    <loc>https://carouselforge.app/terms</loc>
+    <lastmod>2026-10-09</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.4</priority>
   </url>
   <url>
-    <loc>https://carouselforge.app/disclaimer.html</loc>
-    <lastmod>2026-06-16</lastmod>
+    <loc>https://carouselforge.app/disclaimer</loc>
+    <lastmod>2026-10-09</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.4</priority>
   </url>

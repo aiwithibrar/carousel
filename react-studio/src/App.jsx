@@ -24,7 +24,7 @@ import {
   copySlideToClipboard 
 } from './utils/canvasRenderer';
 
-import { Plus, Wand2, Download, FileText, Sliders, Layers, Eye, Edit3 } from 'lucide-react';
+import { Plus, Wand2, Download, FileText, Sliders, Layers, Eye, Edit3, Flame, Smartphone } from 'lucide-react';
 import './App.css';
 
 const TEXT_STORAGE_KEY = 'cmpText';
@@ -356,10 +356,6 @@ export default function App() {
         onExportZIP={handleExportZIP}
         onExportPDF={handleExportPDF}
         isExporting={exportProgress.isOpen && !exportProgress.isDone}
-        viewMode={viewMode}
-        setViewMode={setViewMode}
-        onOpenViralHooks={() => setIsViralHookOpen(true)}
-        onOpenFeedSimulator={() => setIsFeedSimulatorOpen(true)}
       />
 
       <main className="pro-main-container">
@@ -389,6 +385,57 @@ export default function App() {
 
         {/* Right Stage Display */}
         <section className="pro-stage-section">
+          {slides.length > 0 && (
+            <div className="pro-stage-toolbar">
+              <div className="stage-toolbar-left">
+                <span className="stage-count-badge">
+                  <Layers size={13} />
+                  <span>{slides.length} {slides.length === 1 ? 'Slide' : 'Slides'}</span>
+                </span>
+                <div className="pro-mode-selector">
+                  <button
+                    type="button"
+                    className={viewMode === 'strip' ? 'active' : ''}
+                    onClick={() => setViewMode('strip')}
+                    title="Horizontal Carousel Flow"
+                  >
+                    Strip Flow
+                  </button>
+                  <button
+                    type="button"
+                    className={viewMode === 'grid' ? 'active' : ''}
+                    onClick={() => setViewMode('grid')}
+                    title="Grid Overview"
+                  >
+                    Grid View
+                  </button>
+                </div>
+              </div>
+
+              <div className="stage-toolbar-right">
+                <button
+                  type="button"
+                  className="stage-tool-pill highlight-amber"
+                  onClick={() => setIsViralHookOpen(true)}
+                  title="Browse viral headline hooks & formulas"
+                >
+                  <Flame size={14} className="text-amber" />
+                  <span>Viral Hooks</span>
+                </button>
+
+                <button
+                  type="button"
+                  className="stage-tool-pill highlight-indigo"
+                  onClick={() => setIsFeedSimulatorOpen(true)}
+                  title="Preview in realistic LinkedIn & Instagram feeds"
+                >
+                  <Smartphone size={14} className="text-indigo" />
+                  <span>Feed Simulator</span>
+                </button>
+              </div>
+            </div>
+          )}
+
           {slides.length === 0 ? (
             <div className="empty-pro-state">
               <Wand2 size={40} className="empty-icon" />
@@ -521,33 +568,10 @@ export default function App() {
         </section>
       </main>
 
-      {/* Slider Menu Offcanvas Drawer */}
+      {/* Mobile Slider Menu Offcanvas Drawer */}
       <SliderMenu
         isOpen={isSliderMenuOpen}
         onClose={() => setIsSliderMenuOpen(false)}
-        slideCount={slides.length}
-        themeKey={themeKey}
-        setThemeKey={setThemeKey}
-        ratio={ratio}
-        setRatio={setRatio}
-        globalLayout={globalLayout}
-        setGlobalLayout={setGlobalLayout}
-        texture={texture}
-        setTexture={setTexture}
-        seamlessConnectors={seamlessConnectors}
-        setSeamlessConnectors={setSeamlessConnectors}
-        brandKit={brandKit}
-        setBrandKit={setBrandKit}
-        onSaveBrandKit={handleSaveBrandKit}
-        onResetBrandKit={handleResetBrandKit}
-        onOpenViralHooks={() => setIsViralHookOpen(true)}
-        onOpenFeedSimulator={() => setIsFeedSimulatorOpen(true)}
-        onOpenAIPrompt={() => setIsAIPromptOpen(true)}
-        onOpenFeedback={() => setIsFeedbackOpen(true)}
-        onReplay={handleReplay}
-        onExportPDF={handleExportPDF}
-        onExportZIP={handleExportZIP}
-        onResetDraft={handleResetDraft}
       />
 
       {/* Slide Edit Modal */}

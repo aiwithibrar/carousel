@@ -1,0 +1,17 @@
+# CarouselForge Netlify 301 Redirect Rules
+# Blog URLs: Old query parameter URL -> Clean URL
+/blog/post.html?slug=:slug  /blog/:slug/  301!
+
+# Blog URL alias
+/blog/best-free-carousel-generators  /blog/best-free-carousel-generators-2026/  301!
+
+# Legacy HTML URLs -> Clean Canonical URLs
+/about.html                         /about                         301!
+/contact.html                       /contact                       301!
+/privacy.html                       /privacy                       301!
+/terms.html                         /terms                         301!
+/disclaimer.html                    /disclaimer                    301!
+/linkedin-carousel-generator.html   /linkedin-carousel-generator   301!
+/instagram-carousel-maker.html      /instagram-carousel-maker     301!
+/linkedin-text-formatter            /tools/linkedin-text-formator  301!
+/tools/linkedin-text-formatter      /tools/linkedin-text-formator  301!

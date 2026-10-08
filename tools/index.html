@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script src="https://quge5.com/88/tag.min.js" data-zone="240916" async data-cfasync="false"></script>
+<script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+<!-- Google tag (gtag.js) with owner device opt-out -->
+<script>
+  (function() {
+    var gaId = 'G-NQ7Z1SX6WJ';
+    var urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.has('block_ga') || urlParams.has('disable_analytics')) {
+      localStorage.setItem('cf_block_analytics', 'true');
+      alert('Google Analytics tracking is now permanently BLOCKED on this device.');
+    } else if (urlParams.has('unblock_ga') || urlParams.has('enable_analytics')) {
+      localStorage.removeItem('cf_block_analytics');
+      alert('Google Analytics tracking is now RESTORED on this device.');
+    }
+    if (localStorage.getItem('cf_block_analytics') === 'true') {
+      window['ga-disable-' + gaId] = true;
+    }
+  })();
+</script>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-NQ7Z1SX6WJ"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-NQ7Z1SX6WJ');
+</script>
+    <meta charset="UTF-8">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://cdn.jsdelivr.net https://quge5.com https://identity.netlify.com https://bauval.org https://*.bauval.org; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https:; frame-src 'self' https://bauval.org https://*.bauval.org https:; connect-src 'self' https://www.google-analytics.com https://eyjybwkoucwoabzpatvm.supabase.co https://quge5.com https://identity.netlify.com https://bauval.org https://*.bauval.org;">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Free Social Media Creator Tools | CarouselForge</title>
+    <meta name="description" content="Explore CarouselForge's suite of free creator tools: LinkedIn Text Formatter & Font Generator, Carousel Studio, Instagram Carousel Maker & LinkedIn Document Generator.">
+    <meta name="canonical" href="https://carouselforge.app/tools/">
+    <link rel="icon" type="image/png" sizes="512x512" href="/icons/icon-512.png">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/style.css">
+
+    <style>
+      .tools-hero {
+        text-align: center;
+        padding: 60px 20px 40px;
+        max-width: 800px;
+        margin: 0 auto;
+      }
+      .tools-hero h1 {
+        font-size: clamp(2rem, 5vw, 3.2rem);
+        font-weight: 900;
+        letter-spacing: -0.03em;
+        line-height: 1.15;
+        margin-bottom: 16px;
+        color: var(--text-primary);
+      }
+      .tools-hero h1 span {
+        background: var(--accent-gradient);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+      .tools-hero p {
+        font-size: 1.15rem;
+        color: var(--text-secondary);
+        line-height: 1.6;
+      }
+
+      .tools-grid {
+        max-width: 1100px;
+        margin: 0 auto 80px;
+        padding: 0 20px;
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+        gap: 24px;
+      }
+      .tool-card {
+        background: #ffffff;
+        border: 1px solid var(--border-subtle);
+        border-radius: var(--radius-lg);
+        padding: 28px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        box-shadow: var(--shadow-sm);
+        transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+        text-decoration: none;
+        color: inherit;
+      }
+      .tool-card:hover {
+        transform: translateY(-4px);
+        box-shadow: var(--shadow-lg);
+        border-color: rgba(59, 130, 246, 0.35);
+      }
+      .tool-icon {
+        width: 48px;
+        height: 48px;
+        border-radius: 12px;
+        background: rgba(59, 130, 246, 0.1);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.6rem;
+        margin-bottom: 18px;
+      }
+      .tool-card h2 {
+        font-size: 1.3rem;
+        font-weight: 800;
+        color: var(--text-primary);
+        margin-bottom: 10px;
+        line-height: 1.3;
+      }
+      .tool-card p {
+        font-size: 0.95rem;
+        color: var(--text-secondary);
+        line-height: 1.6;
+        margin-bottom: 20px;
+        flex: 1;
+      }
+      .tool-badge {
+        display: inline-block;
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        padding: 4px 10px;
+        border-radius: 999px;
+        background: rgba(16, 185, 129, 0.1);
+        color: #059669;
+        margin-bottom: 12px;
+        align-self: flex-start;
+      }
+      .tool-cta-link {
+        font-size: 0.92rem;
+        font-weight: 700;
+        color: var(--accent-primary);
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+      }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="home-nav" id="homeNav">
+        <div class="logo">
+            <a href="/" class="logo-link" style="text-decoration:none;display:flex;align-items:center;gap:10px;">
+                <div class="logo-icon" aria-hidden="true">
+                    <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+                        <rect x="2" y="2" width="10" height="10" rx="2" fill="#818cf8"/>
+                        <rect x="16" y="2" width="10" height="10" rx="2" fill="#c084fc"/>
+                        <rect x="2" y="16" width="10" height="10" rx="2" fill="#f472b6"/>
+                        <rect x="16" y="16" width="10" height="10" rx="2" fill="#fb923c"/>
+                    </svg>
+                </div>
+                <span class="logo-text">CarouselForge</span>
+            </a>
+        </div>
+        <div class="home-nav-actions">
+            <a href="/" class="nav-link-item">Home</a>
+            <a href="/studio/" class="nav-link-item">Carousel Studio</a>
+            <a href="/tools/linkedin-text-formator" class="nav-link-item">LinkedIn Formatter</a>
+            <a href="/blog/" class="nav-link-item">Blog</a>
+            <a href="/about" class="nav-link-item">About</a>
+            <a href="/studio/" class="nav-btn-primary" style="text-decoration:none;">Open Studio →</a>
+            <!-- Mobile hamburger -->
+            <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Open navigation menu">
+                <div class="hamburger">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Mobile Slider Menu Backdrop & Drawer -->
+    <div class="mobile-menu-backdrop" id="mobileMenuBackdrop"></div>
+    <div class="mobile-menu" id="mobileMenu">
+        <div class="mobile-drawer-header">
+            <a href="/" class="mobile-drawer-brand">
+                <div class="logo-icon" aria-hidden="true">
+                    <svg width="24" height="24" viewBox="0 0 28 28" fill="none">
+                        <rect x="2" y="2" width="10" height="10" rx="2" fill="#818cf8"/>
+                        <rect x="16" y="2" width="10" height="10" rx="2" fill="#c084fc"/>
+                        <rect x="2" y="16" width="10" height="10" rx="2" fill="#f472b6"/>
+                        <rect x="16" y="16" width="10" height="10" rx="2" fill="#fb923c"/>
+                    </svg>
+                </div>
+                <span>CarouselForge</span>
+            </a>
+            <button type="button" class="mobile-drawer-close" id="mobileMenuCloseBtn" aria-label="Close navigation menu">✕</button>
+        </div>
+        <div class="mobile-drawer-content">
+            <div class="mobile-drawer-section">
+                <span class="mobile-drawer-label">⚡ Free Creator Tools</span>
+                <a href="/tools/instagram-grid-maker" class="mobile-drawer-item highlight-tool">
+                    <span class="item-icon">📸</span>
+                    <span>Instagram Grid Maker</span>
+                    <span class="mobile-drawer-badge" style="background:#ec4899;">NEW</span>
+                </a>
+                <a href="/tools/linkedin-text-formator" class="mobile-drawer-item">
+                    <span class="item-icon">🔤</span>
+                    <span>LinkedIn Text Formatter</span>
+                </a>
+                <a href="/linkedin-carousel-generator" class="mobile-drawer-item">
+                    <span class="item-icon">💼</span>
+                    <span>LinkedIn Carousel Maker</span>
+                </a>
+                <a href="/instagram-carousel-maker" class="mobile-drawer-item">
+                    <span class="item-icon">📱</span>
+                    <span>Instagram Carousel Maker</span>
+                </a>
+                <a href="/tools/" class="mobile-drawer-item active">
+                    <span class="item-icon">🛠️</span>
+                    <span>All Free Tools Hub</span>
+                </a>
+            </div>
+
+            <div class="mobile-drawer-section">
+                <span class="mobile-drawer-label">🎨 Studio</span>
+                <a href="/studio/" class="mobile-cta" style="text-decoration:none;">⚡ Open Carousel Studio</a>
+            </div>
+
+            <div class="mobile-drawer-section">
+                <span class="mobile-drawer-label">🧭 Navigation</span>
+                <a href="/" class="mobile-drawer-item">Home Page</a>
+                <a href="/blog/" class="mobile-drawer-item">Blog &amp; Guides</a>
+                <a href="/about" class="mobile-drawer-item">About Us</a>
+                <a href="/contact" class="mobile-drawer-item">Contact Us</a>
+            </div>
+
+            <div class="mobile-drawer-section">
+                <span class="mobile-drawer-label">⚖️ Legal</span>
+                <a href="/privacy" class="mobile-drawer-item" style="font-size:0.84rem;color:var(--text-secondary);">Privacy Policy</a>
+                <a href="/terms" class="mobile-drawer-item" style="font-size:0.84rem;color:var(--text-secondary);">Terms of Service</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hero -->
+    <div class="tools-hero">
+        <div class="hero-badge">✨ Free Social Media Creator Suite</div>
+        <h1>Free Tools for <span>Content Creators</span></h1>
+        <p>100% free web tools to craft scroll-stopping posts, carousels, and copy. No accounts, no paywalls, no watermarks.</p>
+    </div>
+
+    <!-- Tools Grid -->
+    <div class="tools-grid">
+        <a href="/tools/instagram-grid-maker" class="tool-card" style="border-color:rgba(236,72,153,0.3);">
+            <div>
+                <span class="tool-badge" style="background:rgba(236,72,153,0.1);color:#ec4899;border-color:rgba(236,72,153,0.25);">🔥 51K Volume • Free Tool</span>
+                <div class="tool-icon">📸</div>
+                <h2>Instagram Grid Maker &amp; Photo Splitter</h2>
+                <p>Slice any image into 3x1, 3x2, or 3x3 profile feed grids, or cut wide photos into seamless panoramic carousel swipes with 1-click ZIP export.</p>
+            </div>
+            <span class="tool-cta-link" style="color:#ec4899;">Launch Grid Maker →</span>
+        </a>
+
+        <a href="/tools/linkedin-text-formator" class="tool-card">
+            <div>
+                <span class="tool-badge">🔥 New &amp; Viral</span>
+                <div class="tool-icon">🔤</div>
+                <h2>LinkedIn Text Formatter &amp; Font Generator</h2>
+                <p>Convert plain text into bold, italic, monospace, and stylish Unicode fonts for LinkedIn posts, headlines, and bios.</p>
+            </div>
+            <span class="tool-cta-link">Launch Formatter →</span>
+        </a>
+
+        <a href="/studio/" class="tool-card">
+            <div>
+                <span class="tool-badge">⚡ Flagship Studio</span>
+                <div class="tool-icon">🎨</div>
+                <h2>CarouselForge Studio</h2>
+                <p>Auto-split text into viral slides, browse headline hooks, customize brand colors, and export high-res LinkedIn PDFs &amp; ZIPs.</p>
+            </div>
+            <span class="tool-cta-link">Open Studio →</span>
+        </a>
+
+        <a href="/linkedin-carousel-generator" class="tool-card">
+            <div>
+                <span class="tool-badge">💼 LinkedIn PDF</span>
+                <div class="tool-icon">📄</div>
+                <h2>LinkedIn Document Carousel Generator</h2>
+                <p>Generate multi-page document carousels tailored for LinkedIn's native document upload algorithm.</p>
+            </div>
+            <span class="tool-cta-link">Try Generator →</span>
+        </a>
+
+        <a href="/instagram-carousel-maker" class="tool-card">
+            <div>
+                <span class="tool-badge">📸 Instagram 4:5</span>
+                <div class="tool-icon">📱</div>
+                <h2>Instagram Carousel Maker</h2>
+                <p>Create seamless 4:5 portrait and 1:1 square carousels for Instagram feeds with clean typography and connectors.</p>
+            </div>
+            <span class="tool-cta-link">Try Maker →</span>
+        </a>
+    </div>
+
+    <!-- Footer -->
+    <footer class="home-footer">
+        <div class="footer-grid">
+            <div class="footer-brand">
+                <div class="logo">
+                    <div class="logo-icon" aria-hidden="true">
+                        <svg width="24" height="24" viewBox="0 0 28 28" fill="none">
+                            <rect x="2" y="2" width="10" height="10" rx="2" fill="#818cf8"/>
+                            <rect x="16" y="2" width="10" height="10" rx="2" fill="#c084fc"/>
+                            <rect x="2" y="16" width="10" height="10" rx="2" fill="#f472b6"/>
+                            <rect x="16" y="16" width="10" height="10" rx="2" fill="#fb923c"/>
+                        </svg>
+                    </div>
+                    <span class="logo-text">CarouselForge</span>
+                </div>
+                <p class="footer-desc">Free content creation tools for creators and marketers. No signup required.</p>
+            </div>
+            <div class="footer-links-col">
+                <h4>Tools</h4>
+                <ul>
+                    <li><a href="/tools/linkedin-text-formator">LinkedIn Text Formatter</a></li>
+                    <li><a href="/studio/">Carousel Studio</a></li>
+                    <li><a href="/linkedin-carousel-generator">LinkedIn Carousel Generator</a></li>
+                    <li><a href="/instagram-carousel-maker">Instagram Carousel Maker</a></li>
+                </ul>
+            </div>
+            <div class="footer-links-col">
+                <h4>Resources</h4>
+                <ul>
+                    <li><a href="/blog/">Blog &amp; Guides</a></li>
+                    <li><a href="/about">About Us</a></li>
+                    <li><a href="/contact">Contact Us</a></li>
+                </ul>
+            </div>
+            <div class="footer-links-col">
+                <h4>Legal</h4>
+                <ul>
+                    <li><a href="/privacy">Privacy Policy</a></li>
+                    <li><a href="/terms">Terms of Service</a></li>
+                    <li><a href="/disclaimer">Disclaimer</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>© 2026 CarouselForge. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+      (function() {
+        var mobileMenuBtn = document.getElementById('mobileMenuBtn');
+        var mobileMenu = document.getElementById('mobileMenu');
+        var mobileBackdrop = document.getElementById('mobileMenuBackdrop');
+        var mobileCloseBtn = document.getElementById('mobileMenuCloseBtn');
+
+        function closeMobileMenu() {
+          if (mobileMenu) mobileMenu.classList.remove('active');
+          if (mobileMenuBtn) mobileMenuBtn.classList.remove('active');
+          if (mobileBackdrop) mobileBackdrop.classList.remove('active');
+          document.body.style.overflow = '';
+        }
+        function toggleMobileMenu() {
+          var isOpen = mobileMenu && mobileMenu.classList.contains('active');
+          if (isOpen) {
+            closeMobileMenu();
+          } else if (mobileMenu) {
+            mobileMenu.classList.add('active');
+            if (mobileMenuBtn) mobileMenuBtn.classList.add('active');
+            if (mobileBackdrop) mobileBackdrop.classList.add('active');
+            document.body.style.overflow = 'hidden';
+          }
+        }
+        if (mobileMenuBtn) mobileMenuBtn.addEventListener('click', toggleMobileMenu);
+        if (mobileCloseBtn) mobileCloseBtn.addEventListener('click', closeMobileMenu);
+        if (mobileBackdrop) mobileBackdrop.addEventListener('click', closeMobileMenu);
+        if (mobileMenu) {
+          mobileMenu.querySelectorAll('a').forEach(function(link) {
+            link.addEventListener('click', closeMobileMenu);
+          });
+        }
+        document.addEventListener('keydown', function(e) {
+          if (e.key === 'Escape') closeMobileMenu();
+        });
+      })();
+    </script>
+    <script src="/sticky-footer-ad.js" defer></script>
+    <script src="/universal-layout.js" defer></script>
+</body>
+</html>

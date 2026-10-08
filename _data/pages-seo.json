@@ -32,7 +32,7 @@
     },
     {
       "id": "linkedin",
-      "path": "/linkedin-carousel-generator.html",
+      "path": "/linkedin-carousel-generator",
       "title": "Free LinkedIn Document Carousel Generator (PDF & PNG) | CarouselForge",
       "description": "Generate viral LinkedIn document carousels from text in seconds. Export high-res multi-page PDF & PNG slides. 100% free, no signup, no watermark, no design skills needed.",
       "keywords": "linkedin carousel generator, document carousel, linkedin document carousel maker, linkedin carousel maker, text to carousel ai free, free linkedin carousel generator, linkedin carousel generator no signup, linkedin slides generator, linkedin pdf carousel, how to make linkedin carousel free",
@@ -42,7 +42,7 @@
     },
     {
       "id": "instagram",
-      "path": "/instagram-carousel-maker.html",
+      "path": "/instagram-carousel-maker",
       "title": "Free Instagram Carousel Maker (No Watermark & No Signup) | CarouselForge",
       "description": "Turn text into seamless Instagram carousel slides in 30 seconds. 100% free online carousel generator with no watermark, no Canva needed, and instant 1:1 & 4:5 PNG download.",
       "keywords": "instagram carousel maker, free instagram carousel maker, instagram carousel generator, text to carousel ai free, instagram slides maker, instagram carousel without canva, free instagram carousel tool, instagram carousel creator no signup, carousel maker instagram",
@@ -52,7 +52,7 @@
     },
     {
       "id": "about",
-      "path": "/about.html",
+      "path": "/about",
       "title": "About CarouselForge — Free Carousel Generator for Content Creators",
       "description": "Learn about CarouselForge — the fastest free carousel generator for LinkedIn, Instagram and social media. Built for creators who want stunning slides without design skills.",
       "keywords": "about carouselforge, free carousel generator, carousel tool for creators, social media carousel tool, carousel maker about",
@@ -62,7 +62,7 @@
     },
     {
       "id": "contact",
-      "path": "/contact.html",
+      "path": "/contact",
       "title": "Contact CarouselForge — Free Carousel Generator Support",
       "description": "Get in touch with the CarouselForge team. Send questions, feedback or feature requests for our free carousel generator tool.",
       "keywords": "contact carouselforge, carousel generator support, carouselforge help, carousel maker feedback",
@@ -72,7 +72,7 @@
     },
     {
       "id": "privacy",
-      "path": "/privacy.html",
+      "path": "/privacy",
       "title": "Privacy Policy — CarouselForge Free Carousel Generator",
       "description": "CarouselForge Privacy Policy. Your data never leaves your device — our free carousel generator runs entirely in your browser.",
       "keywords": "carouselforge privacy policy, carousel generator privacy, free tool data privacy",
@@ -82,7 +82,7 @@
     },
     {
       "id": "terms",
-      "path": "/terms.html",
+      "path": "/terms",
       "title": "Terms of Service — CarouselForge Free Carousel Generator",
       "description": "CarouselForge Terms of Service. Use our free carousel generator for personal, commercial, or client work — all carousels are yours to keep.",
       "keywords": "carouselforge terms of service, carousel generator terms, free carousel tool terms",
@@ -92,12 +92,42 @@
     },
     {
       "id": "disclaimer",
-      "path": "/disclaimer.html",
+      "path": "/disclaimer",
       "title": "Disclaimer — CarouselForge",
       "description": "CarouselForge Disclaimer. Important information about the use of our free carousel generator and slide maker tool.",
       "keywords": "carouselforge disclaimer, carousel generator disclaimer, free slide maker disclaimer",
       "og_image": "https://carouselforge.app/icons/icon-512.png",
       "schema_type": "WebPage",
+      "noindex": false
+    },
+    {
+      "id": "linkedin-text-formator",
+      "path": "/tools/linkedin-text-formator",
+      "title": "Free LinkedIn Text Formatter & Font Generator (Bold, Italic & Fonts) | CarouselForge",
+      "description": "Transform plain text into scroll-stopping bold, italic, monospace, and fancy Unicode fonts for LinkedIn posts, headlines, and bios. 100% free with 1-click copy.",
+      "keywords": "linkedin text formatter, linkedin font generator, linkedin bold text generator, bold text linkedin, linkedin italic generator, linkedin post formatting, free linkedin text tool, fancy text linkedin, unicode text converter",
+      "og_image": "https://carouselforge.app/icons/icon-512.png",
+      "schema_type": "WebApplication",
+      "noindex": false
+    },
+    {
+      "id": "instagram-grid-maker",
+      "path": "/tools/instagram-grid-maker",
+      "title": "Free Instagram Grid Maker & Image Splitter (3x3, 3x1 & Panorama) | CarouselForge",
+      "description": "Free online Instagram grid maker and photo splitter. Cut photos into 3x1, 3x2, 3x3 profile grids or seamless panoramic swipe carousels. 100% free, no watermark, instant ZIP download.",
+      "keywords": "instagram grid maker, grid maker for instagram, instagram photo splitter, instagram image splitter, instagram 9 grid maker, 3x3 instagram grid, panorama carousel splitter",
+      "og_image": "https://carouselforge.app/icons/icon-512.png",
+      "schema_type": "WebApplication",
+      "noindex": false
+    },
+    {
+      "id": "tools-hub",
+      "path": "/tools/",
+      "title": "Free Social Media Content Creator Tools Suite | CarouselForge",
+      "description": "Discover free creator tools by CarouselForge: LinkedIn Text Formatter, LinkedIn Carousel Generator, Instagram Carousel Maker, and Carousel Studio.",
+      "keywords": "free social media tools, linkedin creator tools, carousel generator, linkedin text formatter, free content marketing tools",
+      "og_image": "https://carouselforge.app/icons/icon-512.png",
+      "schema_type": "CollectionPage",
       "noindex": false
     }
   ]

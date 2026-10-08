@@ -1735,23 +1735,27 @@
         window.scrollTo(0, 0);
     }
 
-    // Mobile menu
+    // Mobile Slider Menu Drawer
     var mobileMenuBtn = document.getElementById('mobileMenuBtn');
     var mobileMenu = document.getElementById('mobileMenu');
+    var mobileBackdrop = document.getElementById('mobileMenuBackdrop');
+    var mobileCloseBtn = document.getElementById('mobileMenuCloseBtn');
 
     function closeMobileMenu() {
         if (mobileMenu) mobileMenu.classList.remove('active');
         if (mobileMenuBtn) mobileMenuBtn.classList.remove('active');
+        if (mobileBackdrop) mobileBackdrop.classList.remove('active');
         document.body.style.overflow = '';
     }
 
     function toggleMobileMenu() {
-        var isOpen = mobileMenu.classList.contains('active');
+        var isOpen = mobileMenu && mobileMenu.classList.contains('active');
         if (isOpen) {
             closeMobileMenu();
-        } else {
+        } else if (mobileMenu) {
             mobileMenu.classList.add('active');
-            mobileMenuBtn.classList.add('active');
+            if (mobileMenuBtn) mobileMenuBtn.classList.add('active');
+            if (mobileBackdrop) mobileBackdrop.classList.add('active');
             document.body.style.overflow = 'hidden';
         }
     }
@@ -1765,7 +1769,13 @@
             document.getElementById('mobileStartBtn')
         ];
         ctaButtons.forEach(function(btn) {
-            if (btn) btn.addEventListener('click', showApp);
+            if (btn) {
+                var href = btn.getAttribute('href');
+                if (href && href.indexOf('studio') !== -1) {
+                    return; // Allow direct link to Carousel Studio
+                }
+                btn.addEventListener('click', showApp);
+            }
         });
 
         // Back to home from app header logo
@@ -1781,6 +1791,12 @@
         if (mobileMenuBtn) {
             mobileMenuBtn.addEventListener('click', toggleMobileMenu);
         }
+        if (mobileCloseBtn) {
+            mobileCloseBtn.addEventListener('click', closeMobileMenu);
+        }
+        if (mobileBackdrop) {
+            mobileBackdrop.addEventListener('click', closeMobileMenu);
+        }
         // Close mobile menu on link clicks
         if (mobileMenu) {
             mobileMenu.querySelectorAll('a').forEach(function(link) {
@@ -1789,6 +1805,9 @@
                 });
             });
         }
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') closeMobileMenu();
+        });
     }
 
     // =============================================
@@ -1978,19 +1997,20 @@
         }
 
         // Auto-save on text input
-        mainTextInput.addEventListener('input', function () {
-            saveDraft();
-        });
+        if (mainTextInput) {
+            mainTextInput.addEventListener('input', function () {
+                saveDraft();
+            });
+            mainTextInput.addEventListener('keydown', function (e) {
+                if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+                    e.preventDefault();
+                    generatePreview();
+                }
+            });
+        }
 
-        generateBtn.addEventListener('click', generatePreview);
-        downloadAllBtn.addEventListener('click', downloadAll);
-
-        mainTextInput.addEventListener('keydown', function (e) {
-            if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
-                e.preventDefault();
-                generatePreview();
-            }
-        });
+        if (generateBtn) generateBtn.addEventListener('click', generatePreview);
+        if (downloadAllBtn) downloadAllBtn.addEventListener('click', downloadAll);
 
         // 1-Click Load Sample Text
         var loadSampleBtn = document.getElementById('loadSampleBtn');

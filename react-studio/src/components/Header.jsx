@@ -1,106 +1,40 @@
 import React from 'react';
-import { 
-  Menu,
-  Flame, 
-  Smartphone, 
-  FileText, 
-  Download, 
-  Layers,
-  Sliders,
-  Home
-} from 'lucide-react';
+import { FileText, Download } from 'lucide-react';
 
 export default function Header({
   slideCount,
   onOpenSliderMenu,
   onExportZIP,
   onExportPDF,
-  isExporting,
-  viewMode,
-  setViewMode,
-  onOpenViralHooks,
-  onOpenFeedSimulator
+  isExporting
 }) {
   return (
     <header className="pro-header">
-      {/* Left: Menu Drawer Toggle + Logo + Slide count */}
+      {/* Left: Brand Logo & Desktop Navigation Links (Same as whole website) */}
       <div className="header-left">
-        <a
-          href="/"
-          className="header-home-btn"
-          title="Back to CarouselForge Home Page"
-        >
-          <Home size={15} />
-          <span className="desktop-only">Home</span>
+        <a href="/" className="studio-brand-link" title="CarouselForge Home">
+          <div className="logo-icon" aria-hidden="true">
+            <svg width="26" height="26" viewBox="0 0 28 28" fill="none">
+              <rect x="2" y="2" width="10" height="10" rx="2" fill="#818cf8"/>
+              <rect x="16" y="2" width="10" height="10" rx="2" fill="#c084fc"/>
+              <rect x="2" y="16" width="10" height="10" rx="2" fill="#f472b6"/>
+              <rect x="16" y="16" width="10" height="10" rx="2" fill="#fb923c"/>
+            </svg>
+          </div>
+          <span className="logo-text">CarouselForge</span>
         </a>
 
-        <button
-          type="button"
-          className="header-menu-trigger"
-          onClick={onOpenSliderMenu}
-          aria-label="Open Studio Menu"
-          title="Open Studio Menu (Tools, Brand Kit, Themes & Settings)"
-        >
-          <Menu size={18} />
-          <span className="menu-btn-text">Menu</span>
-        </button>
-
-        <div className="pro-brand-logo">
-          <span className="pro-brand-title">Carousel Maker Pro</span>
-          <span className="pro-brand-pill">Studio</span>
-        </div>
-
-        {slideCount > 0 && (
-          <div className="pro-count-chip desktop-only">
-            <Layers size={13} />
-            <span>{slideCount} {slideCount === 1 ? 'Slide' : 'Slides'}</span>
-          </div>
-        )}
+        {/* Website Navigation Links (Desktop) */}
+        <nav className="header-nav-links desktop-only">
+          <a href="/" className="nav-link-item">Home</a>
+          <a href="/tools/" className="nav-link-item">Tools</a>
+          <a href="/blog/" className="nav-link-item">Blog</a>
+          <a href="/about" className="nav-link-item">About</a>
+          <a href="/contact" className="nav-link-item">Contact</a>
+        </nav>
       </div>
 
-      {/* Center: Strip / Grid View Mode & Creative Shortcuts (Desktop) */}
-      <div className="header-center desktop-only">
-        <div className="pro-mode-selector">
-          <button
-            type="button"
-            className={viewMode === 'strip' ? 'active' : ''}
-            onClick={() => setViewMode('strip')}
-            title="Horizontal Carousel View"
-          >
-            Strip Flow
-          </button>
-          <button
-            type="button"
-            className={viewMode === 'grid' ? 'active' : ''}
-            onClick={() => setViewMode('grid')}
-            title="Grid Overview"
-          >
-            Grid View
-          </button>
-        </div>
-
-        <button
-          type="button"
-          className="pro-header-subbtn highlight-amber"
-          onClick={onOpenViralHooks}
-          title="Browse viral headline hooks & formulas"
-        >
-          <Flame size={14} className="text-amber" />
-          <span>Viral Hooks</span>
-        </button>
-
-        <button
-          type="button"
-          className="pro-header-subbtn highlight-indigo"
-          onClick={onOpenFeedSimulator}
-          title="Preview in realistic LinkedIn & Instagram feeds"
-        >
-          <Smartphone size={14} className="text-indigo" />
-          <span>Feed Simulator</span>
-        </button>
-      </div>
-
-      {/* Right: Primary Export Buttons */}
+      {/* Right: Studio Export Actions & Mobile-Only Menu Button */}
       <div className="header-right">
         <button
           type="button"
@@ -124,13 +58,18 @@ export default function Header({
           <span className="btn-text">{isExporting ? 'Exporting...' : 'ZIP PNGs'}</span>
         </button>
 
+        {/* Mobile-Only Hamburger Menu Button (Completely hidden on desktop) */}
         <button
           type="button"
-          className="header-tools-mobile-btn mobile-only"
+          className="mobile-menu-btn"
           onClick={onOpenSliderMenu}
-          title="All Tools & Brand Kit"
+          aria-label="Open navigation menu"
         >
-          <Sliders size={17} />
+          <div className="hamburger">
+            <span></span>
+            <span></span>
+            <span></span>
+          </div>
         </button>
       </div>
     </header>
